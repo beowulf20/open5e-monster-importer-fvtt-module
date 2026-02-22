@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monster Creator Formatter Test</title>
+  <style>
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      max-width: 960px;
+      margin: 1rem auto;
+      padding: 0 1rem 2rem;
+      color: #111;
+    }
+    button,
+    input,
+    select {
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      padding: 0.4rem 0.6rem;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.25rem;
+      margin-bottom: 1rem;
+    }
+    .status {
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.4rem;
+      background: #f8fafc;
+      color: #0f172a;
+      max-width: 960px;
+    }
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      white-space: pre-wrap;
+      overflow: auto;
+    }
+    #resultsList {
+      margin: 0 0 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .result-item {
+      width: 100%;
+      text-align: left;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #0f172a;
+      cursor: pointer;
+    }
+    .result-item.selected {
+      border-color: #2563eb;
+      background: #dbeafe;
+    }
+  </style>
+</head>
+<body>
+  <h1>Monster Creator Formatter Test Server</h1>
+  <p>
+    This page runs via Vite and lets you sanity-check the formatter using local fixtures or a live Open5E query.
+  </p>
+
+  <div class="controls">
+    <label for="fixture">Fixture:</label>
+    <select id="fixture"></select>
+    <button id="renderFixture">Render fixture payload</button>
+    <button id="loadOpen5E">Load from live Open5E</button>
+    <label for="queryMode">Query mode:</label>
+    <select id="queryMode">
+      <option value="search">search</option>
+      <option value="name">name</option>
+    </select>
+    <label for="query">Search:</label>
+    <input id="query" type="text" value="aboleth" />
+    <label for="page">Page:</label>
+    <input id="page" type="number" min="1" value="1" />
+    <label for="limit">Limit:</label>
+    <input id="limit" type="number" min="1" max="50" value="10" />
+  </div>
+  <div class="controls">
+    <label for="filterType">Type:</label>
+    <input id="filterType" type="text" placeholder="undead, beast..." />
+    <label for="filterSize">Size:</label>
+    <input id="filterSize" type="text" placeholder="small, medium, large..." />
+    <label for="filterAlignment">Alignment:</label>
+    <input id="filterAlignment" type="text" placeholder="chaotic evil..." />
+    <label for="filterSource">Source key:</label>
+    <input id="filterSource" type="text" placeholder="a5e-mm, bfrd..." />
+    <label for="filterEnvironment">Environment key:</label>
+    <input id="filterEnvironment" type="text" placeholder="underdark, swamp..." />
+  </div>
+  <div class="controls">
+    <button id="prevPage" disabled>Prev</button>
+    <button id="nextPage" disabled>Next</button>
+    <span id="status">Ready</span>
+  </div>
+
+  <h2>Search Results</h2>
+  <div id="resultsList"></div>
+  <pre id="output">Loading...</pre>
+
+  <script type="module">
+    import '/monster-creator/scripts/statblock-formatter.js';
+
+    const fmt = globalThis.MonsterCreatorStatblockFormatter;
+    const fixtureSelect = document.getElementById('fixture');
+    const renderFixtureButton = document.getElementById('renderFixture');
+    const loadOpen5EButton = document.getElementById('loadOpen5E');
+    const queryModeSelect = document.getElementById('queryMode');
+    const queryInput = document.getElementById('query');
+    const pageInput = document.getElementById('page');
+    const limitInput = document.getElementById('limit');
+    const filterTypeInput = document.getElementById('filterType');
+    const filterSizeInput = document.getElementById('filterSize');
+    const filterAlignmentInput = document.getElementById('filterAlignment');
+    const filterSourceInput = document.getElementById('filterSource');
+    const filterEnvironmentInput = document.getElementById('filterEnvironment');
+    const prevPageButton = document.getElementById('prevPage');
+    const nextPageButton = document.getElementById('nextPage');
+    const status = document.getElementById('status');
+    const output = document.getElementById('output');
+    const resultsList = document.getElementById('resultsList');
+
+    const render = (value) => {
+      output.textContent = JSON.stringify(value, null, 2);
+    };
+
+    let open5EResults = [];
+    let selectedOpen5EIndex = 0;
+    let lastOpen5ECount = 0;
+    let lastOpen5ENext = null;
+    let lastOpen5EPrevious = null;
+
+    const summarizeCreature = (creature) => ({
+      name: creature?.name || '(unnamed)',
+      slug: creature?.slug || creature?.slug_id || '',
+      type: creature?.type || '',
+      size: creature?.size || '',
+      source: creature?.source || creature?.source_book || ''
+    });
+
+    const syncPagingStateFromResponse = ({ count = 0, next = null, previous = null }) => {
+      lastOpen5ECount = count;
+      lastOpen5ENext = next || null;
+      lastOpen5EPrevious = previous || null;
+    };
+
+    const renderOpen5EResultPayload = (creature) => {
+      if (!creature) {
+        return;
+      }
+      render({
+        query: {
+          queryText: queryInput.value.trim() || 'current',
+          queryMode: queryModeSelect.value,
+          page: safeInt(pageInput.value, 1),
+          filters: {
+            type: filterTypeInput.value.trim(),
+            size: filterSizeInput.value.trim(),
+            alignment: filterAlignmentInput.value.trim(),
+            source: filterSourceInput.value.trim(),
+            environment: filterEnvironmentInput.value.trim(),
+            limit: safeInt(limitInput.value, 1)
+          }
+        },
+        paging: {
+          count: lastOpen5ECount,
+          hasNext: Boolean(lastOpen5ENext),
+          hasPrev: Boolean(lastOpen5EPrevious),
+          next: toProxyUrl(lastOpen5ENext),
+          previous: toProxyUrl(lastOpen5EPrevious)
+        },
+        selectedResult: {
+          index: selectedOpen5EIndex,
+          ...summarizeCreature(creature)
+        },
+        actorPayload: fmt.buildMonsterActorPayload(creature)
+      });
+    };
+
+    const renderOpen5ESelectionList = (results = []) => {
+      resultsList.innerHTML = '';
+      if (!Array.isArray(results) || !results.length) {
+        const empty = document.createElement('p');
+        empty.textContent = 'No creature matches this page.';
+        resultsList.appendChild(empty);
+        return;
+      }
+
+      if (!Number.isInteger(selectedOpen5EIndex) || selectedOpen5EIndex < 0 || selectedOpen5EIndex >= results.length) {
+        selectedOpen5EIndex = 0;
+      }
+
+      results.forEach((creature, index) => {
+        const summary = summarizeCreature(creature);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `result-item ${index === selectedOpen5EIndex ? 'selected' : ''}`;
+        button.textContent = `${summary.name} · ${summary.size || '?'} ${summary.type || 'creature'}${summary.source ? ` · ${summary.source}` : ''}`;
+        button.addEventListener('click', () => {
+          selectedOpen5EIndex = index;
+          renderOpen5ESelectionList(results);
+          renderOpen5EResultPayload(results[selectedOpen5EIndex]);
+        });
+        resultsList.appendChild(button);
+      });
+    };
+
+    const safeInt = (value, fallback) => {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? Math.max(1, Math.floor(parsed)) : fallback;
+    };
+
+    const toProxyUrl = (url) => {
+      if (typeof url !== 'string') return '';
+      return url.replace(/^https:\/\/api\.open5e\.com/, '/open5e');
+    };
+
+    const toTitleCase = (value) => {
+      return String(value)
+        .toLowerCase()
+        .replace(/(^|[\s-])\S/g, (m) => m.toUpperCase());
+    };
+
+    const buildOpen5eQuery = ({ page, mode, q }) => {
+      const params = new URLSearchParams();
+      const queryText = String(q ?? queryInput.value).trim();
+      const queryMode = mode || queryModeSelect.value;
+      if (queryText) {
+        if (queryMode === 'name') {
+          params.set('name', queryText);
+        } else {
+          params.set('search', queryText);
+        }
+      }
+
+      const type = filterTypeInput.value.trim();
+      const size = filterSizeInput.value.trim();
+      const alignment = filterAlignmentInput.value.trim();
+      const source = filterSourceInput.value.trim();
+      const environment = filterEnvironmentInput.value.trim();
+      const limit = safeInt(limitInput.value, 1);
+
+      if (type) params.set('type', type);
+      if (size) params.set('size', size);
+      if (alignment) params.set('alignment', alignment);
+      if (source) params.set('document__key', source);
+      if (environment) params.set('environment__key', environment);
+      if (page) params.set('page', String(page));
+      params.set('limit', String(limit));
+
+      return `/open5e/v2/creatures/?${params.toString()}`;
+    };
+
+    const syncPageFromResponseUrl = (rawUrl) => {
+      if (!rawUrl || typeof rawUrl !== 'string') {
+        return;
+      }
+
+      try {
+        const parsed = new URL(rawUrl, window.location.origin);
+        const page = parsed.searchParams.get('page');
+        if (page) pageInput.value = String(safeInt(page, 1));
+      } catch {}
+    };
+
+    const setPageStatus = ({ count, resultsLength, page, queryLabel, hasNext, hasPrev, fallbackMessage }) => {
+      const parts = [
+        `count=${count ?? 0}`,
+        `page=${page ?? 1}`,
+        `results=${resultsLength ?? 0}`
+      ];
+
+      const statusText = parts.join(' · ');
+      status.textContent = fallbackMessage
+        ? `${queryLabel || 'Search'} returned unexpected order; ${fallbackMessage} ${statusText}`
+        : `${queryLabel || 'Search'}: ${statusText}`;
+    };
+
+    const setPaginationButtons = ({ next, previous }) => {
+      prevPageButton.disabled = !previous;
+      nextPageButton.disabled = !next;
+      prevPageButton.dataset.url = toProxyUrl(previous);
+      nextPageButton.dataset.url = toProxyUrl(next);
+    };
+
+    const hasMatchingName = (payload, queryText) => {
+      if (!queryText) {
+        return true;
+      }
+
+      const target = String(queryText).trim().toLowerCase();
+      return (payload?.results || []).some((entry) => String(entry?.name || '').toLowerCase().includes(target));
+    };
+
+    const loadOpen5EPayload = async (requestUrl) => {
+      const response = await fetch(requestUrl);
+      if (!response.ok) {
+        throw new Error(`Open5E response ${response.status}`);
+      }
+
+      const payload = await response.json();
+      if (!payload || typeof payload !== 'object' || !Array.isArray(payload.results)) {
+        throw new Error('Open5E response has unexpected shape');
+      }
+
+      return payload;
+    };
+
+    const renderOpen5EResults = async (requestUrl, options = {}) => {
+      const { fallbackNameOnSearch = false, queryText = queryInput.value.trim(), queryMode = queryModeSelect.value } = options;
+      const payload = await loadOpen5EPayload(requestUrl);
+      const normalizedPage = pageInput.value || '1';
+      syncPageFromResponseUrl(requestUrl);
+      setPaginationButtons({ next: payload.next, previous: payload.previous });
+      syncPagingStateFromResponse({
+        count: payload.count || 0,
+        next: payload.next,
+        previous: payload.previous
+      });
+
+      let finalPayload = payload;
+      let fallbackMessage = '';
+
+      if (queryMode === 'search' && queryText && !hasMatchingName(payload, queryText)) {
+        const titleCased = toTitleCase(queryText);
+        if (titleCased !== queryText && !fallbackNameOnSearch) {
+          const fallbackUrl = buildOpen5eQuery({
+            q: titleCased,
+            mode: 'name',
+            page: safeInt(normalizedPage, 1)
+          });
+          const fallbackPayload = await loadOpen5EPayload(fallbackUrl);
+          if (hasMatchingName(fallbackPayload, queryText) && fallbackPayload.count > 0) {
+            finalPayload = fallbackPayload;
+            fallbackMessage = `Used fallback name search "${titleCased}" because /search returned mixed results.`;
+            syncPageFromResponseUrl(fallbackUrl);
+            syncPagingStateFromResponse({
+              count: fallbackPayload.count || 0,
+              next: fallbackPayload.next,
+              previous: fallbackPayload.previous
+            });
+            setPaginationButtons({ next: fallbackPayload.next, previous: fallbackPayload.previous });
+          }
+        }
+      }
+
+      const results = Array.isArray(finalPayload.results) ? finalPayload.results : [];
+      syncPagingStateFromResponse({
+        count: finalPayload.count || 0,
+        next: finalPayload.next,
+        previous: finalPayload.previous
+      });
+      if (!results.length) {
+        render({
+          source: finalPayload,
+          error: `No results found for "${queryText || 'current filters'}"`,
+          page: safeInt(normalizedPage, 1),
+          total: finalPayload.count
+        });
+        renderOpen5ESelectionList([]);
+        return;
+      }
+
+      selectedOpen5EIndex = 0;
+      open5EResults = results;
+      renderOpen5ESelectionList(open5EResults);
+      render({
+        query: {
+          queryText,
+          queryMode,
+          page: safeInt(normalizedPage, 1),
+          filters: {
+            type: filterTypeInput.value.trim(),
+            size: filterSizeInput.value.trim(),
+            alignment: filterAlignmentInput.value.trim(),
+            source: filterSourceInput.value.trim(),
+            environment: filterEnvironmentInput.value.trim(),
+            limit: safeInt(limitInput.value, 1)
+          }
+        },
+        paging: {
+          count: finalPayload.count,
+          hasNext: Boolean(finalPayload.next),
+          hasPrev: Boolean(finalPayload.previous),
+          next: toProxyUrl(finalPayload.next),
+          previous: toProxyUrl(finalPayload.previous)
+        },
+        results: results.map(summarizeCreature),
+        selectedResult: summarizeCreature(results[selectedOpen5EIndex] || results[0])
+      });
+      renderOpen5EResultPayload(open5EResults[selectedOpen5EIndex] || results[0]);
+
+      setPageStatus({
+        count: finalPayload.count,
+        resultsLength: results.length,
+        page: safeInt(normalizedPage, 1),
+        queryLabel: `query="${queryText || 'all'}"`,
+        hasNext: Boolean(finalPayload.next),
+        hasPrev: Boolean(finalPayload.previous),
+        fallbackMessage
+      });
+    };
+
+    const loadFixtures = async () => {
+      const response = await fetch('/monster-creator/tests/fixtures/open5e-monsters.fixture.json');
+      if (!response.ok) {
+        throw new Error(`Failed to load fixtures: ${response.status}`);
+      }
+      const fixtures = await response.json();
+      for (const key of Object.keys(fixtures)) {
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = key;
+        fixtureSelect.appendChild(option);
+      }
+
+      renderFixtureButton.addEventListener('click', () => {
+        const key = fixtureSelect.value;
+        render(fmt.buildMonsterActorPayload(fixtures[key]));
+      });
+    };
+
+    loadOpen5EButton.addEventListener('click', async () => {
+      prevPageButton.disabled = true;
+      nextPageButton.disabled = true;
+      if (!pageInput.value || safeInt(pageInput.value, 1) < 1) {
+        pageInput.value = '1';
+      }
+
+      const queryText = queryInput.value.trim() || '';
+      const queryMode = queryModeSelect.value;
+      const queryUrl = buildOpen5eQuery({
+        page: safeInt(pageInput.value, 1),
+        mode: queryMode,
+        q: queryText
+      });
+
+      try {
+        await renderOpen5EResults(queryUrl, {
+          queryText,
+          queryMode,
+          fallbackNameOnSearch: true
+        });
+      } catch (err) {
+        prevPageButton.disabled = true;
+        nextPageButton.disabled = true;
+        render({ error: String(err) });
+        status.textContent = String(err);
+      }
+    });
+
+    prevPageButton.addEventListener('click', async () => {
+      const requestUrl = prevPageButton.dataset.url;
+      if (!requestUrl) {
+        return;
+      }
+
+      try {
+        await renderOpen5EResults(requestUrl, {
+          queryText: queryInput.value.trim(),
+          queryMode: queryModeSelect.value,
+          fallbackNameOnSearch: true
+        });
+      } catch (err) {
+        render({ error: String(err) });
+        status.textContent = String(err);
+      }
+    });
+
+    nextPageButton.addEventListener('click', async () => {
+      const requestUrl = nextPageButton.dataset.url;
+      if (!requestUrl) {
+        return;
+      }
+
+      try {
+        await renderOpen5EResults(requestUrl, {
+          queryText: queryInput.value.trim(),
+          queryMode: queryModeSelect.value,
+          fallbackNameOnSearch: true
+        });
+      } catch (err) {
+        render({ error: String(err) });
+        status.textContent = String(err);
+      }
+    });
+
+    if (!fmt) {
+      render({ error: 'Formatter module not loaded' });
+    } else {
+      renderFixtureButton.disabled = true;
+      loadFixtures()
+        .then(() => {
+          renderFixtureButton.disabled = false;
+          render({ status: 'ready', message: 'Fixture data loaded. Pick a fixture and render.' });
+        })
+        .catch((error) => {
+          render({ error: String(error) });
+        });
+    }
+  </script>
+</body>
+</html>

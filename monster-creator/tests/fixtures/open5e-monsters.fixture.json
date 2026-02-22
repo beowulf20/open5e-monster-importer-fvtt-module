@@ -1,0 +1,180 @@
+{
+  "full": {
+    "slug": "a5e-mm_aboleth",
+    "key": "a5e-mm_aboleth",
+    "url": "https://api.open5e.com/v2/creatures/a5e-mm_aboleth/",
+    "name": "Aboleth",
+    "desc": "This abyssal intellect lurks beneath the waves.\u2022 It is ancient and merciless.",
+    "size": {
+      "name": "Large",
+      "key": "large"
+    },
+    "type": {
+      "name": "Aberration",
+      "key": "aberration"
+    },
+    "alignment": "chaotic evil",
+    "armor_class": 17,
+    "armor_desc": "natural armor",
+    "hit_points": 171,
+    "hit_dice": "18d10+72",
+    "speed_all": {
+      "walk": 10,
+      "swim": 40,
+      "fly": 60,
+      "unit": "feet"
+    },
+    "ability_scores": {
+      "strength": 20,
+      "dexterity": 12,
+      "constitution": 18,
+      "intelligence": 20,
+      "wisdom": 20,
+      "charisma": 18
+    },
+    "challenge_rating_decimal": "11.000",
+    "challenge_rating_text": "11",
+    "languages": {
+      "as_string": "Deep Speech, telepathy 120 ft.",
+      "data": [
+        {
+          "name": "Deep Speech",
+          "key": "deep-speech",
+          "url": "https://api.open5e.com/v2/languages/deep-speech/"
+        }
+      ]
+    },
+    "saving_throws": {
+      "dexterity": 5,
+      "constitution": 8,
+      "intelligence": 9,
+      "wisdom": 9
+    },
+    "skill_bonuses": {
+      "history": 9,
+      "stealth": 5,
+      "deception": 8
+    },
+    "passive_perception": 15,
+    "darkvision_range": 120,
+    "blindsight_range": 30,
+    "resistances_and_immunities": {
+      "damage_immunities_display": "cold",
+      "damage_immunities": [
+        {
+          "name": "Cold",
+          "key": "cold"
+        }
+      ],
+      "damage_resistances_display": "fire",
+      "damage_resistances": [
+        {
+          "name": "Acid",
+          "key": "acid"
+        }
+      ],
+      "damage_vulnerabilities_display": "",
+      "damage_vulnerabilities": [],
+      "condition_immunities_display": "frightened",
+      "condition_immunities": [
+        {
+          "name": "Charmed",
+          "key": "charmed"
+        }
+      ]
+    },
+    "document": {
+      "name": "Monstrous Menagerie",
+      "key": "a5e-mm",
+      "type": "SOURCE",
+      "display_name": "Monstrous Menagerie"
+    },
+    "traits": [
+      {
+        "name": "Amphibious",
+        "desc": "The aboleth can breathe both air and water."
+      },
+      {
+        "name": "Amorphous",
+        "desc": "Its skin is thick and jelly-like, allowing it to squeeze through cracks."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Tentacle",
+        "desc": "Melee Weapon Attack: +9 to hit, reach 15 ft., one target."
+      },
+      {
+        "name": "Telepathic Summon",
+        "desc": "The aboleth can issue a terrifying psychic command."
+      }
+    ],
+    "illustration": "https://example.com/aboleth.png"
+  },
+  "sparse": {
+    "slug": "nameless-dweller",
+    "name": "Nameless Dweller",
+    "size": "Medium",
+    "type": {
+      "name": "Beast"
+    },
+    "hit_points": 24
+  },
+  "multiModal": {
+    "slug": "skybound-croc",
+    "name": "Skybound Croc",
+    "size": {
+      "name": "Huge"
+    },
+    "type": {
+      "name": "Monstrosity"
+    },
+    "alignment": "neutral",
+    "armor_class": 15,
+    "hit_points": 95,
+    "speed_all": {
+      "walk": 25,
+      "fly": "60",
+      "climb": 15,
+      "swim": "0",
+      "crawl": -5,
+      "teleport": 120,
+      "unit": "feet",
+      "burrow": null
+    },
+    "ability_scores": {
+      "strength": 18,
+      "dexterity": 14,
+      "constitution": 16,
+      "intelligence": 3,
+      "wisdom": 12,
+      "charisma": 6
+    },
+    "challenge_rating_decimal": "4.000",
+    "desc": "A crocodile with wings that hunts from above and below.\u2022 It can strike with both jaws and claws.",
+    "traits": [
+      {
+        "name": "Amphibious",
+        "desc": "\u2022 It breathes water and air."
+      },
+      {
+        "name": "Camouflage",
+        "desc": "_ Blends with mud and stone."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Tail Lash",
+        "desc": "One target takes 1d8."
+      },
+      {
+        "name": "Dive",
+        "desc": "Drops from the sky."
+      }
+    ],
+    "document": {
+      "name": "Homebrew Codex",
+      "key": "hb-codex"
+    }
+  }
+}

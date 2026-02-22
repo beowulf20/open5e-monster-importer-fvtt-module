@@ -1,0 +1,596 @@
+/* ============================================================
+   Monster Creator — Foundry VTT D&D Tabletop Stylesheet
+   ============================================================ */
+
+/* ── CSS Custom Properties ─────────────────────────────────── */
+.monster-creator-form,
+#monster-creator-form {
+  /* Fonts — system serifs only; no external import needed in Foundry */
+  --mc-font-body:   var(--font-primary, "Palatino Linotype", Palatino, Georgia, serif);
+  --mc-font-header: var(--font-primary, "Palatino Linotype", Palatino, Georgia, serif);
+
+  /* Parchment palette (light) */
+  --mc-surface:        #fdf6e3;
+  --mc-paper:          #f5e6c8;
+  --mc-paper-alt:      #efe0bb;
+  --mc-border:         #c8a87a;
+  --mc-border-strong:  #8b5e3c;
+  --mc-border-ornate:  #7d4f2a;
+
+  /* Text */
+  --mc-text:      #1a0a00;
+  --mc-muted:     #5c3d1e;
+  --mc-label:     #6b2d2d;
+
+  /* Crimson accent (Monster Manual red) */
+  --mc-accent:        #7d1111;
+  --mc-accent-hover:  #a01a1a;
+  --mc-accent-glow:   rgba(125, 17, 17, 0.18);
+  --mc-accent-light:  rgba(125, 17, 17, 0.08);
+
+  /* Inputs */
+  --mc-input-bg:    #fffbf2;
+  --mc-control-bg:  #fffbf2;
+  --mc-focus-ring:  rgba(125, 17, 17, 0.35);
+
+  /* Results */
+  --mc-result-hover-bg:    rgba(125, 17, 17, 0.10);
+  --mc-result-selected-bg: rgba(125, 17, 17, 0.22);
+
+  /* Shadows */
+  --mc-shadow-sm:  0 1px 3px rgba(60, 20, 0, 0.18);
+  --mc-shadow-md:  0 3px 8px rgba(60, 20, 0, 0.22);
+  --mc-shadow-inset: inset 0 1px 3px rgba(60, 20, 0, 0.15);
+
+  color:       var(--mc-text);
+  font-family: var(--mc-font-body);
+  font-size:   0.97rem;
+  line-height: 1.5;
+}
+
+/* ── Dark / Grimoire Theme ─────────────────────────────────── */
+.theme-dark .monster-creator-form,
+.theme-dark #monster-creator-form {
+  --mc-surface:       #1a1410;
+  --mc-paper:         #211b14;
+  --mc-paper-alt:     #2a2118;
+  --mc-border:        #4a3820;
+  --mc-border-strong: #6b5030;
+  --mc-border-ornate: #8b6840;
+
+  --mc-text:   #f0e6d0;
+  --mc-muted:  #b09070;
+  --mc-label:  #d4a070;
+
+  --mc-accent:       #c8703a;
+  --mc-accent-hover: #e8904a;
+  --mc-accent-glow:  rgba(200, 112, 58, 0.25);
+  --mc-accent-light: rgba(200, 112, 58, 0.10);
+
+  --mc-input-bg:   #251e16;
+  --mc-control-bg: #251e16;
+  --mc-focus-ring: rgba(200, 112, 58, 0.40);
+
+  --mc-result-hover-bg:    rgba(200, 112, 58, 0.14);
+  --mc-result-selected-bg: rgba(200, 112, 58, 0.28);
+
+  --mc-shadow-sm:    0 1px 4px rgba(0, 0, 0, 0.50);
+  --mc-shadow-md:    0 3px 10px rgba(0, 0, 0, 0.55);
+  --mc-shadow-inset: inset 0 1px 3px rgba(0, 0, 0, 0.40);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FOUNDRY WINDOW — strip built-in content padding
+══════════════════════════════════════════════════════════════ */
+#monster-creator-form .window-content {
+  padding: 0;
+  margin: 6px;
+  overflow-y: auto;
+  background: var(--mc-surface, #fdf6e3);
+
+  /* Themed scrollbar for the whole window */
+  scrollbar-width: thin;
+  scrollbar-color: var(--mc-border-strong, #8b5e3c) transparent;
+}
+
+.theme-dark #monster-creator-form .window-content {
+  background: var(--mc-surface, #1a1410);
+  scrollbar-color: var(--mc-border-strong, #6b5030) transparent;
+}
+
+#monster-creator-form .window-content::-webkit-scrollbar {
+  width: 7px;
+}
+
+#monster-creator-form .window-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#monster-creator-form .window-content::-webkit-scrollbar-thumb {
+  background: var(--mc-border-strong, #8b5e3c);
+  border-radius: 4px;
+}
+
+#monster-creator-form .window-content::-webkit-scrollbar-thumb:hover {
+  background: var(--mc-accent, #7d1111);
+}
+
+.theme-dark #monster-creator-form .window-content::-webkit-scrollbar-thumb {
+  background: var(--mc-border-strong, #6b5030);
+}
+
+.theme-dark #monster-creator-form .window-content::-webkit-scrollbar-thumb:hover {
+  background: var(--mc-accent, #c8703a);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LAYOUT — Form wrapper
+══════════════════════════════════════════════════════════════ */
+.monster-creator-form {
+  padding: 0.6rem 0.75rem 0.75rem;
+  background: var(--mc-surface);
+}
+
+/* ── Labels ──────────────────────────────────────────────────── */
+.monster-creator-form label {
+  display: block;
+  font-family: var(--mc-font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mc-label);
+  margin-bottom: 0.28rem;
+}
+
+/* ── Form groups ─────────────────────────────────────────────── */
+.monster-creator-form .form-group {
+  margin: 0 0 0.85rem;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FIELDSETS — Ornate parchment panels
+══════════════════════════════════════════════════════════════ */
+.monster-creator-form fieldset {
+  position: relative;
+  margin: 0 0 1.2rem;
+  padding: 1rem 1rem 0.9rem;
+  border: none;
+  background: var(--mc-paper);
+  box-shadow: var(--mc-shadow-md);
+
+  /* Layered decorative border */
+  border: 2px solid var(--mc-border-ornate);
+  border-radius: 2px;
+}
+
+/* Inner inset line */
+.monster-creator-form fieldset::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid var(--mc-border);
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+/* ── Legend — styled like a statblock header ─────────────────── */
+.monster-creator-form legend {
+  position: relative;
+  z-index: 1;
+  padding: 0.2rem 0.75rem;
+  margin-left: 0.5rem;
+  font-family: var(--mc-font-header);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mc-surface);
+  background: var(--mc-accent);
+  border-radius: 2px;
+  box-shadow: var(--mc-shadow-sm);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   INPUTS, SELECTS, TEXTAREAS
+══════════════════════════════════════════════════════════════ */
+.monster-creator-form input,
+.monster-creator-form select,
+.monster-creator-form textarea {
+  width: 100%;
+  border: 1px solid var(--mc-border);
+  border-radius: 2px;
+  background: var(--mc-input-bg);
+  color: var(--mc-text);
+  padding: 0.42rem 0.6rem;
+  font-family: var(--mc-font-body);
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  box-shadow: var(--mc-shadow-inset);
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.monster-creator-form input:focus,
+.monster-creator-form select:focus,
+.monster-creator-form textarea:focus {
+  outline: none;
+  border-color: var(--mc-accent);
+  box-shadow: var(--mc-shadow-inset), 0 0 0 2px var(--mc-focus-ring);
+}
+
+.monster-creator-form input::placeholder {
+  color: var(--mc-muted);
+  opacity: 0.65;
+  font-style: italic;
+}
+
+.monster-creator-form textarea {
+  resize: vertical;
+  min-height: 5rem;
+}
+
+.monster-creator-form select {
+  /* Keep native select arrow so Foundry/Electron renders option text correctly */
+  padding-top: 0;
+  padding-bottom: 0;
+  cursor: pointer;
+}
+
+/* Open5e min-height */
+.monster-creator-open5e input,
+.monster-creator-open5e select,
+.monster-creator-open5e textarea {
+  min-height: 2.15rem;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   OPEN5E SEARCH PANEL
+══════════════════════════════════════════════════════════════ */
+.monster-creator-open5e {
+  margin-bottom: 1.3rem;
+}
+
+.monster-creator-open5e legend {
+  letter-spacing: 0.06em;
+}
+
+/* 3-col search controls */
+.monster-creator-open5e-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(130px, 1fr));
+  gap: 0.7rem;
+}
+
+/* ── Action buttons row ─────────────────────────────────────── */
+.monster-creator-open5e-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.monster-creator-open5e-actions button,
+.monster-creator-button {
+  position: relative;
+  border: 1px solid var(--mc-border-strong);
+  border-radius: 2px;
+  color: var(--mc-accent);
+  background: var(--mc-paper-alt);
+  padding: 0.42rem 0.95rem;
+  font-family: var(--mc-font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  min-height: 34px;
+  cursor: pointer;
+  box-shadow: var(--mc-shadow-sm),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: border-color 140ms ease,
+              background-color 140ms ease,
+              color 140ms ease,
+              box-shadow 140ms ease;
+}
+
+.monster-creator-open5e-actions button:hover:not(:disabled),
+.monster-creator-button:hover {
+  border-color: var(--mc-accent);
+  color: var(--mc-surface);
+  background: var(--mc-accent);
+  box-shadow: 0 2px 8px var(--mc-accent-glow),
+              inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.monster-creator-open5e-actions button:active:not(:disabled),
+.monster-creator-button:active {
+  box-shadow: var(--mc-shadow-inset);
+  transform: translateY(1px);
+}
+
+.monster-creator-open5e-actions button:disabled,
+.monster-creator-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Submit — explicit Foundry button values (--button-* tokens don't inherit into forms) */
+#monster-creator-form .monster-creator-submit {
+  width: 97%;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+
+  /* Dark theme: matches #sbi-main-button computed values */
+  background: rgba(11, 10, 19, 0.5);   /* --color-cool-5-50 */
+  border: 1px solid #ffffff;
+  border-radius: 4px;
+  color: #e7d1b1;                       /* --color-light-3   */
+
+  font-family: var(--font-sans, "Signika", "Palatino Linotype", sans-serif);
+  font-size: var(--font-size-14, 0.875rem);
+  line-height: normal;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+/* Light theme override */
+.theme-light #monster-creator-form .monster-creator-submit {
+  background: rgba(255, 255, 245, 0.6);
+  border-color: #7a7971;               /* --dnd5e-color-tan  */
+  color: #191813;                      /* --color-text-dark-primary */
+}
+
+#monster-creator-form .monster-creator-submit:hover:not(:disabled) {
+  background: #c9593f;                 /* --color-warm-2 */
+  border-color: #e7d1b1;              /* --color-light-3 */
+  color: #f7f3e8;                     /* --color-light-1 */
+}
+
+#monster-creator-form .monster-creator-submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── Status line ────────────────────────────────────────────── */
+.monster-creator-open5e-status {
+  grid-column: 1 / -1;
+  min-height: 1.1rem;
+  padding: 0.1rem 0.2rem;
+  font-style: italic;
+  font-size: 0.88rem;
+  color: var(--mc-muted);
+}
+
+/* ── Results list ───────────────────────────────────────────── */
+.monster-creator-open5e-results {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid var(--mc-border);
+  border-radius: 2px;
+  padding: 0.45rem;
+  background: var(--mc-surface);
+  box-shadow: var(--mc-shadow-inset);
+
+  /* Thin scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--mc-border-strong) transparent;
+}
+
+.monster-creator-open5e-results::-webkit-scrollbar {
+  width: 6px;
+}
+.monster-creator-open5e-results::-webkit-scrollbar-thumb {
+  background: var(--mc-border-strong);
+  border-radius: 3px;
+}
+
+/* Individual result card */
+.monster-creator-open5e-result {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--mc-border);
+  border-left: 3px solid transparent;
+  padding: 0.42rem 0.65rem;
+  border-radius: 1px;
+  background: var(--mc-paper);
+  color: var(--mc-text);
+  font-family: var(--mc-font-body);
+  font-size: 0.9rem;
+  box-shadow: var(--mc-shadow-sm);
+  transition: border-color 110ms ease,
+              background-color 110ms ease,
+              box-shadow 110ms ease;
+  cursor: pointer;
+}
+
+.monster-creator-open5e-result:hover {
+  border-color: var(--mc-border-strong);
+  border-left-color: var(--mc-accent);
+  background: var(--mc-result-hover-bg);
+  box-shadow: var(--mc-shadow-md);
+}
+
+.monster-creator-open5e-result.selected {
+  border-color: var(--mc-accent);
+  border-left-color: var(--mc-accent-hover);
+  background: var(--mc-result-selected-bg);
+  box-shadow: 0 0 0 1px var(--mc-accent-glow);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   STAT GRID — AC / HP / Speed / Abilities
+══════════════════════════════════════════════════════════════ */
+.monster-creator-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+  margin-bottom: 0.9rem;
+}
+
+/* ── Ability scores section ─────────────────────────────────── */
+.monster-creator-abilities {
+  margin-bottom: 0.9rem;
+}
+
+.monster-creator-abilities h3 {
+  margin: 0 0 0.55rem;
+  padding: 0.2rem 0.5rem;
+  font-family: var(--mc-font-header);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mc-accent);
+  border-bottom: 1px solid var(--mc-border);
+}
+
+/* Ability score inputs: square, centered number style */
+.monster-creator-abilities .form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.monster-creator-abilities .form-group label {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--mc-accent);
+  margin-bottom: 0.2rem;
+}
+
+.monster-creator-abilities .form-fields {
+  width: 100%;
+}
+
+.monster-creator-abilities input[type="number"] {
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 0.5rem 0.3rem;
+  background: var(--mc-paper-alt);
+  border-color: var(--mc-border-strong);
+  box-shadow: var(--mc-shadow-inset), var(--mc-shadow-sm);
+}
+
+.monster-creator-abilities .monster-creator-grid {
+  grid-template-columns: repeat(6, minmax(52px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DECORATIVE HORIZONTAL DIVIDER (between major sections)
+══════════════════════════════════════════════════════════════ */
+.monster-creator-form .form-group:has(input[name="name"]) {
+  padding-top: 0.3rem;
+}
+
+/* Thin ornate rule between search panel and main form */
+.monster-creator-form fieldset + .form-group::before {
+  content: "";
+  display: block;
+  height: 2px;
+  margin-bottom: 0.9rem;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--mc-border-strong) 20%,
+    var(--mc-accent) 50%,
+    var(--mc-border-strong) 80%,
+    transparent
+  );
+  border-radius: 1px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DIRECTORY BUTTON — sits alongside "Create Actor" in the footer
+══════════════════════════════════════════════════════════════ */
+.monster-creator-directory-button-wrap {
+  margin: 0.5rem;
+}
+
+/* Override the D&D theme on the directory button so it matches
+   Foundry's native footer buttons (Create Actor, Import Statblock) */
+.monster-creator-directory-button-wrap .monster-creator-button {
+  width: 100%;
+  height: 32px;
+  min-height: 32px;
+  min-height: unset;
+  gap: 0.38rem;
+  padding: 0 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+
+  background: rgba(11, 10, 19, 0.5);   /* --color-cool-5-50 */
+  border: 1px solid #9f8475;            /* --color-light-5   */
+  border-radius: 4px;
+  color: #e7d1b1;                       /* --color-light-3   */
+
+  font-family: var(--font-sans, "Signika", "Palatino Linotype", sans-serif);
+  font-size: var(--font-size-14, 0.875rem);
+  font-weight: normal;
+  letter-spacing: normal;
+  text-transform: none;
+  line-height: normal;
+  box-shadow: none;
+  transition: 0.5s;
+}
+
+.monster-creator-directory-button-wrap .monster-creator-button:hover {
+  background: #c9593f;                  /* --color-warm-2 */
+  border-color: #e7d1b1;
+  color: #f7f3e8;                       /* --color-light-1 */
+  box-shadow: none;
+}
+
+.monster-creator-directory-button-wrap .monster-creator-button::before {
+  content: "";
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  background-image: url("../assets/icon.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  display: inline-block;
+  margin-right: 0.2rem;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════════ */
+@media (max-width: 720px) {
+  .monster-creator-open5e-controls,
+  .monster-creator-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .monster-creator-abilities .monster-creator-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .monster-creator-open5e-controls,
+  .monster-creator-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .monster-creator-abilities .monster-creator-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

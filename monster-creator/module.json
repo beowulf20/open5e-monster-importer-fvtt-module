@@ -1,0 +1,27 @@
+{
+  "id": "monster-creator",
+  "name": "monster-creator",
+  "title": "Monster Creator",
+  "description": "Quickly create monster actors from a simple form.",
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "Your Name"
+    }
+  ],
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13",
+    "maximum": "13"
+  },
+  "esmodules": [
+    "scripts/statblock-formatter.js",
+    "scripts/monster-creator.js"
+  ],
+  "styles": [
+    "styles/monster-creator.css"
+  ],
+  "manifest": "https://example.com/modules/monster-creator/module.json",
+  "download": "https://example.com/modules/monster-creator/module.zip",
+  "readme": "README.md"
+}

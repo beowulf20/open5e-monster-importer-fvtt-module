@@ -1,0 +1,119 @@
+<form class="monster-creator-form">
+  <fieldset class="monster-creator-open5e">
+    <legend>Open5E Search</legend>
+    <div class="monster-creator-open5e-controls">
+      <div class="form-group">
+        <label>Query</label>
+        <div class="form-fields"><input type="text" name="open5eQuery" value="" placeholder="zombie" /></div>
+      </div>
+      <div class="form-group">
+        <label>Limit</label>
+        <div class="form-fields"><input type="number" name="open5eLimit" min="1" max="100" value="100" /></div>
+      </div>
+      <div class="form-group">
+        <label>Page</label>
+        <div class="form-fields">
+          <input type="number" name="open5ePage" min="1" value="1" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Filter type</label>
+        <div class="form-fields"><input type="text" name="open5eType" placeholder="undead, beast..." /></div>
+      </div>
+      <div class="form-group">
+        <label>Filter size</label>
+        <div class="form-fields"><input type="text" name="open5eSize" placeholder="small, medium..." /></div>
+      </div>
+      <div class="form-group">
+        <label>Filter source</label>
+        <div class="form-fields"><input type="text" name="open5eSource" placeholder="a5e-mm, phb..." /></div>
+      </div>
+      <div class="monster-creator-open5e-actions">
+        <button type="button" class="monster-creator-open5e-search">Search</button>
+        <button type="button" class="monster-creator-open5e-prev">Prev</button>
+        <button type="button" class="monster-creator-open5e-next">Next</button>
+        <button type="button" class="monster-creator-open5e-clear">Clear selection</button>
+      </div>
+      <div class="monster-creator-open5e-status" role="status" aria-live="polite"></div>
+      <div class="monster-creator-open5e-results"></div>
+    </div>
+  </fieldset>
+
+  <div class="form-group">
+    <label>Name</label>
+    <div class="form-fields"><input type="text" name="name" value="{{defaults.name}}" required /></div>
+  </div>
+
+  <div class="form-group">
+    <label>Image</label>
+    <div class="form-fields"><input type="text" name="img" value="{{defaults.img}}" /></div>
+  </div>
+
+  <div class="monster-creator-grid">
+    <div class="form-group">
+      <label>Type</label>
+      <div class="form-fields"><input type="text" name="type" value="{{defaults.type}}" /></div>
+    </div>
+    <div class="form-group">
+      <label>Size</label>
+      <div class="form-fields">
+        <select name="size">
+          <option value="tiny">Tiny</option>
+          <option value="sm">Small</option>
+          <option value="med" selected>Medium</option>
+          <option value="lg">Large</option>
+          <option value="huge">Huge</option>
+          <option value="grg">Gargantuan</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Alignment</label>
+      <div class="form-fields">
+        <select name="alignment">
+          <option value="unaligned" selected>Unaligned</option>
+          <option value="lawful good">Lawful Good</option>
+          <option value="neutral good">Neutral Good</option>
+          <option value="chaotic good">Chaotic Good</option>
+          <option value="lawful neutral">Lawful Neutral</option>
+          <option value="neutral">Neutral</option>
+          <option value="chaotic neutral">Chaotic Neutral</option>
+          <option value="lawful evil">Lawful Evil</option>
+          <option value="neutral evil">Neutral Evil</option>
+          <option value="chaotic evil">Chaotic Evil</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Challenge</label>
+      <div class="form-fields"><input type="number" name="challenge" min="0" max="30" value="{{defaults.challenge}}" /></div>
+    </div>
+  </div>
+
+  <div class="monster-creator-grid">
+    <div class="form-group"><label>Armor Class</label><div class="form-fields"><input type="number" name="ac" min="0" value="{{defaults.ac}}" /></div></div>
+    <div class="form-group"><label>Hit Points</label><div class="form-fields"><input type="number" name="hp" min="0" value="{{defaults.hp}}" /></div></div>
+    <div class="form-group"><label>Speed</label><div class="form-fields"><input type="number" name="speed" min="0" value="{{defaults.speed}}" /></div></div>
+  </div>
+
+  <section class="monster-creator-abilities">
+    <h3>Ability Scores</h3>
+    <div class="monster-creator-grid">
+      <div class="form-group"><label>STR</label><div class="form-fields"><input type="number" name="str" min="1" max="30" value="{{defaults.str}}" /></div></div>
+      <div class="form-group"><label>DEX</label><div class="form-fields"><input type="number" name="dex" min="1" max="30" value="{{defaults.dex}}" /></div></div>
+      <div class="form-group"><label>CON</label><div class="form-fields"><input type="number" name="con" min="1" max="30" value="{{defaults.con}}" /></div></div>
+      <div class="form-group"><label>INT</label><div class="form-fields"><input type="number" name="int" min="1" max="30" value="{{defaults.int}}" /></div></div>
+      <div class="form-group"><label>WIS</label><div class="form-fields"><input type="number" name="wis" min="1" max="30" value="{{defaults.wis}}" /></div></div>
+      <div class="form-group"><label>CHA</label><div class="form-fields"><input type="number" name="cha" min="1" max="30" value="{{defaults.cha}}" /></div></div>
+    </div>
+  </section>
+
+  <div class="form-group">
+    <label>Notes</label>
+    <div class="form-fields"><textarea name="notes" rows="3">{{defaults.notes}}</textarea></div>
+  </div>
+
+  <div class="form-group">
+    <button class="monster-creator-submit" type="submit">Create Monster</button>
+  </div>
+</form>

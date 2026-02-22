@@ -1,0 +1,25 @@
+{
+  "name": "monster-creator-module",
+  "version": "1.0.9",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "dev": "vite",
+    "dev:open": "vite --open",
+    "dev:host": "vite --host",
+    "build": "TARGET=${FOUNDRY_MONSTER_CREATOR_PATH}; rm -rf \"$TARGET\"; mkdir -p \"$TARGET\"; cp -R monster-creator/. \"$TARGET\"/; mkdir -p dist/monster-creator/styles && cp monster-creator/styles/monster-creator.css dist/monster-creator/styles/monster-creator.css",
+    "serve": "vite preview --host --port 4174",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "vite": "^5.4.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "<rootDir>/monster-creator/tests/**/*.test.js"
+    ]
+  }
+}
