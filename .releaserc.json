@@ -10,7 +10,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "bash ./monster-creator/scripts/release-module.sh"
+        "prepareCmd": "RELEASE_VERSION=${nextRelease.version} RELEASE_TAG=${nextRelease.gitTag} bash ./monster-creator/scripts/release-module.sh"
       }
     ],
     [

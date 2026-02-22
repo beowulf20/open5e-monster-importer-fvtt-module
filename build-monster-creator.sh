@@ -9,6 +9,7 @@ DIST_MODULE_DIR="${DIST_DIR}/monster-creator"
 
 BASE_URL="${MONSTER_CREATOR_BASE_URL:-http://127.0.0.1:8000}"
 OPEN5E_API_URL="${MONSTER_CREATOR_API_REMOTE_URL:-https://api.open5e.com}"
+VERSION="${MONSTER_CREATOR_VERSION:-}"
 
 if [[ ! -d "$MODULE_DIR" ]]; then
   echo "Error: module directory not found at $MODULE_DIR" >&2
@@ -25,8 +26,10 @@ if ! command -v zip >/dev/null 2>&1; then
   exit 1
 fi
 
-PACKAGE_JSON="$SCRIPT_DIR/package.json"
-VERSION=$(node -p "JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')).version || ''" "$PACKAGE_JSON")
+if [[ -z "$VERSION" ]]; then
+  PACKAGE_JSON="$SCRIPT_DIR/package.json"
+  VERSION=$(node -p "JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8')).version || ''" "$PACKAGE_JSON")
+fi
 if [[ -z "$VERSION" || "$VERSION" == "null" ]]; then
   echo "Warning: Could not read version from package.json, falling back to module package file." >&2
   VERSION=$(node -p "JSON.parse(require('fs').readFileSync(process.argv[2], 'utf8')).version || ''" "$MODULE_DIR/module.json")
