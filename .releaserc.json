@@ -1,0 +1,32 @@
+{
+  "branches": [
+    "main",
+    "master"
+  ],
+  "tagFormat": "v${version}",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "bash ./monster-creator/scripts/release-module.sh"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          {
+            "path": "dist/module.json",
+            "label": "module.json"
+          },
+          {
+            "path": "dist/monster-creator.zip",
+            "label": "monster-creator.zip"
+          }
+        ]
+      }
+    ]
+  ]
+}

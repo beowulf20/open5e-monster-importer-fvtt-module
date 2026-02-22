@@ -1,80 +1,34 @@
-name: Release Foundry Module
+name: Semantic Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - master
+      - main
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
   release:
-    name: Build and publish module release
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Read version
-        id: version
-        run: |
-          node - <<'NODE' >> "$GITHUB_OUTPUT"
-          const fs = require('node:fs');
-          const { version } = require('./package.json');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `version=${version}\n`);
-          NODE
-
-      - name: Build module distribution
-        run: ./build-monster-creator.sh
-        env:
-          MONSTER_CREATOR_BASE_URL: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}
-
-      - name: Rewrite module manifest URLs for Foundry import
-        env:
-          REF_NAME: ${{ github.ref_name }}
-          REPO: ${{ github.repository }}
-        run: |
-          node <<'NODE'
-          const fs = require('node:fs');
-
-          const version = require('./package.json').version;
-          const tagName = process.env.REF_NAME || '';
-          const repo = process.env.REPO || '';
-
-          const manifestUrl = `https://github.com/${repo}/releases/latest/download/module.json`;
-          const zipName = `monster-creator-v${version}.zip`;
-          const downloadUrl = `https://github.com/${repo}/releases/download/${tagName}/${zipName}`;
-
-          const files = ['dist/module.json', 'dist/monster-creator/module.json'];
-
-          for (const file of files) {
-            if (!fs.existsSync(file)) {
-              throw new Error(`Expected file not found: ${file}`);
-            }
-
-            const manifest = JSON.parse(fs.readFileSync(file, 'utf8'));
-            manifest.manifest = manifestUrl;
-            manifest.download = downloadUrl;
-            fs.writeFileSync(file, JSON.stringify(manifest, null, 2) + "\n");
-          }
-
-          console.log(`Updated release URLs in ${files.join(', ')}`);
-          NODE
-
-      - name: Repackage zip with updated module manifest
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          (cd dist && rm -f "monster-creator-v${VERSION}.zip" && zip -r -q "monster-creator-v${VERSION}.zip" monster-creator)
-
-      - name: Publish release
-        uses: softprops/action-gh-release@v2
         with:
-          files: |
-            dist/module.json
-            dist/monster-creator-*.zip
-          generate_release_notes: true
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run semantic release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./node_modules/.bin/semantic-release
