@@ -25,6 +25,16 @@ It is built as a self-contained Foundry module for import via a manifest URL:
 3. Enable **Monster Creator** in your world.
 4. Open the Actors tab and use **Create Monster**.
 
+#### Install walkthrough
+
+![Install step 1](assets/how-install/image1.png)
+
+![Install step 2](assets/how-install/image2.png)
+
+Use the module manifest URL from the repository’s **Releases** page: `https://github.com/beowulf20/open5e-monster-importer-fvtt-module/releases/latest/download/module.json`.
+
+![Install step 3](assets/how-install/image3.png)
+
 ### Manual install for local testing
 
 From repository root:
