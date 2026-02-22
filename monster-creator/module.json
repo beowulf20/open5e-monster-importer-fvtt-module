@@ -21,6 +21,7 @@
   "styles": [
     "styles/monster-creator.css"
   ],
+  "url": "https://github.com/beowulf20/open5e-monster-importer-fvtt-module",
   "manifest": "https://example.com/modules/monster-creator/module.json",
   "download": "https://example.com/modules/monster-creator/module.zip",
   "readme": "README.md"
