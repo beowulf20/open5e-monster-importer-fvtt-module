@@ -3,6 +3,14 @@ import { sbiUtils } from './sbi-importer/sbiUtils.js';
 import { sbiParser } from './sbi-importer/sbiParser.js';
 
 const MONSTER_CREATOR_ID = 'monster-creator';
+const JHOW_MODE_SETTING = 'jhowMode';
+const JHOW_MODE_CLASS = 'monster-creator-jhow-mode';
+const JHOW_RAIN_LAYER_CLASS = 'monster-creator-jhow-rain';
+const JHOW_CONFETTI_PIECE_CLASS = 'monster-creator-jhow-confetti-piece';
+const JHOW_MONSTER_CREATOR_LABEL = 'Create Jhow';
+const MONSTER_CREATOR_LABEL = 'Create Monster';
+const JHOW_CLICK_CONFETTI_COUNT = 30;
+const JHOW_INTERACTION_CONFETTI_COUNT = 12;
 const OPEN5E_API_DEFAULT_ROOT = 'https://api.open5e.com';
 const OPEN5E_CREATURES_ENDPOINT = '/v2/creatures/';
 
@@ -31,6 +39,120 @@ const getOpen5eApiRoot = () => {
   return OPEN5E_API_DEFAULT_ROOT;
 };
 
+const isJhowModeEnabled = () => {
+  return Boolean(game?.settings?.get?.(MONSTER_CREATOR_ID, JHOW_MODE_SETTING));
+};
+
+const getJhowButtonLabel = () => {
+  return isJhowModeEnabled() ? JHOW_MONSTER_CREATOR_LABEL : MONSTER_CREATOR_LABEL;
+};
+
+const clamp = (value, min, max) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) {
+    return min;
+  }
+  return Math.max(min, Math.min(max, parsed));
+};
+
+const makeBloodDragonConfetti = (container, requestedCount = JHOW_INTERACTION_CONFETTI_COUNT) => {
+  if (!container || !isJhowModeEnabled()) {
+    return;
+  }
+
+  const colorPalette = ['#d41d26', '#ff4f4f', '#9e111b', '#f7f7a8', '#ffb347', '#ff6f4b', '#9c00ff', '#4f0000'];
+  const pieceCount = Math.max(1, Math.min(Math.floor(requestedCount), 120));
+  const rect = container.getBoundingClientRect();
+  const containerRect = {
+    width: rect.width || 420,
+    height: rect.height || 420
+  };
+
+  for (let i = 0; i < pieceCount; i++) {
+    const piece = document.createElement('span');
+    piece.className = JHOW_CONFETTI_PIECE_CLASS;
+
+    const size = clamp(Math.random() * 10 + 6, 6, 18);
+    const width = clamp(size * (Math.random() > 0.7 ? 0.35 : 1), 4, 14);
+    const height = size;
+    const left = clamp(Math.random() * containerRect.width, 0, Math.max(0, containerRect.width - width));
+    const drift = clamp((Math.random() - 0.5) * 120, -80, 80);
+    const duration = clamp(1.2 + Math.random() * 1.8, 1.2, 3.5);
+    const delay = clamp(Math.random() * 0.5, 0, 0.5);
+    const rotation = clamp(Math.random() * 360, 0, 360);
+    const fallAmount = clamp(containerRect.height * (0.9 + Math.random() * 0.6), containerRect.height, containerRect.height * 1.6);
+    const color = colorPalette[Math.floor(Math.random() * colorPalette.length)] || '#ff4f4f';
+
+    piece.style.left = `${left}px`;
+    piece.style.top = `${-height}px`;
+    piece.style.width = `${width}px`;
+    piece.style.height = `${height}px`;
+    piece.style.backgroundColor = color;
+    piece.style.setProperty('--mc-jhow-drift-x', `${drift}px`);
+    piece.style.setProperty('--mc-jhow-duration', `${duration}s`);
+    piece.style.setProperty('--mc-jhow-delay', `${delay}s`);
+    piece.style.setProperty('--mc-jhow-rotation', `${rotation}deg`);
+    piece.style.setProperty('--mc-jhow-fall-distance', `${fallAmount}px`);
+    piece.style.setProperty('--mc-jhow-size', `${size / 6}`);
+    piece.style.borderRadius = `${Math.random() > 0.5 ? '999px' : '1px 3px'}`;
+
+    container.appendChild(piece);
+    piece.addEventListener('animationend', () => {
+      piece.remove();
+    }, { once: true });
+  }
+};
+
+const getJhowRainLayer = (root) => {
+  if (!root) {
+    return null;
+  }
+  const existing = root.querySelector(`.${JHOW_RAIN_LAYER_CLASS}`);
+  if (existing) {
+    return existing;
+  }
+
+  const layer = document.createElement('div');
+  layer.className = JHOW_RAIN_LAYER_CLASS;
+  root.appendChild(layer);
+  return layer;
+};
+
+const setMonsterCreatorJhowClass = (root) => {
+  if (!(root instanceof HTMLElement)) {
+    return;
+  }
+
+  root.classList.toggle(JHOW_MODE_CLASS, isJhowModeEnabled());
+};
+
+const maybeCreateJhowConfetti = (root, event = null, options = {}) => {
+  if (!isJhowModeEnabled()) {
+    return;
+  }
+  const layer = getJhowRainLayer(root);
+  if (!layer) {
+    return;
+  }
+  layer.classList.toggle(JHOW_MODE_CLASS, true);
+  const requestedCount = Number(options.pieceCount);
+  const pieceCount = Number.isFinite(requestedCount) ? requestedCount : JHOW_INTERACTION_CONFETTI_COUNT;
+  makeBloodDragonConfetti(layer, pieceCount);
+};
+
+const setMonsterCreatorSubmitLabel = (root) => {
+  if (!(root instanceof HTMLElement)) {
+    return;
+  }
+
+  const submitButton = root.querySelector('.monster-creator-submit');
+  if (!(submitButton instanceof HTMLButtonElement)) {
+    return;
+  }
+  submitButton.textContent = getJhowButtonLabel();
+  submitButton.classList.toggle('monster-creator-jhow-submit', isJhowModeEnabled());
+};
+
 const registerMonsterCreatorSettings = () => {
   if (!game?.settings?.register) {
     return;
@@ -43,6 +165,37 @@ const registerMonsterCreatorSettings = () => {
     config: true,
     type: String,
     default: OPEN5E_API_DEFAULT_ROOT
+  });
+
+  game.settings.register(MONSTER_CREATOR_ID, JHOW_MODE_SETTING, {
+    name: 'JHOW MODE',
+    hint: 'Enable Blood Dragon visual mode. When enabled, interactions in the Monster Creator window trigger confetti rain.',
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: false,
+    onChange: () => {
+      document.querySelectorAll('.monster-creator-form').forEach((form) => {
+        if (!(form instanceof HTMLElement)) {
+          return;
+        }
+        setMonsterCreatorJhowClass(form);
+        setMonsterCreatorSubmitLabel(form);
+        const layer = getJhowRainLayer(form);
+        if (layer) {
+          layer.classList.toggle(JHOW_MODE_CLASS, isJhowModeEnabled());
+        }
+      });
+
+      document
+        .querySelectorAll('.monster-creator-button')
+        .forEach((node) => {
+          node.classList.toggle('monster-creator-jhow-button', isJhowModeEnabled());
+          if (node instanceof HTMLButtonElement) {
+            node.textContent = getJhowButtonLabel();
+          }
+        });
+    }
   });
 };
 
@@ -828,6 +981,23 @@ class MonsterCreatorForm extends FormApplication {
     const root = html instanceof HTMLElement ? html : html?.[0];
     if (!root) return;
 
+  setMonsterCreatorJhowClass(root);
+  setMonsterCreatorSubmitLabel(root);
+  maybeCreateJhowConfetti(root);
+  const launchJhowConfetti = (event) => {
+      if (!event) return;
+      if (event.type === 'submit' || event.type === 'input' || event.type === 'change' || event.isTrusted) {
+        const pieceCount = event.type === 'click'
+          ? JHOW_CLICK_CONFETTI_COUNT
+          : JHOW_INTERACTION_CONFETTI_COUNT;
+        maybeCreateJhowConfetti(root, event, { pieceCount });
+      }
+    };
+    root.addEventListener('click', launchJhowConfetti);
+    root.addEventListener('change', launchJhowConfetti);
+    root.addEventListener('input', launchJhowConfetti);
+    root.addEventListener('submit', launchJhowConfetti);
+
     this._elements = {
       pageInput: root.querySelector('[name="open5ePage"]'),
       queryInput: root.querySelector('[name="open5eQuery"]'),
@@ -1009,7 +1179,10 @@ const addMonsterCreatorButton = (_app, html) => {
   const button = document.createElement('button');
   button.type = 'button';
   button.className = `monster-creator-button create-document ${MONSTER_CREATOR_ID}-button`;
-  button.textContent = 'Create Monster';
+  if (isJhowModeEnabled()) {
+    button.classList.add('monster-creator-jhow-button');
+  }
+  button.textContent = getJhowButtonLabel();
   button.addEventListener('click', () => {
     new MonsterCreatorForm().render(true);
   });

@@ -48,6 +48,35 @@
   line-height: 1.5;
 }
 
+/* ── JHOW MODE: Blood Dragon Overload ──────────────────────── */
+.monster-creator-form.monster-creator-jhow-mode,
+#monster-creator-form.monster-creator-jhow-mode {
+  overflow: visible;
+  --mc-font-body:        "Impact", "Arial Black", "Trebuchet MS", sans-serif;
+  --mc-font-header:      "Trebuchet MS", "Impact", "Arial Black", sans-serif;
+  --mc-surface:          radial-gradient(circle at 20% 10%, #25010a 0%, #140006 40%, #040001 100%);
+  --mc-paper:            #2a060f;
+  --mc-paper-alt:        #3a0f18;
+  --mc-border:           #ff4d4d;
+  --mc-border-strong:    #ff8080;
+  --mc-border-ornate:    #dd2828;
+  --mc-text:             #fff1c1;
+  --mc-muted:            #ffc4aa;
+  --mc-label:            #ff6a6a;
+  --mc-accent:           #ff1f35;
+  --mc-accent-hover:     #ff8a40;
+  --mc-accent-glow:      rgba(255, 31, 53, 0.45);
+  --mc-accent-light:     rgba(255, 31, 53, 0.20);
+  --mc-input-bg:          #2d0d13;
+  --mc-control-bg:        #2d0d13;
+  --mc-focus-ring:        rgba(255, 140, 50, 0.55);
+  --mc-result-hover-bg:    rgba(255, 31, 53, 0.25);
+  --mc-result-selected-bg: rgba(255, 31, 53, 0.38);
+  --mc-shadow-sm:         0 1px 5px rgba(255, 30, 53, 0.35);
+  --mc-shadow-md:         0 4px 12px rgba(0, 0, 0, 0.55);
+  --mc-shadow-inset:      inset 0 1px 3px rgba(255, 60, 80, 0.35);
+}
+
 /* ── Dark / Grimoire Theme ─────────────────────────────────── */
 .theme-dark .monster-creator-form,
 .theme-dark #monster-creator-form {
@@ -79,6 +108,31 @@
   --mc-shadow-inset: inset 0 1px 3px rgba(0, 0, 0, 0.40);
 }
 
+.theme-dark .monster-creator-form.monster-creator-jhow-mode,
+.theme-dark #monster-creator-form.monster-creator-jhow-mode {
+  --mc-surface:          radial-gradient(circle at 20% 10%, #25010a 0%, #140006 40%, #040001 100%);
+  --mc-paper:            #2a060f;
+  --mc-paper-alt:        #3a0f18;
+  --mc-border:           #ff4d4d;
+  --mc-border-strong:    #ff8080;
+  --mc-border-ornate:    #dd2828;
+  --mc-text:             #fff1c1;
+  --mc-muted:            #ffc4aa;
+  --mc-label:            #ff6a6a;
+  --mc-accent:           #ff1f35;
+  --mc-accent-hover:     #ff8a40;
+  --mc-accent-glow:      rgba(255, 31, 53, 0.45);
+  --mc-accent-light:     rgba(255, 31, 53, 0.20);
+  --mc-input-bg:          #2d0d13;
+  --mc-control-bg:        #2d0d13;
+  --mc-focus-ring:        rgba(255, 140, 50, 0.55);
+  --mc-result-hover-bg:    rgba(255, 31, 53, 0.25);
+  --mc-result-selected-bg: rgba(255, 31, 53, 0.38);
+  --mc-shadow-sm:         0 1px 5px rgba(255, 30, 53, 0.35);
+  --mc-shadow-md:         0 4px 12px rgba(0, 0, 0, 0.55);
+  --mc-shadow-inset:      inset 0 1px 3px rgba(255, 60, 80, 0.35);
+}
+
 /* ══════════════════════════════════════════════════════════════
    FOUNDRY WINDOW — strip built-in content padding
 ══════════════════════════════════════════════════════════════ */
@@ -87,6 +141,7 @@
   margin: 6px;
   overflow-y: auto;
   background: var(--mc-surface, #fdf6e3);
+  position: relative;
 
   /* Themed scrollbar for the whole window */
   scrollbar-width: thin;
@@ -129,7 +184,58 @@
 .monster-creator-form {
   padding: 0.6rem 0.75rem 0.75rem;
   background: var(--mc-surface);
+  position: relative;
+  overflow: hidden;
 }
+
+.monster-creator-form.monster-creator-jhow-mode,
+#monster-creator-form.monster-creator-jhow-mode {
+  overflow: visible;
+}
+
+/* ---------- JHOW confetti rain ---------- */
+.monster-creator-jhow-rain {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  touch-action: none;
+  display: none;
+  z-index: 100;
+}
+
+.monster-creator-jhow-rain.monster-creator-jhow-mode {
+  display: block;
+}
+
+.monster-creator-jhow-confetti-piece {
+  position: absolute;
+  pointer-events: none;
+  transform: rotate(0deg) translateX(0);
+  box-shadow: 0 0 8px rgba(255, 40, 80, 0.4);
+  opacity: 0.95;
+  animation:
+    mc-jhow-rain-fall var(--mc-jhow-duration, 2s) linear var(--mc-jhow-delay, 0s) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes mc-jhow-rain-fall {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg) scaleX(var(--mc-jhow-size, 1));
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(calc(var(--mc-jhow-fall-distance, 300px) * 0.7)) translateX(calc(var(--mc-jhow-drift-x, 0px) * 0.5)) rotate(calc(var(--mc-jhow-rotation, 0deg) * 0.7));
+  }
+  100% {
+    transform: translateY(var(--mc-jhow-fall-distance, 300px)) translateX(var(--mc-jhow-drift-x, 0px)) rotate(var(--mc-jhow-rotation, 360deg));
+    opacity: 0;
+  }
+}
+
 
 /* ── Labels ──────────────────────────────────────────────────── */
 .monster-creator-form label {
@@ -293,6 +399,30 @@
               box-shadow 140ms ease;
 }
 
+.monster-creator-form.monster-creator-jhow-mode .monster-creator-open5e-actions button,
+.monster-creator-form.monster-creator-jhow-mode .monster-creator-button,
+.monster-creator-form.monster-creator-jhow-mode .monster-creator-submit,
+.monster-creator-jhow-mode.monster-creator-button,
+.monster-creator-button.monster-creator-jhow-button {
+  color: #ffe0b2;
+  border-color: #ff6b6b;
+  background: linear-gradient(180deg, #4d0015 0%, #1d010a 60%, #0b0006 100%);
+  text-shadow: 0 0 8px rgba(255, 80, 100, 0.75);
+  box-shadow: 0 0 12px rgba(255, 31, 53, 0.45);
+  text-transform: uppercase;
+}
+
+.monster-creator-form.monster-creator-jhow-mode .monster-creator-open5e-actions button:hover:not(:disabled),
+.monster-creator-form.monster-creator-jhow-mode .monster-creator-button:hover,
+.monster-creator-form.monster-creator-jhow-mode .monster-creator-submit:hover:not(:disabled),
+.monster-creator-jhow-button:hover,
+.monster-creator-form .monster-creator-submit.monster-creator-jhow-submit:hover:not(:disabled) {
+  border-color: #ffcb62;
+  color: #1a000a;
+  background: linear-gradient(180deg, #ffb347 0%, #8f1f2e 55%, #29040f 100%);
+  box-shadow: 0 0 14px rgba(255, 179, 71, 0.85);
+}
+
 .monster-creator-open5e-actions button:hover:not(:disabled),
 .monster-creator-button:hover {
   border-color: var(--mc-accent);
@@ -303,13 +433,15 @@
 }
 
 .monster-creator-open5e-actions button:active:not(:disabled),
-.monster-creator-button:active {
+.monster-creator-button:active,
+.monster-creator-form.monster-creator-jhow-mode .monster-creator-submit:active:not(:disabled) {
   box-shadow: var(--mc-shadow-inset);
   transform: translateY(1px);
 }
 
 .monster-creator-open5e-actions button:disabled,
-.monster-creator-button:disabled {
+.monster-creator-button:disabled,
+.monster-creator-submit:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
@@ -340,19 +472,42 @@
 }
 
 /* Light theme override */
-.theme-light #monster-creator-form .monster-creator-submit {
+.theme-light #monster-creator-form:not(.monster-creator-jhow-mode) .monster-creator-submit {
   background: rgba(255, 255, 245, 0.6);
   border-color: #7a7971;               /* --dnd5e-color-tan  */
   color: #191813;                      /* --color-text-dark-primary */
 }
 
-#monster-creator-form .monster-creator-submit:hover:not(:disabled) {
+#monster-creator-form:not(.monster-creator-jhow-mode) .monster-creator-submit:hover:not(:disabled) {
   background: #c9593f;                 /* --color-warm-2 */
   border-color: #e7d1b1;              /* --color-light-3 */
   color: #f7f3e8;                     /* --color-light-1 */
 }
 
-#monster-creator-form .monster-creator-submit:disabled {
+#monster-creator-form .monster-creator-submit.monster-creator-jhow-submit,
+.monster-creator-form.monster-creator-jhow-mode .monster-creator-submit.monster-creator-jhow-submit:hover:not(:disabled) {
+  border-radius: 8px;
+  border-color: #ffcb62;
+  background: linear-gradient(180deg, #4f0015 0%, #8f1f2e 70%, #ff8a3c 100%);
+  text-shadow: 0 0 6px rgba(255, 140, 80, 0.9);
+  box-shadow: 0 0 14px rgba(255, 31, 53, 0.45);
+}
+
+.monster-creator-form.monster-creator-jhow-mode .monster-creator-submit.monster-creator-jhow-submit,
+#monster-creator-form.monster-creator-jhow-mode .monster-creator-submit.monster-creator-jhow-submit:hover:not(:disabled) {
+  border-radius: 10px;
+  letter-spacing: 0.05em;
+  font-family: var(--mc-font-body);
+  text-transform: uppercase;
+}
+
+.monster-creator-form.monster-creator-jhow-mode .monster-creator-submit:disabled {
+  border-color: #7a1f2d;
+  background: #24000d;
+  color: #b26d6d;
+}
+
+#monster-creator-form:not(.monster-creator-jhow-mode) .monster-creator-submit:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
