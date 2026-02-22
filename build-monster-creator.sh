@@ -8,7 +8,7 @@ OUTPUT_NAME="monster-creator-v"
 DIST_MODULE_DIR="${DIST_DIR}/monster-creator"
 
 BASE_URL="${MONSTER_CREATOR_BASE_URL:-http://127.0.0.1:8000}"
-OPEN5E_API_URL="${MONSTER_CREATOR_API_REMOTE_URL:-http://localhost:8888}"
+OPEN5E_API_URL="${MONSTER_CREATOR_API_REMOTE_URL:-https://api.open5e.com}"
 
 if [[ ! -d "$MODULE_DIR" ]]; then
   echo "Error: module directory not found at $MODULE_DIR" >&2
@@ -62,7 +62,7 @@ const distModule = path.resolve(process.env.MONSTER_CREATOR_DIST_MODULE || '');
 const baseUrl = process.env.MONSTER_CREATOR_BASE || '';
 const version = process.env.MONSTER_CREATOR_VERSION || '';
 const outputName = process.env.MONSTER_CREATOR_OUTPUT_NAME || '';
-const open5eApiUrl = String(process.env.MONSTER_CREATOR_OPEN5E_API_URL || '').trim() || 'http://localhost:8888';
+const open5eApiUrl = String(process.env.MONSTER_CREATOR_OPEN5E_API_URL || '').trim() || 'https://api.open5e.com';
 
 const manifest = JSON.parse(fs.readFileSync(source, 'utf8'));
 manifest.version = version;
