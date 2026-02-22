@@ -38,6 +38,7 @@ for (const file of ['dist/module.json', 'dist/monster-creator/module.json']) {
   if (version) {
     manifest.version = version;
   }
+  delete manifest.name;
   manifest.manifest = manifestUrl;
   manifest.download = downloadUrl;
   fs.writeFileSync(file, JSON.stringify(manifest, null, 2) + '\n');

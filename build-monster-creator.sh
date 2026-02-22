@@ -71,6 +71,7 @@ const manifest = JSON.parse(fs.readFileSync(source, 'utf8'));
 manifest.version = version;
 manifest.manifest = `${baseUrl}/module.json`;
 manifest.download = `${baseUrl}/${outputName}${version}.zip`;
+delete manifest.name;
 
 fs.writeFileSync(target, JSON.stringify(manifest, null, 2));
 
