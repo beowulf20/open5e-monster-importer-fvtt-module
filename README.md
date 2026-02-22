@@ -1,43 +1,76 @@
 # Monster Creator
 
-A Foundry VTT module starter that adds a `Create Monster` button to the Actor Directory and opens a form for creating NPC-style monster actors.
+Monster Creator is a full Foundry Virtual Tabletop module that adds a **Create Monster** button to the Actor Directory and opens a Foundry form for creating NPC-style monsters with Open5E search.
 
-## Install for development
+It is built as a self-contained Foundry module for import via a manifest URL:
 
-1. Copy this folder to your Foundry `Data/modules/` directory.
-2. In Foundry, enable **Monster Creator** from Module Management.
-3. Reload the world.
-4. Open the Actors sidebar tab.
-5. Click **Create Monster** in the directory footer/header actions.
-6. Use the **Open5E Search** section in the form for query + pagination.
+- module metadata: `module.json`
+- runtime script: `scripts/monster-creator.js`
+- form template: `templates/monster-creator-form.hbs`
+- module styles: `styles/monster-creator.css`
 
-## Files
+## What this module provides
 
-- `module.json` - module metadata
-- `scripts/monster-creator.js` - module behavior and form
-- `templates/monster-creator-form.hbs` - form UI
-- `styles/monster-creator.css` - UI styling
+- Actor Directory button: **Create Monster**
+- Open5E-backed monster search and pagination
+- NPC actor creation payload that follows DnD5e conventions
+- Automatic manifest/download URL injection for distribution builds
 
-## Notes
+## Installation
 
-- The current actor payload is a good DnD5e-oriented base and can be customized in `scripts/monster-creator.js` for your target system.
+### From a built release
 
-## Build
+1. In Foundry VTT, open **Module Management**.
+2. Use **Install Module** and provide the release manifest URL.
+3. Enable **Monster Creator** in your world.
+4. Open the Actors tab and use **Create Monster**.
+
+### Manual install for local testing
 
 From repository root:
+
+```bash
+npm install
+npm run dev:open
+```
+
+Then visit the local test page:
+
+- `http://localhost:4173/monster-creator-test.html`
+
+## Usage
+
+1. Open Foundry and enable the module.
+2. In Actor Directory, click **Create Monster**.
+3. Use the form search + page controls to find a monster.
+4. Review and submit to create the actor.
+
+## Screenshots
+
+![Monster Creator Screenshot 1](assets/image1.png)
+
+![Monster Creator Screenshot 2](assets/image2.png)
+
+![Monster Creator Screenshot 3](assets/image3.png)
+
+![Monster Creator Screenshot 4](assets/image4.png)
+
+## Build and release artifacts
+
+Run the full build from repo root:
 
 ```bash
 ./build-monster-creator.sh
 ```
 
-This creates:
+Build outputs:
 
 - `dist/monster-creator-v<version>.zip`
-- `dist/module.json` (generated for local/static hosting)
-- `dist/monster-creator/` (copy of module files used by the generated manifest)
-  (where `<version>` is the `version` field in `monster-creator/module.json`).
+- `dist/monster-creator.zip` (release-ready filename)
+- `dist/module.json`
+- `dist/monster-creator/`
 
-To host locally for install testing:
+You can host locally to test module install flow:
 
 ```bash
 MONSTER_CREATOR_BASE_URL=http://127.0.0.1:8000 ./build-monster-creator.sh
@@ -45,33 +78,36 @@ cd dist
 python3 -m http.server 8000
 ```
 
-To point the module at a custom Open5E API endpoint when building, set:
+Then in Foundry use:
+
+- `http://127.0.0.1:8000/module.json`
+
+### API endpoint
+
+Default API endpoint in builds is:
+
+- `https://api.open5e.com`
+
+To override for local/proxy use:
 
 ```bash
 MONSTER_CREATOR_API_REMOTE_URL=http://localhost:8888 ./build-monster-creator.sh
 ```
 
-If unset, the API URL defaults to `http://localhost:8888`.
+## Release tooling
 
-In Foundry, use:
-
-`http://127.0.0.1:8000/module.json`
-
-## Local test server (Vite)
-
-Start a lightweight testable server:
+A semantic-release workflow is configured in this repo for release automation. The dry-run command is:
 
 ```bash
-npm install
-npm run dev
+npm run release:dry-run
 ```
 
-Then open:
+Release preparation updates both `dist/module.json` and `dist/monster-creator/module.json` so Foundry can install the module with `monster-creator.zip` from the release.
 
-- `http://localhost:4173/monster-creator-test.html`
+## Credits
 
-The page:
+- Most of the module work is based on and inspired by [Aioros/5e-statblock-importer](https://github.com/Aioros/5e-statblock-importer).
 
-- loads local fixtures from `monster-creator/tests/fixtures/open5e-monsters.fixture.json`
-- builds actor payloads using the formatter
-- optionally pulls live Open5E search results through local proxy route `/open5e/*`
+## Next TODO
+
+- Embed the complete Open5E monster data payload in-module so runtime no longer depends on external API calls.
