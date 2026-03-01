@@ -670,6 +670,107 @@ const createMonsterFromOpen5e = async (monsterOrText, options = {}) => {
   return createMonsterFromOpen5eData(monsterData, options);
 };
 
+const buildManualMonsterPayload = (formData = {}) => {
+  const rawChallenge = parseChallengeRating(formData.challenge, 0);
+  const challenge = Number.isFinite(rawChallenge) ? rawChallenge : 0;
+  const speed = safeInt(formData.speed, 30);
+  const normalizedSize = (() => {
+    const rawSize = safeString(formData.size, 'med').toLowerCase();
+    const aliases = {
+      tiny: 'tiny',
+      small: 'sm',
+      medium: 'med',
+      large: 'lg',
+      huge: 'huge',
+      gargantuan: 'grg',
+      sm: 'sm',
+      med: 'med',
+      lg: 'lg',
+      grg: 'grg'
+    };
+
+    return aliases[rawSize] || 'med';
+  })();
+
+  return {
+    name: safeString(formData.name, 'New Monster'),
+    img: safeString(formData.img, 'icons/svg/mystery-man.svg'),
+    type: safeString(formData.type, 'humanoid'),
+    size: normalizedSize,
+    alignment: safeString(formData.alignment, 'unaligned'),
+    ac: safeNumber(formData.ac, 10),
+    hp: safeInt(formData.hp, 10),
+    speed: {
+      walk: speed
+    },
+    challenge_rating_decimal: challenge,
+    challenge_rating_text: String(challenge),
+    ability_scores: {
+      strength: safeInt(formData.str, 10),
+      dexterity: safeInt(formData.dex, 10),
+      constitution: safeInt(formData.con, 10),
+      intelligence: safeInt(formData.int, 10),
+      wisdom: safeInt(formData.wis, 10),
+      charisma: safeInt(formData.cha, 10)
+    },
+    desc: safeString(formData.notes, ''),
+    traits: [],
+    actions: [],
+    bonusActions: [],
+    reactions: [],
+    legendaryActions: [],
+    mythicActions: [],
+    lairActions: [],
+    document: {
+      display_name: 'Manual Entry',
+      name: 'Manual Entry',
+      key: 'manual-statblock',
+      type: 'SOURCE'
+    }
+  };
+};
+
+const createMonsterFromManualForm = async (formData = {}, { notes = '', folderId } = {}) => {
+  const formatter = getFormatter();
+  if (
+    !formatter
+    || typeof formatter.buildMonsterActorPayload !== 'function'
+    || typeof formatter.toWotcStatblockText !== 'function'
+  ) {
+    sbiUtils.warn('[MonsterCreator] Manual creation unavailable: formatter helper missing.');
+    return null;
+  }
+
+  if (typeof parseMonsterStatblock !== 'function') {
+    sbiUtils.warn('[MonsterCreator] Manual creation unavailable: parser missing.');
+    return null;
+  }
+
+  try {
+    const actorPayload = formatter.buildMonsterActorPayload(buildManualMonsterPayload(formData));
+    const statblockText = formatter.toWotcStatblockText(actorPayload);
+    if (!statblockText) {
+      sbiUtils.warn('[MonsterCreator] Manual creation unavailable: failed to render fallback statblock text.');
+      return null;
+    }
+
+    const parserResult = parseMonsterStatblock(statblockText);
+    if (!parserResult) {
+      sbiUtils.warn('[MonsterCreator] Manual creation parse step failed.');
+      return null;
+    }
+
+    return createMonsterFromParsedResult(parserResult, {
+      notes: safeString(notes, ''),
+      folderId,
+      source: 'manual'
+    });
+  } catch (error) {
+    sbiUtils.error('[MonsterCreator] Manual actor creation failed', error);
+    return null;
+  }
+};
+
 const searchOpen5e = async (query, options = {}) => {
   return fetchJson(buildOpen5ePayloadUrl({
     query,
@@ -1081,7 +1182,17 @@ class MonsterCreatorForm extends FormApplication {
     });
 
     if (!selectedMonster) {
-      sbiUtils.warn('[MonsterCreator] No Open5E monster selected.');
+      sbiUtils.log('[MonsterCreator] No Open5E monster selected. Creating from manual form values.');
+      const manualActor = await createMonsterFromManualForm(formData, {
+        notes: String(formData.notes || ''),
+        folderId: undefined
+      });
+
+      if (manualActor) {
+        return manualActor;
+      }
+
+      sbiUtils.error('[MonsterCreator] Failed to create monster from manual form data.');
       return null;
     }
 
