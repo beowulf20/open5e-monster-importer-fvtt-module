@@ -131,6 +131,16 @@ const RECOVERY_MAP = {
   S: 'sr'
 };
 
+const NUMBER_WORD_MAP = {
+  a: 1,
+  an: 1,
+  one: 1,
+  two: 2,
+  three: 3,
+  four: 4,
+  five: 5
+};
+
 const ITEM_TYPE_MAP = {
   A: 'loot',
   G: 'equipment',
@@ -166,6 +176,44 @@ const ITEM_ICON_MAP = {
   tool: 'icons/svg/hammer.svg',
   weapon: 'icons/svg/sword.svg'
 };
+
+const SOURCE_CATEGORY = {
+  HOMEBREW: 'homebrew',
+  OFFICIAL: 'official',
+  THIRD_PARTY: 'third-party',
+  UA: 'ua',
+  UNKNOWN: 'unknown'
+};
+
+const OFFICIAL_2014_SOURCE_PATTERNS = [
+  /Acquisitions Incorporated/i,
+  /Basic Rules/i,
+  /Baldur's Gate: Descent into Avernus/i,
+  /Bigby Presents: Glory of the Giants/i,
+  /Book of Many Things/i,
+  /Dungeon Master's Guide(?!\s*\(2024\))/i,
+  /Eberron: Rising from the Last War/i,
+  /Elemental Evil Player's Companion/i,
+  /Explorer's Guide to Wildemount/i,
+  /Fizban's Treasury of Dragons/i,
+  /Guildmasters' Guide to Ravnica/i,
+  /Monster Manual(?!\s*\(2025\))/i,
+  /Mythic Odysseys of Theros/i,
+  /Player's Handbook(?!\s*\(2024\))/i,
+  /Planescape: Adventures in the Multiverse/i,
+  /Strixhaven: Curriculum of Chaos/i,
+  /Sword Coast Adventurer's Guide/i,
+  /Tasha's Cauldron of Everything/i,
+  /Van Richten's Guide to Ravenloft/i,
+  /Xanathar's Guide to Everything/i
+];
+
+const OFFICIAL_2024_SOURCE_PATTERNS = [
+  /Dungeon Master's Guide\s*\(2024\)/i,
+  /Free Rules\s*\(2024\)/i,
+  /Monster Manual\s*\(2025\)/i,
+  /Player's Handbook\s*\(2024\)/i
+];
 
 const PRIMARY_ABILITY_OVERRIDES = {
   barbarian: ['str'],
@@ -310,6 +358,96 @@ function trimSlugToken(value = '') {
     .replace(/^-+|-+$/g, '')
     .replace(/-{2,}/g, '-')
     .toLowerCase();
+}
+
+function normalizeSearchText(value = '') {
+  return normalizeWhitespace(value).toLowerCase();
+}
+
+function matchesSourcePatterns(value = '', patterns = []) {
+  return patterns.some((pattern) => pattern.test(value));
+}
+
+function inferSourceCategory({ book = '', name = '', sourceLine = '' } = {}) {
+  const sourceText = [book, name, sourceLine].filter(Boolean).join(' ');
+  const normalized = normalizeSearchText(sourceText);
+  if (!normalized) {
+    return SOURCE_CATEGORY.UNKNOWN;
+  }
+
+  if (/unearthed arcana|playtest/.test(normalized) || /\((?:[^)]*ua[^)]*)\)/i.test(name)) {
+    return SOURCE_CATEGORY.UA;
+  }
+
+  if (/third party/.test(normalized)) {
+    return SOURCE_CATEGORY.THIRD_PARTY;
+  }
+
+  if (/homebrew/.test(normalized) || /\((?:[^)]*hb[^)]*)\)/i.test(name)) {
+    return SOURCE_CATEGORY.HOMEBREW;
+  }
+
+  if (matchesSourcePatterns(sourceText, OFFICIAL_2024_SOURCE_PATTERNS)
+    || matchesSourcePatterns(sourceText, OFFICIAL_2014_SOURCE_PATTERNS)) {
+    return SOURCE_CATEGORY.OFFICIAL;
+  }
+
+  return SOURCE_CATEGORY.UNKNOWN;
+}
+
+function inferSourceRules({ book = '', name = '', identifier = '', sourceLine = '' } = {}) {
+  const sourceText = [book, sourceLine].filter(Boolean).join(' ');
+  const explicitBookEdition = sourceText.match(/\((2014|2024|2025)\)/);
+  if (explicitBookEdition) {
+    return explicitBookEdition[1] === '2025' ? '2024' : explicitBookEdition[1];
+  }
+
+  const explicitNameEdition = String(name || '').match(/\[(2014|2024)\]/);
+  if (explicitNameEdition) {
+    return explicitNameEdition[1];
+  }
+
+  if (/(?:^|-)2024$/.test(String(identifier || ''))) {
+    return '2024';
+  }
+
+  if (matchesSourcePatterns(sourceText, OFFICIAL_2024_SOURCE_PATTERNS)) {
+    return '2024';
+  }
+
+  if (matchesSourcePatterns(sourceText, OFFICIAL_2014_SOURCE_PATTERNS)) {
+    return '2014';
+  }
+
+  return '';
+}
+
+function normalizeSourceRecord(source = {}, hints = {}) {
+  const book = normalizeWhitespace(source.book || '');
+  const page = normalizeWhitespace(source.page || '');
+  const custom = normalizeWhitespace(source.custom || '');
+  const license = normalizeWhitespace(source.license || '');
+  const sourceLine = normalizeWhitespace(hints.sourceLine || '');
+  const rules = normalizeWhitespace(source.rules || '') || inferSourceRules({
+    book,
+    name: hints.name,
+    identifier: hints.identifier,
+    sourceLine
+  });
+  const sourceCategory = inferSourceCategory({
+    book,
+    name: hints.name,
+    sourceLine
+  });
+
+  return {
+    custom,
+    book,
+    page,
+    license,
+    rules,
+    sourceCategory
+  };
 }
 
 function deterministicId(seed) {
@@ -574,19 +712,13 @@ function extractTopLevelEntries(xmlText) {
   return grouped;
 }
 
-function splitSourceText(value = '') {
+function splitSourceText(value = '', hints = {}) {
   const raw = normalizeWhitespace(value);
   if (!raw) {
     return {
       content: '',
       sourceLine: '',
-      source: {
-        custom: '',
-        book: '',
-        page: '',
-        license: '',
-        rules: ''
-      }
+      source: normalizeSourceRecord({}, hints)
     };
   }
 
@@ -612,22 +744,16 @@ function splitSourceText(value = '') {
     }
   }
 
-  let rules = '';
-  const rulesMatch = book.match(/\((2014|2024)\)/);
-  if (rulesMatch) {
-    rules = rulesMatch[1];
-  }
-
   return {
     content: contentLines.join('\n').trim(),
     sourceLine,
-    source: {
+    source: normalizeSourceRecord({
       custom: '',
       book,
       page,
       license: '',
-      rules
-    }
+      rules: ''
+    }, { ...hints, sourceLine })
   };
 }
 
@@ -657,6 +783,7 @@ function buildSourceFlags(entry, sourceType, extras = {}) {
         sourceBook: entry.source?.book || '',
         sourcePage: entry.source?.page || '',
         rules: entry.source?.rules || '',
+        sourceCategory: entry.source?.sourceCategory || SOURCE_CATEGORY.UNKNOWN,
         sourceClasses: entry.classes || '',
         detail: entry.detail || '',
         raw: entry.raw,
@@ -1605,7 +1732,10 @@ function buildBaseActivity(type, activation, duration, rangeData) {
 }
 
 function normalizeSpell(spell) {
-  const sourceSplit = splitSourceText(spell.text);
+  const sourceSplit = splitSourceText(spell.text, {
+    name: spell.name,
+    identifier: trimSlugToken(spell.name)
+  });
   return {
     ...spell,
     descriptionText: sourceSplit.content || spell.text,
@@ -1990,7 +2120,10 @@ function buildEquipmentActivity(entry) {
 }
 
 function normalizeItem(entry) {
-  const sourceSplit = splitSourceText(entry.text);
+  const sourceSplit = splitSourceText(entry.text, {
+    name: entry.name,
+    identifier: trimSlugToken(entry.name)
+  });
   return {
     ...entry,
     descriptionText: sourceSplit.content || entry.text,
@@ -2411,8 +2544,164 @@ function mapSpecificWeaponGrant(entry = '') {
   return `weapon:sim:${key}`;
 }
 
-function parseToolGrants(text = '') {
-  return splitCsvList(text).map((entry) => `tool:${trimSlugToken(entry)}`).filter(Boolean);
+function normalizeToolText(value = '') {
+  return normalizeWhitespace(value)
+    .replace(/[’]/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function cleanToolChoicePrefix(value = '') {
+  return normalizeToolText(value)
+    .replace(/^(?:or|and)\s+/i, '')
+    .replace(/^your choice of\s+/i, '')
+    .replace(/\bof your choice\b/gi, '')
+    .trim();
+}
+
+function parseLeadingCount(value = '') {
+  const text = cleanToolChoicePrefix(value).replace(/^any\s+/i, '').trim();
+  if (!text) return null;
+
+  const digitMatch = text.match(/^(\d+)\b/);
+  if (digitMatch) {
+    return safeNumber(digitMatch[1], null);
+  }
+
+  for (const [word, count] of Object.entries(NUMBER_WORD_MAP)) {
+    if (text.startsWith(`${word} `) || text === word) {
+      return count;
+    }
+  }
+
+  return null;
+}
+
+function stripLeadingToolCount(value = '') {
+  return cleanToolChoicePrefix(value)
+    .replace(/^any\s+/i, '')
+    .replace(/^(?:\d+|a|an|one|two|three|four|five)\b\s*/i, '')
+    .trim();
+}
+
+function normalizeToolOption(value = '') {
+  return stripLeadingToolCount(value)
+    .replace(/^(?:type|set)\s+of\s+/i, '')
+    .replace(/^(?:one|single)\s+/i, '')
+    .replace(/\bof your choice\b/gi, '')
+    .trim();
+}
+
+function mapSpecificToolGrant(entry = '') {
+  const text = normalizeToolOption(entry).toLowerCase();
+  if (!text) return '';
+
+  const patterns = [
+    [/^thieves?'?\s+tools?$/, 'tool:thief'],
+    [/^tinker'?s?\s+tools?$/, 'tool:tinker'],
+    [/^navigator'?s?\s+tools?$/, 'tool:navg'],
+    [/^carpenter'?s?\s+tools?$/, 'tool:carpenter'],
+    [/^smith'?s?\s+tools?$/, 'tool:smith'],
+    [/^cartographer'?s?\s+tools?$/, 'tool:cartographer'],
+    [/^calligrapher'?s?\s+(?:tools?|supplies)$/, 'tool:calligrapher'],
+    [/^mason'?s?\s+tools?$/, 'tool:mason'],
+    [/^woodcarver'?s?\s+tools?$/, 'tool:woodcarver']
+  ];
+
+  for (const [pattern, key] of patterns) {
+    if (pattern.test(text)) return key;
+  }
+
+  return '';
+}
+
+function mapToolChoicePoolEntry(entry = '') {
+  const text = normalizeToolOption(entry).toLowerCase();
+  if (!text) return '';
+
+  const specific = mapSpecificToolGrant(text);
+  if (specific) return specific;
+
+  if (/artisan'?s?\s+(?:tool|tools|kit|kits|supplies|supply|set|sets)/i.test(text)) return 'tool:art:*';
+  if (/musical?\s+instrument/i.test(text)) return 'tool:music:*';
+  if (/gaming\s+set/i.test(text)) return 'tool:game:*';
+  if (/land\s+vehicle/i.test(text)) return 'tool:vehicle:land';
+  if (/water\s+vehicle/i.test(text)) return 'tool:vehicle:water';
+  if (/air\s+vehicle/i.test(text)) return 'tool:vehicle:air';
+  if (/vehicle/i.test(text)) return 'tool:vehicle:*';
+  return '';
+}
+
+function splitToolChoiceOptions(value = '') {
+  return cleanToolChoicePrefix(value)
+    .replace(/\s*,\s*or\s+/gi, ',')
+    .replace(/\s+or\s+/gi, ',')
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+function parseToolChoiceClause(value = '') {
+  const raw = normalizeToolText(value);
+  if (!raw) return null;
+
+  const isChoiceClause = /^your choice of\b/i.test(raw)
+    || /\bof your choice\b/i.test(raw)
+    || /\s+or\s+/i.test(raw)
+    || /\b(?:\d+|a|an|one|two|three|four|five)\s+(?:type of\s+)?(?:artisan'?s?\s+(?:tool|tools|kit|kits|supplies|supply|set|sets)|musical?\s+instrument|gaming\s+set|vehicle)/i.test(raw)
+    || /\bany\s+one\b/i.test(raw);
+
+  if (!isChoiceClause) return null;
+
+  const pool = Array.from(new Set(splitToolChoiceOptions(raw)
+    .map(mapToolChoicePoolEntry)
+    .filter(Boolean)));
+  if (!pool.length) return null;
+
+  return {
+    count: parseLeadingCount(raw) || 1,
+    pool
+  };
+}
+
+function parseToolProficiencies(text = '') {
+  const normalized = normalizeToolText(text);
+  const result = {
+    grants: [],
+    choices: [],
+    unmapped: []
+  };
+  if (!normalized) return result;
+
+  const clauses = /^your choice of\b/i.test(normalized) ? [normalized] : splitCsvList(normalized);
+
+  for (const clause of clauses) {
+    const directGrant = mapSpecificToolGrant(clause);
+    if (directGrant) {
+      result.grants.push(directGrant);
+      continue;
+    }
+
+    const choice = parseToolChoiceClause(clause);
+    if (choice) {
+      result.choices.push(choice);
+      continue;
+    }
+
+    const fallbackChoiceEntry = mapToolChoicePoolEntry(clause);
+    if (fallbackChoiceEntry) {
+      result.choices.push({
+        count: 1,
+        pool: [fallbackChoiceEntry]
+      });
+      continue;
+    }
+
+    result.unmapped.push(clause);
+  }
+
+  result.grants = Array.from(new Set(result.grants));
+  return result;
 }
 
 function buildRequirementsLabel(ownerName, level) {
@@ -2428,7 +2717,10 @@ function detectFeatureActivation(text = '') {
 }
 
 function createFeatureDocument({ ownerName, ownerIdentifier, ownerType, feature, level, subclassName = '' }) {
-  const sourceSplit = splitSourceText(feature.text);
+  const sourceSplit = splitSourceText(feature.text, {
+    name: feature.name,
+    identifier: trimSlugToken(`${ownerIdentifier}-${feature.name}`)
+  });
   const identifierBase = trimSlugToken(`${ownerIdentifier}-${feature.name}`) || trimSlugToken(feature.name) || 'feature';
   const idSeed = [
     'feature',
@@ -2562,39 +2854,263 @@ function createFeatureDocument({ ownerName, ownerIdentifier, ownerType, feature,
   };
 }
 
-function extractSubclassFeatures(classEntry) {
-  const subclasses = new Map();
-
-  for (const autolevel of classEntry.autolevels) {
-    for (const feature of autolevel.features) {
-      const colonMatch = feature.name.match(/^[^:]+:\s*(.+)$/);
-      const parenMatch = feature.name.match(/\(([^)]+)\)\s*$/);
-      const explicitSubclass = feature.subclass || '';
-      const subclassName = explicitSubclass || (colonMatch ? colonMatch[1].trim() : '') || (parenMatch ? parenMatch[1].trim() : '');
-      if (!subclassName) continue;
-
-      if (!subclasses.has(subclassName)) {
-        subclasses.set(subclassName, {
-          name: subclassName,
-          introLevel: autolevel.level,
-          description: '',
-          features: []
-        });
-      }
-
-      const subclass = subclasses.get(subclassName);
-      const isIntro = Boolean(colonMatch);
-      if (isIntro && !subclass.description) {
-        subclass.description = feature.text;
-        continue;
-      }
-
-      subclass.features.push({
-        ...feature,
-        level: autolevel.level
+function buildClassDescription(classEntry) {
+  return classEntry.traits
+    .map((trait) => {
+      const sourceSplit = splitSourceText(trait.text, {
+        name: trait.name,
+        identifier: trimSlugToken(`${classEntry.name}-${trait.name}`)
       });
+      const body = textToHtml(sourceSplit.content);
+      return `<h3>${trait.name}</h3>${body}`;
+    })
+    .join('');
+}
+
+function extractTrailingParenthetical(value = '') {
+  const text = normalizeWhitespace(value);
+  if (!text.endsWith(')')) return '';
+
+  let depth = 0;
+  for (let index = text.length - 1; index >= 0; index -= 1) {
+    const character = text[index];
+    if (character === ')') {
+      depth += 1;
+      continue;
     }
 
+    if (character !== '(') continue;
+    depth -= 1;
+    if (depth === 0) {
+      return text.slice(index + 1, -1).trim();
+    }
+  }
+
+  return '';
+}
+
+function isAbilityScoreImprovementFeature(name = '') {
+  return /^(?:level\s+\d+\s*:\s*)?ability score improvement(?:s)?$/i.test(normalizeWhitespace(name));
+}
+
+function isLevelLabelPrefix(name = '') {
+  return /^level\s+\d+$/i.test(normalizeWhitespace(name));
+}
+
+function buildClassFeatureEntries(classEntry) {
+  const entries = [];
+
+  for (const autolevel of classEntry.autolevels) {
+    const counterSubclassesByName = new Map();
+    for (const counter of autolevel.counters) {
+      const counterName = normalizeWhitespace(counter.name);
+      const subclassName = normalizeWhitespace(counter.subclass);
+      if (!counterName || !subclassName) continue;
+
+      const current = counterSubclassesByName.get(counterName) || [];
+      current.push(subclassName);
+      counterSubclassesByName.set(counterName, current);
+    }
+
+    autolevel.features.forEach((feature, index) => {
+      const name = normalizeWhitespace(feature.name);
+      const colonMatch = name.match(/^([^:]+):\s*(.+)$/);
+
+      entries.push({
+        autolevel,
+        feature,
+        index,
+        level: autolevel.level,
+        name,
+        explicitSubclass: normalizeWhitespace(feature.subclass),
+        colonPrefix: colonMatch ? colonMatch[1].trim() : '',
+        colonValue: colonMatch ? colonMatch[2].trim() : '',
+        parenValue: extractTrailingParenthetical(name),
+        counterSubclasses: counterSubclassesByName.get(name) || []
+      });
+    });
+  }
+
+  return entries;
+}
+
+function isStrongSubclassIntro(entry) {
+  return Boolean(entry.colonValue)
+    && !isLevelLabelPrefix(entry.colonPrefix)
+    && !isAbilityScoreImprovementFeature(entry.name)
+    && !isAbilityScoreImprovementFeature(entry.colonValue);
+}
+
+function resolveSubclassTitle(subclasses) {
+  const counts = new Map();
+  for (const subclass of subclasses.values()) {
+    const title = normalizeWhitespace(subclass.title);
+    if (!title) continue;
+    counts.set(title, (counts.get(title) || 0) + 1);
+  }
+
+  let bestTitle = '';
+  let bestCount = 0;
+  for (const [title, count] of counts.entries()) {
+    if (count > bestCount) {
+      bestTitle = title;
+      bestCount = count;
+    }
+  }
+
+  return bestTitle;
+}
+
+function extractSubclassFeatures(classEntry) {
+  const entries = buildClassFeatureEntries(classEntry);
+  const candidates = new Map();
+  const ignoredFeatures = new WeakSet();
+
+  function ensureCandidate(name, {
+    level = 0,
+    description = '',
+    introTitle = '',
+    introEntry = null,
+    explicit = false
+  } = {}) {
+    const subclassName = normalizeWhitespace(name);
+    if (!subclassName) return null;
+
+    const candidate = candidates.get(subclassName) || {
+      name: subclassName,
+      introLevel: level,
+      description: '',
+      introTitle: '',
+      introEntry: null,
+      explicit: false,
+      featureEntries: new Set()
+    };
+
+    if (!candidate.introLevel || (level && level < candidate.introLevel)) {
+      candidate.introLevel = level;
+    }
+    if (description && !candidate.description) {
+      candidate.description = description;
+    }
+    if (introTitle && !candidate.introTitle) {
+      candidate.introTitle = introTitle;
+    }
+    if (introEntry && !candidate.introEntry) {
+      candidate.introEntry = introEntry;
+    }
+    if (explicit) {
+      candidate.explicit = true;
+    }
+
+    candidates.set(subclassName, candidate);
+    return candidate;
+  }
+
+  for (const entry of entries) {
+    if (isAbilityScoreImprovementFeature(entry.name)) {
+      ignoredFeatures.add(entry.feature);
+    }
+
+    if (entry.explicitSubclass) {
+      ensureCandidate(entry.explicitSubclass, { level: entry.level, explicit: true });
+    }
+
+    entry.counterSubclasses.forEach((subclassName) => {
+      ensureCandidate(subclassName, { level: entry.level, explicit: true });
+    });
+
+    if (isStrongSubclassIntro(entry)) {
+      ensureCandidate(entry.colonValue, {
+        level: entry.level,
+        description: entry.feature.text,
+        introTitle: entry.colonPrefix,
+        introEntry: entry
+      });
+    }
+  }
+
+  for (const entry of entries) {
+    const candidateNames = new Set();
+
+    if (entry.explicitSubclass && candidates.has(entry.explicitSubclass)) {
+      candidateNames.add(entry.explicitSubclass);
+    }
+
+    entry.counterSubclasses.forEach((subclassName) => {
+      if (candidates.has(subclassName)) {
+        candidateNames.add(subclassName);
+      }
+    });
+
+    if (entry.parenValue && candidates.has(entry.parenValue)) {
+      candidateNames.add(entry.parenValue);
+    }
+
+    for (const subclassName of candidateNames) {
+      const candidate = candidates.get(subclassName);
+      if (!candidate || candidate.introEntry === entry) continue;
+      candidate.featureEntries.add(entry);
+    }
+  }
+
+  const subclasses = new Map();
+  const ownership = new WeakMap();
+
+  function resolveAssignment(entry) {
+    if (entry.explicitSubclass && subclasses.has(entry.explicitSubclass)) {
+      return entry.explicitSubclass;
+    }
+
+    for (const subclassName of entry.counterSubclasses) {
+      if (subclasses.has(subclassName)) {
+        return subclassName;
+      }
+    }
+
+    if (entry.parenValue && subclasses.has(entry.parenValue)) {
+      return entry.parenValue;
+    }
+
+    if (isStrongSubclassIntro(entry) && subclasses.has(entry.colonValue)) {
+      return entry.colonValue;
+    }
+
+    return '';
+  }
+
+  for (const candidate of candidates.values()) {
+    if (!candidate.explicit && candidate.featureEntries.size === 0) continue;
+    subclasses.set(candidate.name, {
+      name: candidate.name,
+      introLevel: candidate.introLevel,
+      description: candidate.description,
+      features: [],
+      title: candidate.introTitle
+    });
+  }
+
+  for (const entry of entries) {
+    const subclassName = resolveAssignment(entry);
+    if (!subclassName) continue;
+
+    const subclass = subclasses.get(subclassName);
+    if (!subclass) continue;
+
+    const isIntro = isStrongSubclassIntro(entry) && entry.colonValue === subclassName && subclass.description === entry.feature.text;
+    ownership.set(entry.feature, {
+      subclassName,
+      isIntro
+    });
+
+    if (isIntro) continue;
+
+    subclass.features.push({
+      ...entry.feature,
+      level: entry.level
+    });
+  }
+
+  for (const autolevel of classEntry.autolevels) {
     for (const counter of autolevel.counters) {
       if (!counter.subclass) continue;
       const subclass = subclasses.get(counter.subclass);
@@ -2606,29 +3122,36 @@ function extractSubclassFeatures(classEntry) {
     }
   }
 
-  return subclasses;
+  return {
+    subclasses,
+    ownership,
+    ignoredFeatures
+  };
 }
 
-function buildClassDescription(classEntry) {
-  return classEntry.traits
-    .map((trait) => {
-      const sourceSplit = splitSourceText(trait.text);
-      const body = textToHtml(sourceSplit.content);
-      return `<h3>${trait.name}</h3>${body}`;
-    })
-    .join('');
+function detectSubclassTitle(subclasses) {
+  return resolveSubclassTitle(subclasses);
 }
 
 function convertClass(classEntry) {
   const classIdentifier = trimSlugToken(classEntry.name) || 'class';
-  const classSource = classEntry.traits.find((trait) => trait.name === classEntry.name)?.text || '';
-  const classSourceSplit = splitSourceText(classSource);
+  const className = normalizeWhitespace(classEntry.name);
+  const strippedClassName = normalizeWhitespace(stripEditionSuffix(classEntry.name));
+  const classSource = classEntry.traits.find((trait) => {
+    const traitName = normalizeWhitespace(trait.name);
+    return traitName === className || traitName === strippedClassName;
+  })?.text || classEntry.traits[0]?.text || '';
+  const classSourceSplit = splitSourceText(classSource, {
+    name: classEntry.name,
+    identifier: classIdentifier
+  });
   const classId = deterministicId(['class', classEntry.name].join('|'));
   const spellAbility = SPELL_ABILITY_MAP[normalizeAbilityLabel(classEntry.spellAbility)] || '';
   const spellcastingProgression = inferSpellcastingProgression(classEntry);
   const primaryAbility = inferPrimaryAbility(classEntry, spellAbility);
   const { saves, skills } = parseSkillAndSaveData(classEntry.proficiency);
-  const subclasses = extractSubclassFeatures(classEntry);
+  const subclassData = extractSubclassFeatures(classEntry);
+  const subclasses = subclassData.subclasses;
   const features = [];
   const classAdvancements = [
     {
@@ -2660,11 +3183,11 @@ function convertClass(classEntry) {
     }));
   }
 
-  const toolGrants = parseToolGrants(classEntry.tools);
-  if (toolGrants.length) {
+  const toolData = parseToolProficiencies(classEntry.tools);
+  if (toolData.grants.length || toolData.choices.length) {
     classAdvancements.push(buildTraitAdvancement({
-      grants: toolGrants,
-      choices: [],
+      grants: toolData.grants,
+      choices: toolData.choices,
       level: 1,
       classRestriction: 'primary'
     }));
@@ -2695,11 +3218,8 @@ function convertClass(classEntry) {
   for (const autolevel of classEntry.autolevels) {
     const levelFeatures = [];
     for (const feature of autolevel.features) {
-      const belongsToSubclass = Boolean(feature.subclass)
-        || /\(([^)]+)\)\s*$/.test(feature.name)
-        || /^[^:]+:\s*(.+)$/.test(feature.name);
       const ignoreFeature = /^(Starting|Multiclass)/i.test(feature.name);
-      if (belongsToSubclass || ignoreFeature) continue;
+      if (subclassData.ownership.has(feature) || subclassData.ignoredFeatures.has(feature) || ignoreFeature) continue;
 
       const featureDoc = createFeatureDocument({
         ownerName: classEntry.name,
@@ -2732,8 +3252,10 @@ function convertClass(classEntry) {
   }
 
   if (Number.isFinite(subclassIntroLevel)) {
-    classAdvancements.push(buildSubclassAdvancement(subclassIntroLevel, detectSubclassTitle(classEntry) || 'Subclass'));
+    classAdvancements.push(buildSubclassAdvancement(subclassIntroLevel, detectSubclassTitle(subclasses) || 'Subclass'));
   }
+
+  const classFlagExtras = toolData.unmapped.length ? { unmappedToolProficiencies: toolData.unmapped } : {};
 
   const classDocument = normalizeDocumentBase({
     id: classId,
@@ -2762,20 +3284,23 @@ function convertClass(classEntry) {
       wealth: classEntry.wealth ? classEntry.wealth.replace(/x/g, ' * ') : '',
       primaryAbility
     },
-    flags: buildSourceFlags({
-      name: classEntry.name,
-      detail: '',
-      classes: '',
-      source: classSourceSplit.source,
-      raw: classEntry
-    }, 'class')
+      flags: buildSourceFlags({
+        name: classEntry.name,
+        detail: '',
+        classes: '',
+        source: classSourceSplit.source,
+        raw: classEntry
+      }, 'class', classFlagExtras)
   });
 
   const subclassDocuments = [];
   for (const subclass of subclasses.values()) {
     const subclassIdentifier = trimSlugToken(subclass.name) || 'subclass';
     const subclassId = deterministicId(['subclass', classIdentifier, subclass.name].join('|'));
-    const subclassSourceSplit = splitSourceText(subclass.description);
+    const subclassSourceSplit = splitSourceText(subclass.description, {
+      name: subclass.name,
+      identifier: subclassIdentifier
+    });
     const advancements = [];
 
     const grouped = new Map();
@@ -2833,15 +3358,6 @@ function convertClass(classEntry) {
     subclassDocuments,
     featureDocuments: features
   };
-}
-
-function detectSubclassTitle(classEntry) {
-  const introFeature = classEntry.autolevels
-    .flatMap((autolevel) => autolevel.features)
-    .find((feature) => /^[^:]+:\s*(.+)$/.test(feature.name));
-
-  if (!introFeature) return '';
-  return introFeature.name.split(':')[0].trim();
 }
 
 function generateCompendiumDocuments(parsed) {

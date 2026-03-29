@@ -14,6 +14,49 @@ const {
   splitSourceText
 } = require('../../tools/fc5-compendium');
 
+function buildTestFeature(name, text, overrides = {}) {
+  return {
+    name,
+    text,
+    optional: false,
+    subclass: '',
+    modifiers: [],
+    rolls: [],
+    ...overrides
+  };
+}
+
+function buildTestClass(overrides = {}) {
+  return {
+    name: 'Test Class',
+    hd: '8',
+    proficiency: 'Strength, Wisdom',
+    numSkills: 0,
+    armor: 'None',
+    weapons: 'Simple Weapons',
+    tools: 'None',
+    wealth: '0',
+    spellAbility: '',
+    slotsReset: '',
+    traits: [{
+      name: overrides.name || 'Test Class',
+      text: 'Synthetic class rules.\n\nSource:\tSynthetic Manual p. 1'
+    }],
+    autolevels: [],
+    ...overrides
+  };
+}
+
+function findToolAdvancement(classDocument) {
+  return classDocument.system.advancement.find((entry) => {
+    if (entry.type !== 'Trait') return false;
+    const grants = entry.configuration?.grants || [];
+    const choices = entry.configuration?.choices || [];
+    return grants.some((grant) => grant.startsWith('tool:'))
+      || choices.some((choice) => (choice.pool || []).some((grant) => grant.startsWith('tool:')));
+  });
+}
+
 describe('FC5 compendium conversion', () => {
   test('parses the synthetic FC5 fixture into top-level records', () => {
     const parsed = parseFc5Xml(fixtureXml);
@@ -217,6 +260,206 @@ Source:\tPlayer's Handbook (2024) p. 249`,
     ]);
   });
 
+  test('maps fixed and selectable tool proficiencies into valid dnd5e trait advancements', () => {
+    const artificer = convertClass(buildTestClass({
+      name: 'Artificer',
+      tools: "Thieves' Tools, Tinker's Tools, one type of Artisan's Tools of your choice"
+    })).classDocument;
+    const bard = convertClass(buildTestClass({
+      name: 'Bard',
+      tools: '3 Musical Instruments'
+    })).classDocument;
+    const warmage = convertClass(buildTestClass({
+      name: 'Warmage',
+      tools: "One artisan's kit of your choice, one gaming set of your choice"
+    })).classDocument;
+
+    expect(findToolAdvancement(artificer).configuration.grants).toEqual(['tool:thief', 'tool:tinker']);
+    expect(findToolAdvancement(artificer).configuration.choices).toEqual([
+      {
+        count: 1,
+        pool: ['tool:art:*']
+      }
+    ]);
+
+    expect(findToolAdvancement(bard).configuration.grants).toEqual([]);
+    expect(findToolAdvancement(bard).configuration.choices).toEqual([
+      {
+        count: 3,
+        pool: ['tool:music:*']
+      }
+    ]);
+
+    expect(findToolAdvancement(warmage).configuration.choices).toEqual([
+      {
+        count: 1,
+        pool: ['tool:art:*']
+      },
+      {
+        count: 1,
+        pool: ['tool:game:*']
+      }
+    ]);
+  });
+
+  test('maps mixed tool choice prose into valid tool choice pools and preserves unmapped phrases in flags', () => {
+    const monk = convertClass(buildTestClass({
+      name: 'Monk',
+      tools: "Any one type of Artisan's Tools or any one Musical Instrument of your choice"
+    })).classDocument;
+    const pugilist = convertClass(buildTestClass({
+      name: 'Pugilist',
+      tools: "Your choice of one Artisan's Tools, Gaming Set, or Thieves' Tools"
+    })).classDocument;
+    const courier = convertClass(buildTestClass({
+      name: 'Courier',
+      tools: "Carpenter's Tools, Navigator's Tools, Musical Instrument"
+    })).classDocument;
+    const unknown = convertClass(buildTestClass({
+      name: 'Oddball',
+      tools: "Queen's Workshop"
+    })).classDocument;
+
+    expect(findToolAdvancement(monk).configuration.choices).toEqual([
+      {
+        count: 1,
+        pool: ['tool:art:*', 'tool:music:*']
+      }
+    ]);
+
+    expect(findToolAdvancement(pugilist).configuration.grants).toEqual([]);
+    expect(findToolAdvancement(pugilist).configuration.choices).toEqual([
+      {
+        count: 1,
+        pool: ['tool:art:*', 'tool:game:*', 'tool:thief']
+      }
+    ]);
+
+    expect(findToolAdvancement(courier).configuration.grants).toEqual(['tool:carpenter', 'tool:navg']);
+    expect(findToolAdvancement(courier).configuration.choices).toEqual([
+      {
+        count: 1,
+        pool: ['tool:music:*']
+      }
+    ]);
+
+    expect(unknown.flags['monster-creator'].fc5.unmappedToolProficiencies).toEqual(["Queen's Workshop"]);
+  });
+
+  test('keeps option-style features out of bogus subclass docs and suppresses textual ASI features', () => {
+    const result = convertClass(buildTestClass({
+      name: 'Warmage',
+      spellAbility: 'Intelligence',
+      traits: [{
+        name: 'Warmage',
+        text: 'Warmages bend cantrips into battlefield doctrine.\n\nSource:\tSynthetic Manual p. 2'
+      }],
+      autolevels: [
+        {
+          level: 1,
+          scoreImprovement: false,
+          slots: [],
+          features: [
+            buildTestFeature('Arcane Fighting Style', 'You adopt a magical combat style.\n\nSource:\tSynthetic Manual p. 2'),
+            buildTestFeature('Arcane Fighting Style: Blaster (HB)', 'You gain a +1 bonus to spell save DCs.\n\nSource:\tSynthetic Manual p. 2')
+          ],
+          counters: []
+        },
+        {
+          level: 3,
+          scoreImprovement: false,
+          slots: [],
+          features: [
+            buildTestFeature('Warmage House: House of Pawns', 'Versatile cantrip masters.\n\nSource:\tSynthetic Manual p. 3', { optional: true }),
+            buildTestFeature('Promotion (House of Pawns)', 'You master adaptive tactics.\n\nSource:\tSynthetic Manual p. 3')
+          ],
+          counters: []
+        },
+        {
+          level: 4,
+          scoreImprovement: true,
+          slots: [],
+          features: [
+            buildTestFeature('Ability Score Improvement', 'You gain the Ability Score Improvement feat.\n\nSource:\tSynthetic Manual p. 4', { optional: true })
+          ],
+          counters: []
+        },
+        {
+          level: 8,
+          scoreImprovement: true,
+          slots: [],
+          features: [
+            buildTestFeature('Level 8: Ability Score Improvement', 'You gain the Ability Score Improvement feat.\n\nSource:\tSynthetic Manual p. 4', { optional: true }),
+            buildTestFeature('Arcane Fighting Style: Blaster (House of Pawns)', 'You gain a +1 bonus to spell save DCs.\n\nSource:\tSynthetic Manual p. 5')
+          ],
+          counters: []
+        }
+      ]
+    }));
+    const subclassNames = result.subclassDocuments.map((entry) => entry.name);
+    const featureNames = result.featureDocuments.map((entry) => entry.name);
+    const hbBlaster = result.featureDocuments.find((entry) => entry.name === 'Arcane Fighting Style: Blaster (HB)');
+    const pawnBlaster = result.featureDocuments.find((entry) => entry.name === 'Arcane Fighting Style: Blaster (House of Pawns)');
+
+    expect(subclassNames).toEqual(['House of Pawns']);
+    expect(subclassNames).not.toContain('Ability Score Improvement');
+    expect(subclassNames).not.toContain('Blaster (House of Pawns)');
+    expect(featureNames).toContain('Arcane Fighting Style: Blaster (HB)');
+    expect(featureNames).toContain('Arcane Fighting Style: Blaster (House of Pawns)');
+    expect(featureNames).not.toContain('Ability Score Improvement');
+    expect(featureNames).not.toContain('Level 8: Ability Score Improvement');
+    expect(hbBlaster.flags['monster-creator'].fc5.raw.ownerType).toBe('class');
+    expect(hbBlaster.flags['monster-creator'].fc5.raw.subclassName).toBe('');
+    expect(pawnBlaster.flags['monster-creator'].fc5.raw.ownerType).toBe('subclass');
+    expect(pawnBlaster.flags['monster-creator'].fc5.raw.subclassName).toBe('House of Pawns');
+    expect(result.classDocument.system.advancement.filter((entry) => entry.type === 'AbilityScoreImprovement').map((entry) => entry.level)).toEqual([4, 8]);
+  });
+
+  test('supports nested parenthetical subclass names when attaching subclass features', () => {
+    const result = convertClass(buildTestClass({
+      name: 'Wizard',
+      hd: '6',
+      proficiency: 'Intelligence, Wisdom',
+      spellAbility: 'Intelligence',
+      traits: [{
+        name: 'Wizard',
+        text: 'Wizards refine arcane study into traditions.\n\nSource:\tSynthetic Manual p. 6'
+      }],
+      autolevels: [
+        {
+          level: 2,
+          scoreImprovement: false,
+          slots: [],
+          features: [
+            buildTestFeature('Arcane Tradition: Cantrip Adept (HB)', 'You specialize in advanced cantrip theory.\n\nSource:\tSynthetic Manual p. 6', { optional: true }),
+            buildTestFeature('Arcane Alacrity (Cantrip Adept (HB))', 'You can cast a wizard cantrip as a bonus action.\n\nSource:\tSynthetic Manual p. 6')
+          ],
+          counters: []
+        },
+        {
+          level: 10,
+          scoreImprovement: false,
+          slots: [],
+          features: [
+            buildTestFeature('Adroit Caster (Cantrip Adept (HB))', 'Your cantrip riders last longer.\n\nSource:\tSynthetic Manual p. 7')
+          ],
+          counters: []
+        }
+      ]
+    }));
+    const subclass = result.subclassDocuments.find((entry) => entry.name === 'Cantrip Adept (HB)');
+    const alacrity = result.featureDocuments.find((entry) => entry.name === 'Arcane Alacrity (Cantrip Adept (HB))');
+    const adroit = result.featureDocuments.find((entry) => entry.name === 'Adroit Caster (Cantrip Adept (HB))');
+
+    expect(subclass).toBeDefined();
+    expect(subclass.system.classIdentifier).toBe('wizard');
+    expect(subclass.system.advancement.map((entry) => entry.level)).toEqual([2, 10]);
+    expect(alacrity.flags['monster-creator'].fc5.raw.ownerType).toBe('subclass');
+    expect(alacrity.flags['monster-creator'].fc5.raw.subclassName).toBe('Cantrip Adept (HB)');
+    expect(adroit.flags['monster-creator'].fc5.raw.ownerType).toBe('subclass');
+    expect(adroit.flags['monster-creator'].fc5.raw.subclassName).toBe('Cantrip Adept (HB)');
+  });
+
   test('document generation stays deterministic across repeated runs', () => {
     const parsed = parseFc5Xml(fixtureXml);
     const first = generateCompendiumDocuments(parsed);
@@ -233,5 +476,86 @@ Source:\tPlayer's Handbook (2024) p. 249`,
     expect(result.source.book).toBe('Primer (2024)');
     expect(result.source.page).toBe('99');
     expect(result.source.rules).toBe('2024');
+    expect(result.source.sourceCategory).toBe('unknown');
+  });
+
+  test('infers official rules-era metadata from published source books without explicit edition tags', () => {
+    const published = splitSourceText(`Subclass rules.\n\nSource:\tXanathar's Guide to Everything p. 47`);
+    const homebrew = splitSourceText(`Subclass rules.\n\nSource:\tMordenkainen's Codex of Allies v1.3 p. 24 (Homebrew)`);
+    const ua = splitSourceText(`Subclass rules.\n\nSource:\tUnearthed Arcana: Gothic Heroes`);
+
+    expect(published.source.book).toBe("Xanathar's Guide to Everything");
+    expect(published.source.rules).toBe('2014');
+    expect(published.source.sourceCategory).toBe('official');
+    expect(homebrew.source.sourceCategory).toBe('homebrew');
+    expect(homebrew.source.rules).toBe('');
+    expect(ua.source.sourceCategory).toBe('ua');
+  });
+
+  test('tags generated classes and subclasses with normalized FC5 source categories for subclass filtering', () => {
+    const result = convertClass(buildTestClass({
+      name: 'Rogue',
+      hd: '8',
+      proficiency: 'Dexterity, Intelligence',
+      traits: [{
+        name: 'Rogue',
+        text: "Rogues rely on precision and guile.\n\nSource:\tPlayer's Handbook (2014) p. 94"
+      }],
+      autolevels: [
+        {
+          level: 3,
+          scoreImprovement: false,
+          slots: [],
+          features: [
+            buildTestFeature('Roguish Archetype: Assassin', "Deadly killers.\n\nSource:\tPlayer's Handbook (2014) p. 97", { optional: true }),
+            buildTestFeature('Roguish Archetype: Scout', "Skirmishing experts.\n\nSource:\tXanathar's Guide to Everything p. 47", { optional: true }),
+            buildTestFeature('Roguish Archetype: Acrobat (HB)', "Agile performers.\n\nSource:\tMordenkainen's Codex of Allies v1.3 p. 24 (Homebrew)", { optional: true }),
+            buildTestFeature('Roguish Archetype: Inquisitive (UA)', 'Keen investigators.\n\nSource:\tUnearthed Arcana: Gothic Heroes', { optional: true })
+          ],
+          counters: []
+        },
+        {
+          level: 9,
+          scoreImprovement: false,
+          slots: [],
+          features: [
+            buildTestFeature('Death Strike (Assassin)', "You ambush with precision.\n\nSource:\tPlayer's Handbook (2014) p. 97"),
+            buildTestFeature('Superior Mobility (Scout)', "You cross the battlefield quickly.\n\nSource:\tXanathar's Guide to Everything p. 47"),
+            buildTestFeature('Center Stage (Acrobat (HB))', "You steal the spotlight.\n\nSource:\tMordenkainen's Codex of Allies v1.3 p. 24 (Homebrew)"),
+            buildTestFeature('Ear for Deceit (Inquisitive (UA))', 'Your instincts sharpen.\n\nSource:\tUnearthed Arcana: Gothic Heroes')
+          ],
+          counters: []
+        }
+      ]
+    }));
+    const flags = result.classDocument.flags['monster-creator'].fc5;
+    const assassin = result.subclassDocuments.find((entry) => entry.name === 'Assassin');
+    const scout = result.subclassDocuments.find((entry) => entry.name === 'Scout');
+    const acrobat = result.subclassDocuments.find((entry) => entry.name === 'Acrobat (HB)');
+    const inquisitive = result.subclassDocuments.find((entry) => entry.name === 'Inquisitive (UA)');
+
+    expect(flags.sourceCategory).toBe('official');
+    expect(result.classDocument.system.source.rules).toBe('2014');
+    expect(assassin.system.source.rules).toBe('2014');
+    expect(assassin.flags['monster-creator'].fc5.sourceCategory).toBe('official');
+    expect(scout.system.source.rules).toBe('2014');
+    expect(scout.flags['monster-creator'].fc5.sourceCategory).toBe('official');
+    expect(acrobat.flags['monster-creator'].fc5.sourceCategory).toBe('homebrew');
+    expect(inquisitive.flags['monster-creator'].fc5.sourceCategory).toBe('ua');
+  });
+
+  test('matches edition-suffixed class names back to their source trait text', () => {
+    const result = convertClass(buildTestClass({
+      name: 'Rogue [2024]',
+      traits: [{
+        name: 'Rogue',
+        text: "Rogues rely on cunning.\n\nSource:\tPlayer's Handbook (2024) p. 129"
+      }]
+    }));
+
+    expect(result.classDocument.system.identifier).toBe('rogue-2024');
+    expect(result.classDocument.system.source.book).toBe("Player's Handbook (2024)");
+    expect(result.classDocument.system.source.rules).toBe('2024');
+    expect(result.classDocument.flags['monster-creator'].fc5.sourceCategory).toBe('official');
   });
 });

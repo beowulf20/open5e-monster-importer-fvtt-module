@@ -18,7 +18,8 @@
   },
   "esmodules": [
     "scripts/statblock-formatter.js",
-    "scripts/monster-creator.js"
+    "scripts/monster-creator.js",
+    "scripts/fc5-subclass-browser.js"
   ],
   "styles": [
     "styles/monster-creator.css"
