@@ -1,0 +1,4 @@
+interface:
+  display_name: "Foundry DnD5e"
+  short_description: "Operate on the Foundry dnd5e system and content."
+  default_prompt: "Use $dnd5e to modify the Foundry dnd5e system with exact repo paths and current upstream references."
