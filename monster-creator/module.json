@@ -23,6 +23,43 @@
   "styles": [
     "styles/monster-creator.css"
   ],
+  "packs": [
+    {
+      "name": "fc5spells",
+      "label": "FC5 Spells",
+      "path": "packs/fc5-spells",
+      "type": "Item",
+      "system": "dnd5e"
+    },
+    {
+      "name": "fc5items",
+      "label": "FC5 Items",
+      "path": "packs/fc5-items",
+      "type": "Item",
+      "system": "dnd5e"
+    },
+    {
+      "name": "fc5classes",
+      "label": "FC5 Classes",
+      "path": "packs/fc5-classes",
+      "type": "Item",
+      "system": "dnd5e"
+    },
+    {
+      "name": "fc5subclasses",
+      "label": "FC5 Subclasses",
+      "path": "packs/fc5-subclasses",
+      "type": "Item",
+      "system": "dnd5e"
+    },
+    {
+      "name": "fc5features",
+      "label": "FC5 Features",
+      "path": "packs/fc5-features",
+      "type": "Item",
+      "system": "dnd5e"
+    }
+  ],
   "url": "https://github.com/beowulf20/open5e-monster-importer-fvtt-module",
   "manifest": "https://example.com/modules/monster-creator/module.json",
   "download": "https://example.com/modules/monster-creator/module.zip",

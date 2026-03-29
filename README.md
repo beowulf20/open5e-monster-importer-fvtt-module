@@ -8,12 +8,14 @@ It is built as a self-contained Foundry module for import via a manifest URL:
 - runtime script: `scripts/monster-creator.js`
 - form template: `templates/monster-creator-form.hbs`
 - module styles: `styles/monster-creator.css`
+- local FC5 pack generator: `tools/fc5-compendium/generate-fc5-compendiums.js`
 
 ## What this module provides
 
 - Actor Directory button: **Create Monster**
 - Open5E-backed monster search and pagination
 - NPC actor creation payload that follows DnD5e conventions
+- Local/private Fight Club 5e XML conversion into `dnd5e` compendium packs
 - Automatic manifest/download URL injection for distribution builds
 
 ## Installation
@@ -54,6 +56,33 @@ Then visit the local test page:
 2. In Actor Directory, click **Create Monster**.
 3. Use the form search + page controls to find a monster.
 4. Review and submit to create the actor.
+
+## FC5 Compendium Generation
+
+This repo can also generate local/private `dnd5e` compendium packs from a Fight Club 5e XML file. The generated pack data is ignored by git and intended for local use only.
+
+Target release used for development:
+
+- `https://github.com/vidalvanbergen/FightClub5eXML/releases/download/2026.02.10/Complete_Compendium_2014+2024.xml`
+
+Install dependencies and generate packs:
+
+```bash
+npm install
+npm run generate:fc5-compendia -- --xml /path/to/Complete_Compendium_2014+2024.xml
+```
+
+That command writes JSON source files under `tmp/fc5-pack-sources/` and compiles module pack data into:
+
+- `monster-creator/packs/fc5-spells`
+- `monster-creator/packs/fc5-items`
+- `monster-creator/packs/fc5-classes`
+- `monster-creator/packs/fc5-subclasses`
+- `monster-creator/packs/fc5-features`
+
+Generated documents include mapped Active Effects for common FC5 modifier data such as AC bonuses, weapon/spell attack bonuses, damage bonuses, save bonuses, movement bonuses, ability score bonuses, and subclass/class feature modifiers. Unsupported modifier strings are preserved in document flags for later refinement instead of being dropped.
+
+The module manifest already includes these pack definitions. Regenerate them locally whenever the upstream XML changes.
 
 ## Screenshots
 
