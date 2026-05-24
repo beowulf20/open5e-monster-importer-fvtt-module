@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<compendium version="5" auto_indent="NO">
+  <class>
+    <name>Stormblade</name>
+    <hd>8</hd>
+    <proficiency>Strength, Charisma, Athletics, Insight, Intimidation, Perception</proficiency>
+    <numSkills>2</numSkills>
+    <armor>Light Armor, Medium Armor, Shields</armor>
+    <weapons>Simple Weapons, Martial Weapons</weapons>
+    <tools>None</tools>
+    <wealth>4d4x10</wealth>
+    <spellAbility>Charisma</spellAbility>
+    <slotsReset>L</slotsReset>
+    <trait>
+      <name>Stormblade</name>
+      <text>Stormblades blend steel with thunderous magic.
+
+Source:	Homebrew Manual (2024) p. 10</text>
+    </trait>
+    <autolevel level="1">
+      <slots>2,2</slots>
+      <feature>
+        <name>Spellcasting</name>
+        <text>You cast spells through battle chants.
+
+Source:	Homebrew Manual (2024) p. 11</text>
+      </feature>
+      <feature>
+        <name>Tempest Strike</name>
+        <text>As an action, you wreathe your weapon in storm energy.
+
+Source:	Homebrew Manual (2024) p. 11</text>
+      </feature>
+    </autolevel>
+    <autolevel level="3">
+      <feature optional="YES">
+        <name>Blade Path: Path of Echoes</name>
+        <text>Echo stormblades step between afterimages.
+
+Source:	Homebrew Manual (2024) p. 12</text>
+      </feature>
+      <feature>
+        <name>Echo Strike (Path of Echoes)</name>
+        <text>When you hit with a weapon attack, you deal 1d6 thunder damage.
+
+Source:	Homebrew Manual (2024) p. 12</text>
+        <roll description="Thunder Damage">1d6</roll>
+      </feature>
+    </autolevel>
+    <autolevel level="4" scoreImprovement="YES">
+      <feature optional="YES">
+        <name>Ability Score Improvement</name>
+        <text>You refine your martial gift.</text>
+      </feature>
+    </autolevel>
+    <autolevel level="6">
+      <feature>
+        <name>Mirror Veil (Path of Echoes)</name>
+        <text>As a bonus action, you blur into an echoing veil until the end of your next turn. You gain a +2 bonus to AC for the duration.
+
+Source:	Homebrew Manual (2024) p. 13</text>
+        <modifier category="bonus">ac +2</modifier>
+      </feature>
+      <counter>
+        <name>Mirror Veil (Path of Echoes)</name>
+        <value>1</value>
+        <reset>S</reset>
+        <subclass>Path of Echoes</subclass>
+      </counter>
+    </autolevel>
+  </class>
+  <spell>
+    <name>Thunder Arc</name>
+    <level>2</level>
+    <school>EV</school>
+    <time>1 action</time>
+    <range>Self (30-foot cone)</range>
+    <components>V, S, M (a copper wire)</components>
+    <duration>Concentration, up to 1 minute</duration>
+    <classes>Stormblade, Sorcerer</classes>
+    <text>A wave of thunder erupts from you. Each creature in a 30-foot cone must make a Constitution saving throw. A creature takes 3d6 thunder damage on a failed save, or half as much damage on a successful one.
+
+At Higher Levels. The damage increases by 1d6 for each slot level above 2nd.
+
+Source:	Homebrew Manual (2024) p. 33</text>
+    <roll description="Thunder Damage">3d6</roll>
+  </spell>
+  <item>
+    <name>Echo Bow</name>
+    <detail>uncommon</detail>
+    <type>R</type>
+    <magic>YES</magic>
+    <weight>2</weight>
+    <value>250</value>
+    <property>A,H,2H,M</property>
+    <dmg1>1d8</dmg1>
+    <dmgType>P</dmgType>
+    <range>150/600</range>
+    <text>Ammo: arrow
+
+Proficiency: martial, longbow
+
+Source:	Homebrew Manual (2024) p. 41</text>
+    <modifier category="bonus">ranged attacks +1</modifier>
+  </item>
+  <item>
+    <name>Stormplate</name>
+    <detail>rare (requires attunement)</detail>
+    <type>MA</type>
+    <magic>YES</magic>
+    <weight>20</weight>
+    <ac>14</ac>
+    <text>While wearing this armor, you gain a +1 bonus to AC.
+
+Source:	Homebrew Manual (2024) p. 42</text>
+    <modifier category="bonus">ac +1</modifier>
+  </item>
+  <item>
+    <name>Potion of Echo Healing</name>
+    <detail>common</detail>
+    <type>P</type>
+    <magic>YES</magic>
+    <weight>0.1</weight>
+    <value>50</value>
+    <text>You regain 2d4+2 hit points when you drink this potion.
+
+Source:	Homebrew Manual (2024) p. 43</text>
+    <roll description="Healing">2d4+2</roll>
+  </item>
+  <item>
+    <name>Ioun Shard of Agility</name>
+    <detail>rare (requires attunement)</detail>
+    <type>W</type>
+    <magic>YES</magic>
+    <weight>0</weight>
+    <value>500</value>
+    <text>Your Dexterity score increases by 2 while this shard circles your head.
+
+Source:	Homebrew Manual (2024) p. 44</text>
+    <modifier category="ability score">dexterity +2</modifier>
+  </item>
+  <item>
+    <name>Hero's Badge</name>
+    <detail>uncommon</detail>
+    <type>G</type>
+    <magic>YES</magic>
+    <weight>0</weight>
+    <value>100</value>
+    <text>This badge keeps a strange tally of victories.
+
+Source:	Homebrew Manual (2024) p. 45</text>
+    <modifier category="bonus">bonus hp +1</modifier>
+  </item>
+</compendium>

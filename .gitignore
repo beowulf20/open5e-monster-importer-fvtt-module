@@ -1,3 +1,15 @@
 dist/**
 node_modules/**
+monster-creator/packs/**
+!monster-creator/packs/
+!monster-creator/packs/fc5-spells/
+!monster-creator/packs/fc5-spells/.gitkeep
+!monster-creator/packs/fc5-items/
+!monster-creator/packs/fc5-items/.gitkeep
+!monster-creator/packs/fc5-classes/
+!monster-creator/packs/fc5-classes/.gitkeep
+!monster-creator/packs/fc5-subclasses/
+!monster-creator/packs/fc5-subclasses/.gitkeep
+!monster-creator/packs/fc5-features/
+!monster-creator/packs/fc5-features/.gitkeep
 tmp/**
