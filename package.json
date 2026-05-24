@@ -4,7 +4,8 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "dev": "vite",
+    "dev": "node ./tools/launch-debug-chrome.js",
+    "dev:vite": "vite",
     "dev:open": "vite --open",
     "dev:host": "vite --host",
     "build": "node ./tools/copy-module.js",

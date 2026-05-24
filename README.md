@@ -43,7 +43,7 @@ From repository root:
 
 ```bash
 npm install
-npm run dev:open
+npm run dev:vite
 ```
 
 Then visit the local test page:
@@ -54,6 +54,9 @@ For local Foundry installs, copy `.env.example` to `.env` and set:
 
 ```bash
 FOUNDRY_MONSTER_CREATOR_PATH=/path/to/FoundryVTT/Data/modules/monster-creator
+VTT_URL=http://192.168.68.100:30000
+VTT_USER=Gamemaster
+VTT_PASSWORD=your-foundry-password
 ```
 
 Then run:
@@ -61,6 +64,16 @@ Then run:
 ```bash
 npm run build
 ```
+
+To launch Foundry in a Chrome instance that can be attached to with DevTools remote debugging:
+
+```bash
+npm run dev
+```
+
+Keep port `9222` on a trusted network only because it allows browser control.
+
+For login automation, use `VTT_USER` and `VTT_PASSWORD` from `.env` to select the Foundry user and submit the password.
 
 ## Usage
 

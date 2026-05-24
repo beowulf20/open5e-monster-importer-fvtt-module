@@ -8,13 +8,29 @@ At the repo root, `README.md` covers usage and releases, `monster-creator-test.h
 
 ## Build, Test, and Development Commands
 
-- `npm run dev`: start the Vite dev server.
+- `npm run dev`: launch Chrome with DevTools remote debugging and open `VTT_URL` from `.env`.
+- `npm run dev:vite`: start the Vite dev server.
 - `npm run dev:open`: start Vite and open the test page.
 - `npm run serve`: preview the Vite build on port `4174`.
 - `npm test`: run Jest for `monster-creator/tests/**/*.test.js`.
 - `npm run test:watch`: rerun tests while developing.
 - `FOUNDRY_MONSTER_CREATOR_PATH=/path/to/Data/modules/monster-creator npm run build`: copy the unpacked module into a Foundry modules directory.
 - `./build-monster-creator.sh`: generate `dist/module.json` and the release zip files.
+
+For local Foundry browser debugging, stay focused on the live Foundry page, not the Vite harness. Launch Chrome with DevTools remote debugging and open the VTT URL from `.env`:
+
+```bash
+npm run dev
+```
+
+Focused debug flow:
+
+1. Read `VTT_URL`, `VTT_USER`, and `VTT_PASSWORD` from `.env`.
+2. Attach to the Chrome remote debugging target at `http://127.0.0.1:9222/json/version` or the configured LAN debug endpoint.
+3. Open `VTT_URL`, select `VTT_USER` on the Foundry login screen, submit `VTT_PASSWORD`, and wait for the world UI.
+4. Confirm **Monster Creator** is enabled, then reproduce through the Actor Directory **Create Monster** button.
+5. Capture browser console errors, failed network requests, Foundry notifications, and exact module UI state before changing code.
+6. Prefer fixes under `monster-creator/`; use `npm run build` to copy into the local Foundry module path, then refresh the same debug page.
 
 ## Coding Style & Naming Conventions
 
