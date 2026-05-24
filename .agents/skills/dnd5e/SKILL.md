@@ -25,6 +25,7 @@ Use Foundry V13 docs for public API details:
 - Activities wiki: <https://github.com/foundryvtt/dnd5e/wiki/Activities-Overview>
 - Module Registration wiki: <https://github.com/foundryvtt/dnd5e/wiki/Module-Registration>
 - Foundry API V13: <https://foundryvtt.com/api/v13/index.html>
+- Foundry bundled frameworks/libraries: <https://foundryvtt.com/article/frameworks/>
 
 ## Quick Routing
 
@@ -58,6 +59,7 @@ rg --files packs/_source
 ## Rules
 
 - Prefer public Foundry APIs and documented hooks over underscore-prefixed internals.
+- Before adding or bundling a custom client-side library, check Foundry's bundled frameworks and libraries. Prefer built-in Foundry, Handlebars, jQuery, PixiJS, or GreenSock when they fit the task. Add external/custom libraries only when Foundry does not already provide a suitable capability, and document the reason when the choice affects module architecture, bundle size, licensing, or runtime compatibility.
 - Pair UI edits across code, Handlebars, and Less. Do not change only one layer.
 - Treat `packs/_source` as the source of truth for authored compendium content.
 - Re-check wiki or API docs before changing version-sensitive behavior such as hooks, applications, manifests, or packaging.
