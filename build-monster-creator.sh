@@ -7,6 +7,13 @@ DIST_DIR="${SCRIPT_DIR}/dist"
 OUTPUT_NAME="monster-creator-v"
 DIST_MODULE_DIR="${DIST_DIR}/monster-creator"
 
+if [[ -f "$SCRIPT_DIR/.env" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$SCRIPT_DIR/.env"
+  set +a
+fi
+
 BASE_URL="${MONSTER_CREATOR_BASE_URL:-http://127.0.0.1:8000}"
 OPEN5E_API_URL="${MONSTER_CREATOR_API_REMOTE_URL:-https://api.open5e.com}"
 VERSION="${MONSTER_CREATOR_VERSION:-}"

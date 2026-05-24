@@ -2,6 +2,10 @@
 
 const path = require('node:path');
 
+const { loadEnv } = require('../load-env.js');
+
+loadEnv();
+
 const {
   PACK_CONFIG,
   compilePackSources,

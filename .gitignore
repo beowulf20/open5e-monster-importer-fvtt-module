@@ -1,5 +1,6 @@
 dist/**
 node_modules/**
+.env
 monster-creator/packs/**
 !monster-creator/packs/
 !monster-creator/packs/fc5-spells/

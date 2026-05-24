@@ -50,6 +50,18 @@ Then visit the local test page:
 
 - `http://localhost:4173/monster-creator-test.html`
 
+For local Foundry installs, copy `.env.example` to `.env` and set:
+
+```bash
+FOUNDRY_MONSTER_CREATOR_PATH=/path/to/FoundryVTT/Data/modules/monster-creator
+```
+
+Then run:
+
+```bash
+npm run build
+```
+
 ## Usage
 
 1. Open Foundry and enable the module.
@@ -70,6 +82,12 @@ Install dependencies and generate packs:
 ```bash
 npm install
 npm run generate:fc5-compendia -- --xml /path/to/Complete_Compendium_2014+2024.xml
+```
+
+You can also set `FC5_XML_PATH` in `.env` and run:
+
+```bash
+npm run generate:fc5-compendia
 ```
 
 That command writes JSON source files under `tmp/fc5-pack-sources/` and compiles module pack data into:
@@ -132,6 +150,8 @@ To override for local/proxy use:
 ```bash
 MONSTER_CREATOR_API_REMOTE_URL=http://localhost:8888 ./build-monster-creator.sh
 ```
+
+`./build-monster-creator.sh` also reads these values from `.env`.
 
 ## Release tooling
 

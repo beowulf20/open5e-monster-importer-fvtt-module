@@ -799,7 +799,7 @@ class MonsterCreatorForm extends FormApplication {
   }
 
   static get defaultOptions() {
-    return mergeObject(super.defaultOptions, {
+    return foundry.utils.mergeObject(super.defaultOptions, {
       id: `${MONSTER_CREATOR_ID}-form`,
       template: `modules/${MONSTER_CREATOR_ID}/templates/monster-creator-form.hbs`,
       title: 'Monster Creator',
