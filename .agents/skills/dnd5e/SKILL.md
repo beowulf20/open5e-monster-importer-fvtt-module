@@ -19,11 +19,15 @@ Observed upstream on March 29, 2026:
 - `system.json` showed Foundry compatibility `minimum: 13.347` and `verified: 13`
 - GitHub repo page showed latest release `release-5.2.5` dated January 20, 2026
 
-Use Foundry V13 docs for public API details:
+Use version-matched Foundry docs for public API details. Prefer the docs matching the live or target Foundry version from `game.version`, `system.json`, or module compatibility. For ApplicationV2 work on Foundry 14, start with the V14 pages below instead of the older V13 index.
 - Repo root: <https://github.com/foundryvtt/dnd5e>
 - Hooks wiki: <https://github.com/foundryvtt/dnd5e/wiki/Hooks>
 - Activities wiki: <https://github.com/foundryvtt/dnd5e/wiki/Activities-Overview>
 - Module Registration wiki: <https://github.com/foundryvtt/dnd5e/wiki/Module-Registration>
+- Foundry API V14: <https://foundryvtt.com/api/v14/index.html>
+- ApplicationV2 V14: <https://foundryvtt.com/api/v14/classes/foundry.applications.api.ApplicationV2.html>
+- HandlebarsApplicationMixin V14: <https://foundryvtt.com/api/v14/functions/foundry.applications.api.HandlebarsApplicationMixin.html>
+- Application form configuration V14: <https://foundryvtt.com/api/v14/interfaces/foundry.applications.types.ApplicationFormConfiguration.html>
 - Foundry API V13: <https://foundryvtt.com/api/v13/index.html>
 - Foundry bundled frameworks/libraries: <https://foundryvtt.com/article/frameworks/>
 
@@ -59,6 +63,7 @@ rg --files packs/_source
 ## Rules
 
 - Prefer public Foundry APIs and documented hooks over underscore-prefixed internals.
+- For ApplicationV2 migrations, avoid `FormApplication`, `defaultOptions`, `getData`, `activateListeners`, and `_updateObject`; use `ApplicationV2` plus `HandlebarsApplicationMixin`, `DEFAULT_OPTIONS`, `PARTS`, `_prepareContext`, `_onRender`, and V2 `form.handler`. Each Handlebars part must render exactly one root HTML element.
 - Before adding or bundling a custom client-side library, check Foundry's bundled frameworks and libraries. Prefer built-in Foundry, Handlebars, jQuery, PixiJS, or GreenSock when they fit the task. Add external/custom libraries only when Foundry does not already provide a suitable capability, and document the reason when the choice affects module architecture, bundle size, licensing, or runtime compatibility.
 - Pair UI edits across code, Handlebars, and Less. Do not change only one layer.
 - Treat `packs/_source` as the source of truth for authored compendium content.
