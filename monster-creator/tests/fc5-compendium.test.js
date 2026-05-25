@@ -10,6 +10,7 @@ const {
   convertSpell,
   deterministicId,
   generateCompendiumDocuments,
+  isFeatureLikeSpell,
   parseFc5Xml,
   splitSourceText
 } = require('../../tools/fc5-compendium');
@@ -62,7 +63,7 @@ describe('FC5 compendium conversion', () => {
     const parsed = parseFc5Xml(fixtureXml);
 
     expect(parsed.classes).toHaveLength(1);
-    expect(parsed.spells).toHaveLength(1);
+    expect(parsed.spells).toHaveLength(2);
     expect(parsed.items).toHaveLength(5);
     expect(parsed.classes[0].autolevels).toHaveLength(4);
   });
@@ -92,6 +93,35 @@ describe('FC5 compendium conversion', () => {
     expect(activity.damage.parts[0].types).toEqual(['thunder']);
     expect(activity.damage.parts[0].scaling.mode).toBe('whole');
     expect(activity.damage.parts[0].scaling.number).toBe(1);
+  });
+
+  test('routes FC5 spell-shaped class options into feature documents', () => {
+    const parsed = parseFc5Xml(fixtureXml);
+    const documents = generateCompendiumDocuments(parsed);
+    const feature = documents.features.find((entry) => entry.name === 'Arcane Fighting Style: Blaster (HB)');
+
+    expect(isFeatureLikeSpell(parsed.spells[1])).toBe(true);
+    expect(documents.spells.map((entry) => entry.name)).not.toContain('Arcane Fighting Style: Blaster (HB)');
+    expect(feature).toBeDefined();
+    expect(feature._id).toBe(deterministicId([
+      'spell',
+      'Arcane Fighting Style: Blaster (HB)',
+      "Valda's Spire of Secrets p. 159 (Homebrew)",
+      '',
+      0,
+      'Warmage (Valda): Arcane Fighting Styles',
+      '',
+      '',
+      '',
+      '',
+      'You gain a +1 bonus to the saving throw DCs of your warmage spells.',
+      '[]'
+    ].join('|')));
+    expect(feature.type).toBe('feat');
+    expect(feature.system.type.value).toBe('class');
+    expect(feature.system.requirements).toBe('Warmage (Valda): Arcane Fighting Styles');
+    expect(feature.flags['monster-creator'].fc5.type).toBe('feature');
+    expect(feature.flags['monster-creator'].fc5.sourceCategory).toBe('homebrew');
   });
 
   test('maps rider-style save spells into non-transfer spell effects linked from the activity', () => {

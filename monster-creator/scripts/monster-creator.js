@@ -13,6 +13,7 @@ const JHOW_CLICK_CONFETTI_COUNT = 30;
 const JHOW_INTERACTION_CONFETTI_COUNT = 12;
 const OPEN5E_API_DEFAULT_ROOT = 'https://api.open5e.com';
 const OPEN5E_CREATURES_ENDPOINT = '/v2/creatures/';
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 const normalizeOpen5eApiRoot = (value) => {
   if (typeof value !== 'string') {
@@ -783,7 +784,7 @@ const searchOpen5e = async (query, options = {}) => {
   }));
 };
 
-class MonsterCreatorForm extends FormApplication {
+class MonsterCreatorForm extends HandlebarsApplicationMixin(ApplicationV2) {
   constructor(options = {}) {
     super(options);
 
@@ -798,21 +799,33 @@ class MonsterCreatorForm extends FormApplication {
     this._elements = {};
   }
 
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      id: `${MONSTER_CREATOR_ID}-form`,
-      template: `modules/${MONSTER_CREATOR_ID}/templates/monster-creator-form.hbs`,
-      title: 'Monster Creator',
+  static DEFAULT_OPTIONS = {
+    tag: 'form',
+    id: `${MONSTER_CREATOR_ID}-form`,
+    classes: ['monster-creator-form'],
+    position: {
       width: 560,
-      height: 700,
+      height: 700
+    },
+    window: {
+      title: 'Monster Creator',
+      resizable: true
+    },
+    form: {
       closeOnSubmit: true,
       submitOnChange: false,
-      submitOnClose: false,
-      resizable: true
-    });
-  }
+      handler: MonsterCreatorForm.submitForm
+    }
+  };
+
+  static PARTS = {
+    form: {
+      template: `modules/${MONSTER_CREATOR_ID}/templates/monster-creator-form.hbs`
+    }
+  };
 
   get _root() {
+    if (this.element instanceof HTMLElement) return this.element;
     return this.element?.length ? this.element[0] : this.element;
   }
 
@@ -1077,15 +1090,15 @@ class MonsterCreatorForm extends FormApplication {
     this._loadOpen5ePage(Math.max(1, this._open5ePage - 1));
   }
 
-  activateListeners(html) {
-    super.activateListeners(html);
-    const root = html instanceof HTMLElement ? html : html?.[0];
+  _onRender(context, options) {
+    super._onRender(context, options);
+    const root = this._root;
     if (!root) return;
 
-  setMonsterCreatorJhowClass(root);
-  setMonsterCreatorSubmitLabel(root);
-  maybeCreateJhowConfetti(root);
-  const launchJhowConfetti = (event) => {
+    setMonsterCreatorJhowClass(root);
+    setMonsterCreatorSubmitLabel(root);
+    maybeCreateJhowConfetti(root);
+    const launchJhowConfetti = (event) => {
       if (!event) return;
       if (event.type === 'submit' || event.type === 'input' || event.type === 'change' || event.isTrusted) {
         const pieceCount = event.type === 'click'
@@ -1147,7 +1160,7 @@ class MonsterCreatorForm extends FormApplication {
     this._renderOpen5eResults();
   }
 
-  getData() {
+  _prepareContext() {
     return {
       defaults: {
         name: 'New Monster',
@@ -1170,7 +1183,12 @@ class MonsterCreatorForm extends FormApplication {
     };
   }
 
-  async _updateObject(_event, formData) {
+  static async submitForm(event, form, formData) {
+    const values = formData?.object || Object.fromEntries(new FormData(form).entries());
+    return this._submitMonsterCreatorForm(event, values);
+  }
+
+  async _submitMonsterCreatorForm(_event, formData) {
     const selectedMonster = this._open5eSelectedIndex >= 0
       ? this._open5eResults[this._open5eSelectedIndex]
       : null;

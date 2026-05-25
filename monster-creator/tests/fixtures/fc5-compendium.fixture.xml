@@ -85,6 +85,14 @@ At Higher Levels. The damage increases by 1d6 for each slot level above 2nd.
 Source:	Homebrew Manual (2024) p. 33</text>
     <roll description="Thunder Damage">3d6</roll>
   </spell>
+  <spell>
+    <name>Arcane Fighting Style: Blaster (HB)</name>
+    <level>0</level>
+    <classes>Warmage (Valda): Arcane Fighting Styles</classes>
+    <text>You gain a +1 bonus to the saving throw DCs of your warmage spells.
+
+Source:	Valda's Spire of Secrets p. 159 (Homebrew)</text>
+  </spell>
   <item>
     <name>Echo Bow</name>
     <detail>uncommon</detail>

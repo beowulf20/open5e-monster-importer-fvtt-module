@@ -1744,10 +1744,17 @@ function normalizeSpell(spell) {
   };
 }
 
-function convertSpell(spell) {
-  const normalized = normalizeSpell(spell);
-  const identifier = trimSlugToken(normalized.name) || 'spell';
-  const idSeed = [
+function isFeatureLikeSpell(spell) {
+  return safeNumber(spell.level, 0) === 0
+    && !normalizeWhitespace(spell.school)
+    && !normalizeWhitespace(spell.time)
+    && !normalizeWhitespace(spell.range)
+    && !normalizeWhitespace(spell.components)
+    && !normalizeWhitespace(spell.duration);
+}
+
+function spellFeatureIdSeed(normalized) {
+  return [
     'spell',
     normalized.name,
     normalized.source.book,
@@ -1761,6 +1768,12 @@ function convertSpell(spell) {
     normalized.descriptionText,
     JSON.stringify(normalized.rolls)
   ].join('|');
+}
+
+function convertSpell(spell) {
+  const normalized = normalizeSpell(spell);
+  const identifier = trimSlugToken(normalized.name) || 'spell';
+  const idSeed = spellFeatureIdSeed(normalized);
   const id = deterministicId(idSeed);
   const rangeData = parseRange(normalized.range);
   const duration = parseDuration(normalized.duration);
@@ -1848,6 +1861,95 @@ function convertSpell(spell) {
       ...normalized,
       raw: spell
     }, 'spell', modifierEffectData.unmapped.length ? { unmappedModifiers: modifierEffectData.unmapped } : {})
+  });
+}
+
+function convertFeatureLikeSpell(spell) {
+  const normalized = normalizeSpell(spell);
+  const id = deterministicId(spellFeatureIdSeed(normalized));
+  const identifier = trimSlugToken(normalized.name) || 'feature';
+  const activation = detectFeatureActivation(normalized.descriptionText);
+  const effectData = buildDocumentEffects({
+    modifiers: normalized.modifiers,
+    documentId: id,
+    packName: PACK_CONFIG.features.packName,
+    documentName: normalized.name,
+    img: ITEM_ICON_MAP.feat,
+    disabled: Boolean(activation.type)
+  });
+  const activities = {};
+
+  if (activation.type) {
+    activities.dnd5eactivity000 = buildBaseActivity('utility', {
+      type: activation.type,
+      value: activation.value,
+      condition: ''
+    }, {
+      value: '',
+      units: '',
+      concentration: false,
+      special: ''
+    }, {
+      range: {
+        value: '',
+        long: '',
+        units: 'self',
+        special: ''
+      },
+      target: {
+        affects: {
+          count: '',
+          type: 'self',
+          choice: false,
+          special: ''
+        },
+        template: {
+          count: '',
+          contiguous: false,
+          type: '',
+          size: '',
+          width: '',
+          height: '',
+          units: ''
+        }
+      }
+    });
+  }
+
+  return normalizeDocumentBase({
+    id,
+    name: normalized.name,
+    type: 'feat',
+    img: ITEM_ICON_MAP.feat,
+    system: {
+      description: {
+        value: textToHtml(normalized.descriptionText),
+        chat: ''
+      },
+      source: normalized.source,
+      uses: {
+        max: '',
+        recovery: [],
+        spent: 0
+      },
+      type: {
+        value: 'class',
+        subtype: ''
+      },
+      requirements: normalized.classes || '',
+      properties: [],
+      activities,
+      enchant: {},
+      prerequisites: {
+        level: null
+      },
+      identifier
+    },
+    effects: effectData.effects,
+    flags: buildSourceFlags({
+      ...normalized,
+      raw: spell
+    }, 'feature', effectData.unmapped.length ? { unmappedModifiers: effectData.unmapped } : {})
   });
 }
 
@@ -3392,11 +3494,13 @@ function convertClass(classEntry) {
 }
 
 function generateCompendiumDocuments(parsed) {
-  const spells = parsed.spells.map(convertSpell);
+  const spellEntries = parsed.spells.filter((spell) => !isFeatureLikeSpell(spell));
+  const spellFeatureEntries = parsed.spells.filter(isFeatureLikeSpell);
+  const spells = spellEntries.map(convertSpell);
   const items = parsed.items.map(convertItem);
   const classes = [];
   const subclasses = [];
-  const features = [];
+  const features = spellFeatureEntries.map(convertFeatureLikeSpell);
 
   parsed.classes.forEach((classEntry) => {
     const result = convertClass(classEntry);
@@ -3500,7 +3604,9 @@ module.exports = {
   deterministicId,
   trimSlugToken,
   normalizeSpell,
+  isFeatureLikeSpell,
   convertSpell,
+  convertFeatureLikeSpell,
   convertItem,
   convertClass
 };
