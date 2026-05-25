@@ -544,6 +544,75 @@ Source:\tPlayer's Handbook (2024) p. 249`,
     expect(inquisitive.flags['monster-creator'].fc5.sourceCategory).toBe('ua');
   });
 
+  test('keeps generic subclass placeholder features out of class grants', () => {
+    const result = convertClass(buildTestClass({
+      name: 'Rogue',
+      hd: '8',
+      traits: [{
+        name: 'Rogue',
+        text: "Rogues rely on precision and guile.\n\nSource:\tPlayer's Handbook (2014) p. 94"
+      }],
+      autolevels: [
+        {
+          level: 3,
+          scoreImprovement: false,
+          slots: [],
+          features: [
+            buildTestFeature('Sneak Attack (2)', "Your sneak attack improves.\n\nSource:\tPlayer's Handbook (2014) p. 96"),
+            buildTestFeature('Roguish Archetype', "You choose an archetype.\n\nSource:\tPlayer's Handbook (2014) p. 96"),
+            buildTestFeature('Roguish Archetype: Arcane Trickster', "You enhance your fine-honed skills with magic.\n\nSource:\tPlayer's Handbook (2014) p. 97", { optional: true }),
+            buildTestFeature('Roguish Archetype: Assassin', "You focus your training on the grim art of death.\n\nSource:\tPlayer's Handbook (2014) p. 97", { optional: true }),
+            buildTestFeature('Roguish Archetype: Thief', "You hone your skills in the larcenous arts.\n\nSource:\tPlayer's Handbook (2014) p. 97", { optional: true }),
+            buildTestFeature('Assassinate (Assassin)', "You are at your deadliest when you get the drop on your enemies.\n\nSource:\tPlayer's Handbook (2014) p. 97"),
+            buildTestFeature('Fast Hands (Thief)', "You can use your Cunning Action to make checks with thieves' tools.\n\nSource:\tPlayer's Handbook (2014) p. 97"),
+            buildTestFeature('Mage Hand Legerdemain (Arcane Trickster)', "You can make your mage hand invisible.\n\nSource:\tPlayer's Handbook (2014) p. 98")
+          ],
+          counters: []
+        },
+        {
+          level: 9,
+          scoreImprovement: false,
+          slots: [],
+          features: [
+            buildTestFeature('Sneak Attack (5)', "Your sneak attack improves again.\n\nSource:\tPlayer's Handbook (2014) p. 96"),
+            buildTestFeature('Roguish Archetype Feature', "Your archetype grants you a feature.\n\nSource:\tPlayer's Handbook (2014) p. 96"),
+            buildTestFeature('Infiltration Expertise (Assassin)', "You can create false identities.\n\nSource:\tPlayer's Handbook (2014) p. 97"),
+            buildTestFeature('Supreme Sneak (Thief)', "You have advantage on Dexterity (Stealth) checks.\n\nSource:\tPlayer's Handbook (2014) p. 97"),
+            buildTestFeature('Magical Ambush (Arcane Trickster)', "Your magic from hiding is harder to resist.\n\nSource:\tPlayer's Handbook (2014) p. 98")
+          ],
+          counters: []
+        }
+      ]
+    }));
+
+    const classFeatureNames = result.featureDocuments
+      .filter((entry) => entry.flags['monster-creator'].fc5.raw.ownerType === 'class')
+      .map((entry) => entry.name);
+    const assassin = result.subclassDocuments.find((entry) => entry.name === 'Assassin');
+    const subclassAdvancement = result.classDocument.system.advancement.find((entry) => entry.type === 'Subclass');
+
+    expect(subclassAdvancement.level).toBe(3);
+    expect(subclassAdvancement.title).toBe('Roguish Archetype');
+    expect(classFeatureNames).toContain('Sneak Attack (2)');
+    expect(classFeatureNames).toContain('Sneak Attack (5)');
+    expect(classFeatureNames).not.toContain('Roguish Archetype');
+    expect(classFeatureNames).not.toContain('Roguish Archetype Feature');
+    expect(assassin.system.advancement).toEqual([
+      expect.objectContaining({
+        level: 3,
+        configuration: expect.objectContaining({
+          items: [
+            expect.objectContaining({
+              uuid: expect.stringContaining('Compendium.monster-creator.fc5features.Item.')
+            })
+          ]
+        })
+      }),
+      expect.objectContaining({ level: 9 })
+    ]);
+    expect(result.featureDocuments.find((entry) => entry.name === 'Assassinate (Assassin)').flags['monster-creator'].fc5.raw.subclassName).toBe('Assassin');
+  });
+
   test('matches edition-suffixed class names back to their source trait text', () => {
     const result = convertClass(buildTestClass({
       name: 'Rogue [2024]',

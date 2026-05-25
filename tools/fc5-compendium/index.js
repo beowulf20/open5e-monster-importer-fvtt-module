@@ -2897,6 +2897,12 @@ function isLevelLabelPrefix(name = '') {
   return /^level\s+\d+$/i.test(normalizeWhitespace(name));
 }
 
+function normalizeSubclassPlaceholderName(name = '') {
+  return normalizeWhitespace(name)
+    .replace(/^level\s+\d+\s*:\s*/i, '')
+    .toLowerCase();
+}
+
 function buildClassFeatureEntries(classEntry) {
   const entries = [];
 
@@ -2939,6 +2945,25 @@ function isStrongSubclassIntro(entry) {
     && !isLevelLabelPrefix(entry.colonPrefix)
     && !isAbilityScoreImprovementFeature(entry.name)
     && !isAbilityScoreImprovementFeature(entry.colonValue);
+}
+
+function isGenericSubclassPlaceholderFeature(entry, subclasses) {
+  if (entry.explicitSubclass || entry.counterSubclasses.length || entry.parenValue || entry.colonValue) {
+    return false;
+  }
+
+  const featureName = normalizeSubclassPlaceholderName(entry.name);
+  if (!featureName) return false;
+
+  for (const subclass of subclasses.values()) {
+    const title = normalizeSubclassPlaceholderName(subclass.title);
+    if (!title) continue;
+    if (featureName === title || featureName === `${title} feature` || featureName === `${title} features`) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 function resolveSubclassTitle(subclasses) {
@@ -3087,6 +3112,12 @@ function extractSubclassFeatures(classEntry) {
       features: [],
       title: candidate.introTitle
     });
+  }
+
+  for (const entry of entries) {
+    if (isGenericSubclassPlaceholderFeature(entry, subclasses)) {
+      ignoredFeatures.add(entry.feature);
+    }
   }
 
   for (const entry of entries) {
