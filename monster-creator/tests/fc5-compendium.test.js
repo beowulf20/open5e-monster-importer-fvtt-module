@@ -657,6 +657,160 @@ Source:\tPlayer's Handbook (2024) p. 249`,
     ]);
   });
 
+  test('infers high-confidence passive effects from feature prose', () => {
+    const result = convertClass(buildTestClass({
+      name: 'Elementalist',
+      autolevels: [{
+        level: 1,
+        counters: [],
+        features: [
+          buildTestFeature('Elemental Body', 'You have resistance to fire and cold damage. You are immune to poison damage and the poisoned condition. You gain darkvision out to 60 feet. Your walking speed increases by 10 feet. You gain a +1 bonus to AC.\n\nSource:\tSynthetic Manual p. 4')
+        ]
+      }]
+    }));
+    const feature = result.featureDocuments.find((entry) => entry.name === 'Elemental Body');
+    const effect = feature.effects[0];
+
+    expect(feature.effects).toHaveLength(1);
+    expect(effect.disabled).toBe(false);
+    expect(effect.transfer).toBe(true);
+    expect(effect.flags['monster-creator'].fc5.inferredEffect).toBe(true);
+    expect(effect.flags['monster-creator'].fc5.inferenceRules).toEqual(expect.arrayContaining([
+      'damage-resistance',
+      'damage-immunity',
+      'condition-immunity',
+      'sense-darkvision',
+      'movement-walk',
+      'flat-bonus-ac'
+    ]));
+    expect(effect.changes).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        key: 'system.traits.dr.value',
+        mode: 2,
+        value: 'cold;fire'
+      }),
+      expect.objectContaining({
+        key: 'system.traits.di.value',
+        mode: 2,
+        value: 'poison'
+      }),
+      expect.objectContaining({
+        key: 'system.traits.ci.value',
+        mode: 2,
+        value: 'poisoned'
+      }),
+      expect.objectContaining({
+        key: 'system.attributes.senses.darkvision',
+        mode: 4,
+        value: '60'
+      }),
+      expect.objectContaining({
+        key: 'system.attributes.movement.walk',
+        mode: 2,
+        value: '10'
+      }),
+      expect.objectContaining({
+        key: 'system.attributes.ac.bonus',
+        mode: 2,
+        value: '+1'
+      })
+    ]));
+  });
+
+  test('infers runtime-conditional passive effects as disabled toggles', () => {
+    const result = convertClass(buildTestClass({
+      name: 'Berserker',
+      autolevels: [{
+        level: 1,
+        counters: [],
+        features: [
+          buildTestFeature('Battle Trance', 'While raging, you have resistance to bludgeoning, piercing, and slashing damage. For 1 minute, your speed increases by 10 feet. You gain a +2 bonus to saving throws against spells.\n\nSource:\tSynthetic Manual p. 5')
+        ]
+      }]
+    }));
+    const feature = result.featureDocuments.find((entry) => entry.name === 'Battle Trance');
+
+    expect(feature.effects).toHaveLength(3);
+    expect(feature.effects.every((effect) => effect.disabled)).toBe(true);
+    expect(feature.effects.every((effect) => effect.flags['monster-creator'].fc5.inferredEffect)).toBe(true);
+    expect(feature.effects.map((effect) => effect.changes).flat()).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        key: 'system.traits.dr.value',
+        mode: 2,
+        value: 'bludgeoning;piercing;slashing'
+      }),
+      expect.objectContaining({
+        key: 'system.attributes.movement.bonus',
+        mode: 2,
+        value: '10'
+      }),
+      expect.objectContaining({
+        key: 'system.bonuses.abilities.save',
+        mode: 2,
+        value: '+2'
+      })
+    ]));
+    expect(feature.effects.map((effect) => effect.flags['monster-creator'].fc5.condition).filter(Boolean)).toHaveLength(3);
+  });
+
+  test('keeps inferred effects scoped to owner benefits', () => {
+    const result = convertClass(buildTestClass({
+      name: 'Shadow Master',
+      autolevels: [{
+        level: 3,
+        counters: [],
+        features: [
+          buildTestFeature('Abyssal Eyes', 'When you choose this archetype at 3rd level, your eyes change to an inky black, granting you darkvision out to a range of 60 feet.\n\nSource:\tSynthetic Manual p. 6'),
+          buildTestFeature('Aegis of Stone', 'The target gains resistance to nonmagical bludgeoning, piercing, and slashing damage for 1 minute.\n\nSource:\tSynthetic Manual p. 7')
+        ]
+      }]
+    }));
+    const eyes = result.featureDocuments.find((entry) => entry.name === 'Abyssal Eyes');
+    const aegis = result.featureDocuments.find((entry) => entry.name === 'Aegis of Stone');
+
+    expect(eyes.effects).toHaveLength(1);
+    expect(eyes.effects[0].disabled).toBe(false);
+    expect(eyes.effects[0].changes).toEqual([
+      expect.objectContaining({
+        key: 'system.attributes.senses.darkvision',
+        mode: 4,
+        value: '60'
+      })
+    ]);
+    expect(aegis.effects).toHaveLength(0);
+  });
+
+  test('keeps mixed damage and condition immunity in the correct trait buckets', () => {
+    const result = convertClass(buildTestClass({
+      name: 'Primordial',
+      autolevels: [{
+        level: 1,
+        counters: [],
+        features: [
+          buildTestFeature('Air Body', 'For the duration, you also gain resistance to all nonmagical bludgeoning, piercing, or slashing damage, and immunity to the grappled condition.\n\nSource:\tSynthetic Manual p. 8')
+        ]
+      }]
+    }));
+    const feature = result.featureDocuments.find((entry) => entry.name === 'Air Body');
+    const changes = feature.effects.map((effect) => effect.changes).flat();
+
+    expect(feature.effects).toHaveLength(1);
+    expect(feature.effects[0].disabled).toBe(true);
+    expect(changes).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        key: 'system.traits.dr.value',
+        mode: 2,
+        value: 'bludgeoning;piercing;slashing'
+      }),
+      expect.objectContaining({
+        key: 'system.traits.ci.value',
+        mode: 2,
+        value: 'grappled'
+      })
+    ]));
+    expect(changes.some((change) => change.key === 'system.traits.di.value')).toBe(false);
+  });
+
   test('maps mixed tool choice prose into valid tool choice pools and preserves unmapped phrases in flags', () => {
     const monk = convertClass(buildTestClass({
       name: 'Monk',

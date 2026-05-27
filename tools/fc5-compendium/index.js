@@ -122,6 +122,39 @@ const STANDARD_DAMAGE_TYPES = [
   'thunder'
 ];
 
+const CONDITION_ID_MAP = {
+  blinded: 'blinded',
+  charmed: 'charmed',
+  deafened: 'deafened',
+  exhaustion: 'exhaustion',
+  frightened: 'frightened',
+  grappled: 'grappled',
+  incapacitated: 'incapacitated',
+  invisible: 'invisible',
+  paralyzed: 'paralyzed',
+  petrified: 'petrified',
+  poisoned: 'poisoned',
+  prone: 'prone',
+  restrained: 'restrained',
+  stunned: 'stunned',
+  unconscious: 'unconscious'
+};
+
+const SENSE_ID_MAP = {
+  blindsight: 'blindsight',
+  darkvision: 'darkvision',
+  tremorsense: 'tremorsense',
+  truesight: 'truesight'
+};
+
+const MOVEMENT_ID_MAP = {
+  burrowing: 'burrow',
+  climbing: 'climb',
+  flying: 'fly',
+  swimming: 'swim',
+  walking: 'walk'
+};
+
 const ITEM_PROPERTY_MAP = {
   '2H': 'two',
   A: 'amm',
@@ -389,7 +422,11 @@ const ABILITY_ID_MAP = {
 };
 
 const ACTIVE_EFFECT_MODE = {
+  CUSTOM: 0,
+  MULTIPLY: 1,
   ADD: 2,
+  DOWNGRADE: 3,
+  UPGRADE: 4,
   OVERRIDE: 5
 };
 
@@ -1200,7 +1237,8 @@ function buildActiveEffect({
   transfer = true,
   description = '',
   statuses = [],
-  duration = null
+  duration = null,
+  flags = {}
 }) {
   const effectId = deterministicId([
     'effect',
@@ -1217,7 +1255,7 @@ function buildActiveEffect({
     duration: buildEffectDurationData(duration),
     origin: buildEffectOrigin(packName, documentId),
     transfer,
-    flags: {},
+    flags,
     tint: '#ffffff',
     name: documentName,
     description,
@@ -1305,15 +1343,341 @@ function hasUnarmoredDefenseFormula(featureName = '', text = '') {
   return /\b(?:armor class|ac) equals 10 \+ your dexterity modifier \+ your (?:constitution|wisdom|charisma) modifier\b/.test(featureText);
 }
 
-function inferDamageResistanceChanges(text = '') {
-  const featureText = normalizeSearchText(text);
-  if (!/\bresistant to all damage types\b/.test(featureText)) {
-    return [];
+function splitInferenceSentences(text = '') {
+  return normalizeWhitespace(text)
+    .replace(/\n+/g, ' ')
+    .split(/(?<=[.!?])\s+/g)
+    .map((sentence) => normalizeWhitespace(sentence))
+    .filter(Boolean);
+}
+
+function truncateInferenceText(value = '') {
+  const text = normalizeWhitespace(value);
+  return text.length > 240 ? `${text.slice(0, 237)}...` : text;
+}
+
+function inferRuntimeCondition(sentence = '') {
+  const text = normalizeSearchText(sentence);
+  if (/\bwhen you (?:choose|select|gain|reach)\b/.test(text)) return '';
+
+  if (/\b(?:while|whenever|during|if|as long as|until|against)\b/.test(text)) {
+    return truncateInferenceText(sentence);
   }
 
-  return [
-    buildEffectChange('system.traits.dr.value', STANDARD_DAMAGE_TYPES.join(';'))
+  if (/\bwhen\b/.test(text) && !/\bwhen you (?:gain|reach)\b/.test(text)) {
+    return truncateInferenceText(sentence);
+  }
+
+  if (/\bfor (?:the duration|\d+ (?:round|rounds|minute|minutes|hour|hours))\b/.test(text)) {
+    return truncateInferenceText(sentence);
+  }
+
+  if (/\bfrom (?:nonmagical|magical|spell|spells|attack|attacks)\b/.test(text)) {
+    return truncateInferenceText(sentence);
+  }
+
+  return '';
+}
+
+function sentenceReferencesOwner(sentence = '') {
+  return /\byou(?:r|)\b/.test(normalizeSearchText(sentence));
+}
+
+function buildInferenceCandidate({
+  ruleId,
+  changes = [],
+  sentence = '',
+  disabled = null,
+  confidence = 'high'
+} = {}) {
+  if (!ruleId || !changes.length) return null;
+
+  const condition = inferRuntimeCondition(sentence);
+  return {
+    ruleId,
+    confidence,
+    changes,
+    disabled: disabled === null ? Boolean(condition) : Boolean(disabled),
+    condition,
+    matchedText: truncateInferenceText(sentence)
+  };
+}
+
+function extractDamageTypeIds(value = '') {
+  const text = normalizeSearchText(value);
+  if (/\ball damage(?: types?)?\b/.test(text)) {
+    return STANDARD_DAMAGE_TYPES;
+  }
+
+  const ids = [];
+  for (const id of STANDARD_DAMAGE_TYPES) {
+    if (new RegExp(`\\b${id}\\b`).test(text)) {
+      ids.push(id);
+    }
+  }
+
+  return ids;
+}
+
+function extractDamageTypeIdsForTrait(sentence = '', prefixPattern = '') {
+  const ids = new Set();
+  const regex = new RegExp(`\\b${prefixPattern}\\s+([^.;]*?\\bdamage(?:\\s+types?)?)`, 'g');
+  const normalized = normalizeSearchText(sentence);
+
+  for (const match of normalized.matchAll(regex)) {
+    extractDamageTypeIds(match[1]).forEach((id) => ids.add(id));
+  }
+
+  return Array.from(ids);
+}
+
+function inferDamageTraitCandidates(text = '') {
+  const candidates = [];
+  const rules = [
+    {
+      ruleId: 'damage-resistance',
+      key: 'system.traits.dr.value',
+      prefixPattern: '(?:resistant to|resistance to)'
+    },
+    {
+      ruleId: 'damage-immunity',
+      key: 'system.traits.di.value',
+      prefixPattern: '(?:immune to|immunity to)'
+    },
+    {
+      ruleId: 'damage-vulnerability',
+      key: 'system.traits.dv.value',
+      prefixPattern: '(?:vulnerable to|vulnerability to)'
+    }
   ];
+
+  for (const sentence of splitInferenceSentences(text)) {
+    const normalized = normalizeSearchText(sentence);
+    if (!sentenceReferencesOwner(sentence)) continue;
+    if (!/\bdamage\b/.test(normalized) && !/\ball damage types\b/.test(normalized)) continue;
+
+    for (const rule of rules) {
+      const damageTypes = extractDamageTypeIdsForTrait(sentence, rule.prefixPattern);
+      if (!damageTypes.length) continue;
+
+      candidates.push(buildInferenceCandidate({
+        ruleId: rule.ruleId,
+        changes: [
+          buildEffectChange(rule.key, damageTypes.join(';'))
+        ],
+        sentence
+      }));
+    }
+  }
+
+  return candidates.filter(Boolean);
+}
+
+function inferConditionImmunityCandidates(text = '') {
+  const candidates = [];
+  const conditionIds = Object.keys(CONDITION_ID_MAP);
+
+  for (const sentence of splitInferenceSentences(text)) {
+    const normalized = normalizeSearchText(sentence);
+    if (!sentenceReferencesOwner(sentence)) continue;
+    if (!/\b(?:you (?:are|become|remain) immune to|you\b[^.]{0,120}\bimmunity to|you (?:can(?:no|')?t|can't|cannot) be)\b/.test(normalized)) continue;
+
+    const matchedConditions = conditionIds.filter((condition) => new RegExp(`\\b${condition}\\b`).test(normalized));
+    if (!matchedConditions.length) continue;
+
+    candidates.push(buildInferenceCandidate({
+      ruleId: 'condition-immunity',
+      changes: [
+        buildEffectChange('system.traits.ci.value', matchedConditions.map((condition) => CONDITION_ID_MAP[condition]).join(';'))
+      ],
+      sentence
+    }));
+  }
+
+  return candidates.filter(Boolean);
+}
+
+function inferSenseCandidates(text = '') {
+  const candidates = [];
+
+  for (const sentence of splitInferenceSentences(text)) {
+    const normalized = normalizeSearchText(sentence);
+    if (!sentenceReferencesOwner(sentence)) continue;
+    for (const [label, id] of Object.entries(SENSE_ID_MAP)) {
+      if (!new RegExp(`\\b${label}\\b`).test(normalized)) continue;
+
+      const increaseMatch = normalized.match(new RegExp(`\\b${label}\\b[^.]*?\\bincreases? by\\s+(\\d+)\\s*(?:feet|ft)`));
+      if (increaseMatch) {
+        candidates.push(buildInferenceCandidate({
+          ruleId: `sense-${id}-increase`,
+          changes: [
+            buildEffectChange(`system.attributes.senses.${id}`, String(safeNumber(increaseMatch[1], 0)))
+          ],
+          sentence
+        }));
+        continue;
+      }
+
+      const distanceMatch = normalized.match(new RegExp(`\\b${label}\\b[^.]*?\\b(?:out to|to a range of|range of|radius of|within|to)\\s+(\\d+)\\s*(?:feet|ft)`));
+      if (!distanceMatch) continue;
+
+      candidates.push(buildInferenceCandidate({
+        ruleId: `sense-${id}`,
+        changes: [
+          buildEffectChange(`system.attributes.senses.${id}`, String(safeNumber(distanceMatch[1], 0)), ACTIVE_EFFECT_MODE.UPGRADE)
+        ],
+        sentence
+      }));
+    }
+  }
+
+  return candidates.filter(Boolean);
+}
+
+function inferMovementCandidates(text = '') {
+  const candidates = [];
+
+  for (const sentence of splitInferenceSentences(text)) {
+    const normalized = normalizeSearchText(sentence);
+    if (!sentenceReferencesOwner(sentence)) continue;
+    let matchedSpecific = false;
+
+    for (const [label, id] of Object.entries(MOVEMENT_ID_MAP)) {
+      const match = normalized.match(new RegExp(`\\b(?:your\\s+)?${label}\\s+speed\\s+increases? by\\s+(\\d+)\\s*(?:feet|ft)`));
+      if (!match) continue;
+
+      matchedSpecific = true;
+      candidates.push(buildInferenceCandidate({
+        ruleId: `movement-${id}`,
+        changes: [
+          buildEffectChange(`system.attributes.movement.${id}`, String(safeNumber(match[1], 0)))
+        ],
+        sentence
+      }));
+    }
+
+    if (matchedSpecific) continue;
+
+    const genericMatch = normalized.match(/\b(?:your\s+)?speed\s+increases? by\s+(\d+)\s*(?:feet|ft)/);
+    if (!genericMatch) continue;
+
+    candidates.push(buildInferenceCandidate({
+      ruleId: 'movement-bonus',
+      changes: [
+        buildEffectChange('system.attributes.movement.bonus', String(safeNumber(genericMatch[1], 0)))
+      ],
+      sentence
+    }));
+  }
+
+  return candidates.filter(Boolean);
+}
+
+function inferFlatBonusCandidates(text = '') {
+  const candidates = [];
+  const subjectPattern = [
+    'ac',
+    'armor class',
+    'initiative',
+    'saving throws',
+    'ability checks',
+    'weapon attacks',
+    'weapon damage',
+    'melee attacks',
+    'melee damage',
+    'ranged attacks',
+    'ranged damage',
+    'spell attack',
+    'spell attacks',
+    'spell dc'
+  ].join('|');
+
+  for (const sentence of splitInferenceSentences(text)) {
+    const normalized = normalizeSearchText(sentence);
+    if (!sentenceReferencesOwner(sentence)) continue;
+    const regex = new RegExp(`([+-]\\d+)\\s+bonus to\\s+(${subjectPattern})\\b`, 'g');
+    for (const match of normalized.matchAll(regex)) {
+      const subject = match[2] === 'armor class'
+        ? 'ac'
+        : match[2] === 'spell attacks'
+          ? 'spell attack'
+          : match[2];
+      const changes = mapBonusModifierChanges(subject, match[1]);
+      if (!changes.length) continue;
+
+      candidates.push(buildInferenceCandidate({
+        ruleId: `flat-bonus-${trimSlugToken(subject)}`,
+        changes,
+        sentence
+      }));
+    }
+  }
+
+  return candidates.filter(Boolean);
+}
+
+function inferUnarmoredDefenseCandidates({ ownerIdentifier = '', ownerName = '', featureName = '', text = '' } = {}) {
+  if (!hasUnarmoredDefenseFormula(featureName, text)) return [];
+
+  const calc = inferUnarmoredDefenseCalc({ ownerIdentifier, ownerName, text });
+  if (!calc) return [];
+
+  return [buildInferenceCandidate({
+    ruleId: `unarmored-defense-${calc}`,
+    changes: [
+      buildEffectChange('system.attributes.ac.calc', calc, ACTIVE_EFFECT_MODE.OVERRIDE)
+    ],
+    sentence: featureName,
+    disabled: false
+  })].filter(Boolean);
+}
+
+function groupInferenceCandidates(candidates = []) {
+  const groups = new Map();
+
+  for (const candidate of candidates) {
+    const key = `${candidate.disabled ? 'disabled' : 'enabled'}|${candidate.condition || ''}`;
+    if (!groups.has(key)) {
+      groups.set(key, {
+        disabled: candidate.disabled,
+        condition: candidate.condition,
+        changes: [],
+        rules: [],
+        matchedText: [],
+        confidence: candidate.confidence
+      });
+    }
+
+    const group = groups.get(key);
+    for (const change of candidate.changes) {
+      const changeKey = effectChangeSignature(change);
+      if (group.changes.some((entry) => effectChangeSignature(entry) === changeKey)) continue;
+      group.changes.push(change);
+    }
+    group.rules.push(candidate.ruleId);
+    if (candidate.matchedText) group.matchedText.push(candidate.matchedText);
+  }
+
+  return Array.from(groups.values()).filter((group) => group.changes.length);
+}
+
+function effectChangeSignature(change = {}) {
+  return `${change.key}|${change.mode}|${change.value}`;
+}
+
+function removeExistingEffectChanges(candidates = [], existingEffects = []) {
+  const existingChanges = new Set(existingEffects
+    .flatMap((effect) => effect.changes || [])
+    .map((change) => effectChangeSignature(change)));
+
+  if (!existingChanges.size) return candidates;
+
+  return candidates
+    .map((candidate) => ({
+      ...candidate,
+      changes: candidate.changes.filter((change) => !existingChanges.has(effectChangeSignature(change)))
+    }))
+    .filter((candidate) => candidate.changes.length);
 }
 
 function buildFeaturePassiveEffects({
@@ -1323,35 +1687,42 @@ function buildFeaturePassiveEffects({
   text = '',
   documentId,
   documentName,
-  img
+  img,
+  existingEffects = []
 }) {
-  const changes = [];
-  const seeds = [];
+  const candidates = removeExistingEffectChanges([
+    ...inferUnarmoredDefenseCandidates({ ownerIdentifier, ownerName, featureName, text }),
+    ...inferDamageTraitCandidates(text),
+    ...inferConditionImmunityCandidates(text),
+    ...inferSenseCandidates(text),
+    ...inferMovementCandidates(text),
+    ...inferFlatBonusCandidates(text)
+  ], existingEffects);
 
-  if (hasUnarmoredDefenseFormula(featureName, text)) {
-    const calc = inferUnarmoredDefenseCalc({ ownerIdentifier, ownerName, text });
-    if (calc) {
-      changes.push(buildEffectChange('system.attributes.ac.calc', calc, ACTIVE_EFFECT_MODE.OVERRIDE));
-      seeds.push(`unarmored-defense|${calc}`);
-    }
-  }
-
-  const resistanceChanges = inferDamageResistanceChanges(text);
-  if (resistanceChanges.length) {
-    changes.push(...resistanceChanges);
-    seeds.push('damage-resistance|all');
-  }
-
-  if (!changes.length) return [];
-
-  return [buildActiveEffect({
-    documentId,
-    packName: PACK_CONFIG.features.packName,
-    documentName,
-    img,
-    changes,
-    seed: `passive|${seeds.join('|')}`
-  })];
+  return groupInferenceCandidates(candidates).map((group) => {
+    const rules = Array.from(new Set(group.rules));
+    const matchedText = Array.from(new Set(group.matchedText)).slice(0, 5);
+    return buildActiveEffect({
+      documentId,
+      packName: PACK_CONFIG.features.packName,
+      documentName,
+      img,
+      changes: group.changes,
+      disabled: group.disabled,
+      seed: `passive|${group.disabled ? 'disabled' : 'enabled'}|${rules.join('|')}|${group.condition || ''}`,
+      flags: {
+        [MODULE_ID]: {
+          fc5: {
+            inferredEffect: true,
+            inferenceRules: rules,
+            confidence: group.confidence,
+            matchedText,
+            condition: group.condition || ''
+          }
+        }
+      }
+    });
+  });
 }
 
 function stripEditionSuffix(name = '') {
@@ -3684,7 +4055,8 @@ function createFeatureDocument({ ownerName, ownerIdentifier, ownerType, feature,
     text: sourceSplit.content,
     documentId: id,
     documentName: feature.name,
-    img: ITEM_ICON_MAP.feat
+    img: ITEM_ICON_MAP.feat,
+    existingEffects: effectData.effects
   });
   const uses = counter ? {
     max: String(counter.value || ''),

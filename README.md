@@ -111,7 +111,7 @@ That command writes JSON source files under `tmp/fc5-pack-sources/` and compiles
 - `monster-creator/packs/fc5-subclasses`
 - `monster-creator/packs/fc5-features`
 
-Generated documents include mapped Active Effects for common FC5 modifier data such as AC bonuses, weapon/spell attack bonuses, damage bonuses, save bonuses, movement bonuses, ability score bonuses, and subclass/class feature modifiers. Unsupported modifier strings are preserved in document flags for later refinement instead of being dropped.
+Generated documents include mapped Active Effects for common FC5 modifier data such as AC bonuses, weapon/spell attack bonuses, damage bonuses, save bonuses, movement bonuses, ability score bonuses, and subclass/class feature modifiers. Class and subclass feature prose also gets high-confidence passive effect inference for owner-scoped traits such as damage resistance, damage immunity, condition immunity, senses, movement bonuses, flat bonuses, and unarmored AC formulas; runtime-conditional matches are generated disabled for manual toggling. Unsupported modifier strings are preserved in document flags for later refinement instead of being dropped.
 
 The module manifest already includes these pack definitions. Regenerate them locally whenever the upstream XML changes.
 
