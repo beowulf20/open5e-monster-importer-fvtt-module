@@ -643,7 +643,7 @@ Source:\tPlayer's Handbook (2024) p. 249`,
     expect(brawlerFeature.effects).toHaveLength(1);
     expect(brawlerFeature.effects[0].disabled).toBe(false);
     expect(brawlerFeature.effects[0].transfer).toBe(true);
-    expect(brawlerFeature.effects[0].changes).toEqual([
+    expect(brawlerFeature.effects[0].changes).toEqual(expect.arrayContaining([
       expect.objectContaining({
         key: 'system.attributes.ac.calc',
         mode: 5,
@@ -652,9 +652,15 @@ Source:\tPlayer's Handbook (2024) p. 249`,
       expect.objectContaining({
         key: 'system.traits.dr.value',
         mode: 2,
-        value: 'acid;bludgeoning;cold;fire;force;lightning;necrotic;piercing;poison;psychic;radiant;slashing;thunder'
+        value: 'acid'
+      }),
+      expect.objectContaining({
+        key: 'system.traits.dr.value',
+        mode: 2,
+        value: 'thunder'
       })
-    ]);
+    ]));
+    expect(brawlerFeature.effects[0].changes.filter((change) => change.key === 'system.traits.dr.value')).toHaveLength(13);
   });
 
   test('infers high-confidence passive effects from feature prose', () => {
@@ -687,7 +693,12 @@ Source:\tPlayer's Handbook (2024) p. 249`,
       expect.objectContaining({
         key: 'system.traits.dr.value',
         mode: 2,
-        value: 'cold;fire'
+        value: 'cold'
+      }),
+      expect.objectContaining({
+        key: 'system.traits.dr.value',
+        mode: 2,
+        value: 'fire'
       }),
       expect.objectContaining({
         key: 'system.traits.di.value',
@@ -700,7 +711,7 @@ Source:\tPlayer's Handbook (2024) p. 249`,
         value: 'poisoned'
       }),
       expect.objectContaining({
-        key: 'system.attributes.senses.darkvision',
+        key: 'system.attributes.senses.ranges.darkvision',
         mode: 4,
         value: '60'
       }),
@@ -737,7 +748,17 @@ Source:\tPlayer's Handbook (2024) p. 249`,
       expect.objectContaining({
         key: 'system.traits.dr.value',
         mode: 2,
-        value: 'bludgeoning;piercing;slashing'
+        value: 'bludgeoning'
+      }),
+      expect.objectContaining({
+        key: 'system.traits.dr.value',
+        mode: 2,
+        value: 'piercing'
+      }),
+      expect.objectContaining({
+        key: 'system.traits.dr.value',
+        mode: 2,
+        value: 'slashing'
       }),
       expect.objectContaining({
         key: 'system.attributes.movement.bonus',
@@ -772,7 +793,7 @@ Source:\tPlayer's Handbook (2024) p. 249`,
     expect(eyes.effects[0].disabled).toBe(false);
     expect(eyes.effects[0].changes).toEqual([
       expect.objectContaining({
-        key: 'system.attributes.senses.darkvision',
+        key: 'system.attributes.senses.ranges.darkvision',
         mode: 4,
         value: '60'
       })
@@ -800,7 +821,17 @@ Source:\tPlayer's Handbook (2024) p. 249`,
       expect.objectContaining({
         key: 'system.traits.dr.value',
         mode: 2,
-        value: 'bludgeoning;piercing;slashing'
+        value: 'bludgeoning'
+      }),
+      expect.objectContaining({
+        key: 'system.traits.dr.value',
+        mode: 2,
+        value: 'piercing'
+      }),
+      expect.objectContaining({
+        key: 'system.traits.dr.value',
+        mode: 2,
+        value: 'slashing'
       }),
       expect.objectContaining({
         key: 'system.traits.ci.value',
@@ -809,6 +840,67 @@ Source:\tPlayer's Handbook (2024) p. 249`,
       })
     ]));
     expect(changes.some((change) => change.key === 'system.traits.di.value')).toBe(false);
+  });
+
+  test('avoids offensive and companion trait false positives', () => {
+    const result = convertClass(buildTestClass({
+      name: 'Old God Warrior',
+      autolevels: [{
+        level: 3,
+        counters: [],
+        features: [
+          buildTestFeature('Adaptable Combatant', 'Your attacks count as magical for overcoming resistance to bludgeoning, piercing, and slashing damage.\n\nSource:\tSynthetic Manual p. 9'),
+          buildTestFeature('Origami Familiar', 'Your familiar is immune to poison and psychic damage.\n\nSource:\tSynthetic Manual p. 10')
+        ]
+      }]
+    }));
+
+    expect(result.featureDocuments.find((entry) => entry.name === 'Adaptable Combatant').effects).toHaveLength(0);
+    expect(result.featureDocuments.find((entry) => entry.name === 'Origami Familiar').effects).toHaveLength(0);
+  });
+
+  test('excludes damage type exceptions from all-damage resistance', () => {
+    const result = convertClass(buildTestClass({
+      name: 'Totem Warrior',
+      autolevels: [{
+        level: 3,
+        counters: [],
+        features: [
+          buildTestFeature('Bear', 'While raging, you have resistance to all damage except psychic damage.\n\nSource:\tSynthetic Manual p. 11')
+        ]
+      }]
+    }));
+    const feature = result.featureDocuments.find((entry) => entry.name === 'Bear');
+    const resistanceValues = feature.effects[0].changes
+      .filter((change) => change.key === 'system.traits.dr.value')
+      .map((change) => change.value);
+
+    expect(feature.effects[0].disabled).toBe(true);
+    expect(resistanceValues).toContain('acid');
+    expect(resistanceValues).toContain('thunder');
+    expect(resistanceValues).not.toContain('psychic');
+  });
+
+  test('does not infer shared sense range as owner darkvision', () => {
+    const result = convertClass(buildTestClass({
+      name: 'Twilight Priest',
+      autolevels: [{
+        level: 1,
+        counters: [],
+        features: [
+          buildTestFeature('Eyes of Night', 'You have darkvision out to a range of 300 feet. As an action, you can share this darkvision with willing creatures within 10 feet of you.\n\nSource:\tSynthetic Manual p. 12')
+        ]
+      }]
+    }));
+    const feature = result.featureDocuments.find((entry) => entry.name === 'Eyes of Night');
+    const senseChanges = feature.effects.map((effect) => effect.changes).flat()
+      .filter((change) => change.key === 'system.attributes.senses.ranges.darkvision');
+
+    expect(senseChanges).toHaveLength(1);
+    expect(senseChanges[0]).toEqual(expect.objectContaining({
+      mode: 4,
+      value: '300'
+    }));
   });
 
   test('maps mixed tool choice prose into valid tool choice pools and preserves unmapped phrases in flags', () => {
@@ -1034,6 +1126,97 @@ Source:\tPlayer's Handbook (2024) p. 249`,
     expect(result.system.source.book).toBe('Valda\'s Spire of Secrets');
     expect(result.system.source.page).toBe('276');
     expect(result.flags['monster-creator'].fc5.sourceBook).toBe('Valda\'s Spire of Secrets');
+  });
+
+  test('inherits class source for unsourced subclasses and features', () => {
+    const result = convertClass(buildTestClass({
+      name: 'Sourceful',
+      traits: [{
+        name: 'Sourceful',
+        text: 'Class rules.\n\nSource:\tSynthetic Manual p. 20'
+      }],
+      autolevels: [{
+        level: 3,
+        counters: [],
+        features: [
+          buildTestFeature('Sourceful Archetype: Sourceful Path', 'Subclass text without source.'),
+          buildTestFeature('Unsourced Feature (Sourceful Path)', 'Feature text without source.')
+        ]
+      }]
+    }));
+    const subclass = result.subclassDocuments.find((entry) => entry.name === 'Sourceful Path');
+    const feature = result.featureDocuments.find((entry) => entry.name === 'Unsourced Feature (Sourceful Path)');
+
+    expect(subclass.system.source.book).toBe('Synthetic Manual');
+    expect(subclass.flags['monster-creator'].fc5.sourceBook).toBe('Synthetic Manual');
+    expect(feature.system.source.book).toBe('Synthetic Manual');
+    expect(feature.flags['monster-creator'].fc5.sourceBook).toBe('Synthetic Manual');
+  });
+
+  test('emits dnd5e 5.3 hit dice schema on class documents', () => {
+    const classDocument = convertClass(buildTestClass({
+      name: 'Schema Knight',
+      hd: '10'
+    })).classDocument;
+
+    expect(classDocument.system.hd).toEqual({
+      denomination: 'd10',
+      spent: 0,
+      additional: ''
+    });
+    expect(classDocument.system.hitDice).toBeUndefined();
+    expect(classDocument.system.hitDiceUsed).toBeUndefined();
+  });
+
+  test('uses Unknown Source for unsourced spell-shaped features', () => {
+    const docs = generateCompendiumDocuments({
+      spells: [{
+        name: 'Arcane Hand',
+        level: 0,
+        school: '',
+        ritual: false,
+        time: '',
+        range: '',
+        components: '',
+        duration: '',
+        classes: 'Bender (Ryoko)',
+        text: '',
+        modifiers: [],
+        rolls: []
+      }],
+      items: [],
+      classes: []
+    });
+    const feature = docs.features[0];
+
+    expect(feature.system.source.book).toBe('Unknown Source');
+    expect(feature.flags['monster-creator'].fc5.sourceBook).toBe('Unknown Source');
+  });
+
+  test('disambiguates feature identifiers when repeated feature names have different content', () => {
+    const result = convertClass(buildTestClass({
+      name: 'Wilderness Adept',
+      autolevels: [
+        {
+          level: 3,
+          counters: [],
+          features: [
+            buildTestFeature('Bushcraft', 'First version of the feature.')
+          ]
+        },
+        {
+          level: 6,
+          counters: [],
+          features: [
+            buildTestFeature('Bushcraft', 'Second version of the feature.')
+          ]
+        }
+      ]
+    }));
+    const identifiers = result.featureDocuments.map((entry) => entry.system.identifier);
+
+    expect(new Set(identifiers).size).toBe(2);
+    expect(identifiers.every((identifier) => identifier.startsWith('wilderness-adept-bushcraft-'))).toBe(true);
   });
 
   test('extracts source metadata from trailing source lines', () => {

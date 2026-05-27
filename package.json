@@ -12,7 +12,7 @@
     "experiment:codex-icon": "node ./tools/fc5-compendium/experiment-codex-icon-image.js",
     "build": "node ./tools/copy-module.js",
     "generate:open5e-data": "node ./tools/open5e/generate-open5e-data.js",
-    "generate:fc5-compendia": "node ./tools/fc5-compendium/generate-fc5-compendiums.js",
+    "generate:fc5-compendia": "node ./tools/fc5-compendium/generate-fc5-compendiums.js --xml tmp/Complete_Compendium_5e.xml",
     "serve": "vite preview --host --port 4174",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
     "test:watch": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch",

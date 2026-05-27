@@ -977,6 +977,24 @@ function buildSourceFlags(entry, sourceType, extras = {}) {
   };
 }
 
+function sourceHasBook(source = {}) {
+  return Boolean(normalizeWhitespace(source.book || ''));
+}
+
+function withSourceFallback(source = {}, fallbackSource = {}) {
+  if (sourceHasBook(source)) return source;
+
+  return {
+    ...source,
+    custom: source.custom || fallbackSource.custom || '',
+    book: source.book || fallbackSource.book || '',
+    page: source.page || fallbackSource.page || '',
+    license: source.license || fallbackSource.license || '',
+    rules: source.rules || fallbackSource.rules || '',
+    sourceCategory: source.sourceCategory || fallbackSource.sourceCategory || SOURCE_CATEGORY.UNKNOWN
+  };
+}
+
 let iconOverrideCache = null;
 
 function getIconOverrides() {
@@ -1360,6 +1378,10 @@ function inferRuntimeCondition(sentence = '') {
   const text = normalizeSearchText(sentence);
   if (/\bwhen you (?:choose|select|gain|reach)\b/.test(text)) return '';
 
+  if (/\bas (?:an action|a bonus action|a reaction)\b/.test(text)) {
+    return truncateInferenceText(sentence);
+  }
+
   if (/\b(?:while|whenever|during|if|as long as|until|against)\b/.test(text)) {
     return truncateInferenceText(sentence);
   }
@@ -1368,7 +1390,7 @@ function inferRuntimeCondition(sentence = '') {
     return truncateInferenceText(sentence);
   }
 
-  if (/\bfor (?:the duration|\d+ (?:round|rounds|minute|minutes|hour|hours))\b/.test(text)) {
+  if (/\bfor (?:the duration|(?:(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten) (?:round|rounds|minute|minutes|hour|hours)))\b/.test(text)) {
     return truncateInferenceText(sentence);
   }
 
@@ -1381,6 +1403,48 @@ function inferRuntimeCondition(sentence = '') {
 
 function sentenceReferencesOwner(sentence = '') {
   return /\byou(?:r|)\b/.test(normalizeSearchText(sentence));
+}
+
+function sentenceHasRejectedTraitContext(sentence = '') {
+  const text = normalizeSearchText(sentence);
+  return /\b(?:ignore|ignores|ignored|ignoring|overcome|overcomes|overcoming)\b[^.]{0,80}\b(?:resistance|immunity|vulnerability)\b/.test(text)
+    || /\btreats?\b[^.]{0,80}\bimmunity\b[^.]{0,80}\bas\b[^.]{0,80}\bresistance\b/.test(text)
+    || /\byour attacks?\b[^.]{0,120}\b(?:resistance|immunity|vulnerability)\b/.test(text)
+    || /\b(?:familiar|servant|construct|weapon|target|creature|companion)\b[^.]{0,120}\b(?:resistance|immunity|vulnerability)\b/.test(text);
+}
+
+function sentenceHasOwnerDamageTraitGrant(sentence = '', ruleId = '') {
+  const text = normalizeSearchText(sentence);
+  if (sentenceHasRejectedTraitContext(sentence)) return false;
+
+  if (ruleId === 'damage-resistance') {
+    return /\byou\b[^.]{0,80}\b(?:gain|have|gains|has) resistance to\b/.test(text)
+      || /\byou\b[^.]{0,80}\b(?:are|become|remain) resistant to\b/.test(text);
+  }
+
+  if (ruleId === 'damage-immunity') {
+    return /\byou\b[^.]{0,80}\b(?:gain|have|gains|has) immunity to\b/.test(text)
+      || /\byou\b[^.]{0,80}\b(?:are|become|remain) immune to\b/.test(text);
+  }
+
+  if (ruleId === 'damage-vulnerability') {
+    return /\byou\b[^.]{0,80}\b(?:gain|have|gains|has) vulnerability to\b/.test(text)
+      || /\byou\b[^.]{0,80}\b(?:are|become|remain) vulnerable to\b/.test(text);
+  }
+
+  return false;
+}
+
+function sentenceHasOwnerSenseGrant(sentence = '', label = '') {
+  const text = normalizeSearchText(sentence);
+  if (/\b(?:share|grant|extend)\b[^.]{0,120}\b(?:creature|creatures|ally|allies|target|targets)\b/.test(text)) {
+    return false;
+  }
+
+  return new RegExp(`\\byou\\b[^.]{0,120}\\b(?:gain|have|gains|has) ${label}\\b`).test(text)
+    || new RegExp(`\\bgranting you ${label}\\b`).test(text)
+    || new RegExp(`\\byour ${label}\\b`).test(text)
+    || new RegExp(`\\b${label}\\b[^.]{0,80}\\brange increases\\b`).test(text);
 }
 
 function buildInferenceCandidate({
@@ -1419,13 +1483,22 @@ function extractDamageTypeIds(value = '') {
   return ids;
 }
 
+function applyDamageTypeExceptions(ids = [], value = '') {
+  const text = normalizeSearchText(value);
+  const exceptionMatch = text.match(/\b(?:except|other than)\s+([^.;]*?\bdamage)\b/);
+  if (!exceptionMatch) return ids;
+
+  const excluded = new Set(extractDamageTypeIds(exceptionMatch[1]));
+  return ids.filter((id) => !excluded.has(id));
+}
+
 function extractDamageTypeIdsForTrait(sentence = '', prefixPattern = '') {
   const ids = new Set();
-  const regex = new RegExp(`\\b${prefixPattern}\\s+([^.;]*?\\bdamage(?:\\s+types?)?)`, 'g');
+  const regex = new RegExp(`\\b${prefixPattern}\\s+([^.;]*?\\bdamage(?:\\s+types?)?(?:[^.;]*?\\b(?:except|other than)\\b[^.;]*?\\bdamage)?)`, 'g');
   const normalized = normalizeSearchText(sentence);
 
   for (const match of normalized.matchAll(regex)) {
-    extractDamageTypeIds(match[1]).forEach((id) => ids.add(id));
+    applyDamageTypeExceptions(extractDamageTypeIds(match[1]), match[1]).forEach((id) => ids.add(id));
   }
 
   return Array.from(ids);
@@ -1457,14 +1530,14 @@ function inferDamageTraitCandidates(text = '') {
     if (!/\bdamage\b/.test(normalized) && !/\ball damage types\b/.test(normalized)) continue;
 
     for (const rule of rules) {
+      if (!sentenceHasOwnerDamageTraitGrant(sentence, rule.ruleId)) continue;
+
       const damageTypes = extractDamageTypeIdsForTrait(sentence, rule.prefixPattern);
       if (!damageTypes.length) continue;
 
       candidates.push(buildInferenceCandidate({
         ruleId: rule.ruleId,
-        changes: [
-          buildEffectChange(rule.key, damageTypes.join(';'))
-        ],
+        changes: damageTypes.map((damageType) => buildEffectChange(rule.key, damageType)),
         sentence
       }));
     }
@@ -1480,6 +1553,7 @@ function inferConditionImmunityCandidates(text = '') {
   for (const sentence of splitInferenceSentences(text)) {
     const normalized = normalizeSearchText(sentence);
     if (!sentenceReferencesOwner(sentence)) continue;
+    if (sentenceHasRejectedTraitContext(sentence)) continue;
     if (!/\b(?:you (?:are|become|remain) immune to|you\b[^.]{0,120}\bimmunity to|you (?:can(?:no|')?t|can't|cannot) be)\b/.test(normalized)) continue;
 
     const matchedConditions = conditionIds.filter((condition) => new RegExp(`\\b${condition}\\b`).test(normalized));
@@ -1487,9 +1561,7 @@ function inferConditionImmunityCandidates(text = '') {
 
     candidates.push(buildInferenceCandidate({
       ruleId: 'condition-immunity',
-      changes: [
-        buildEffectChange('system.traits.ci.value', matchedConditions.map((condition) => CONDITION_ID_MAP[condition]).join(';'))
-      ],
+      changes: matchedConditions.map((condition) => buildEffectChange('system.traits.ci.value', CONDITION_ID_MAP[condition])),
       sentence
     }));
   }
@@ -1505,26 +1577,39 @@ function inferSenseCandidates(text = '') {
     if (!sentenceReferencesOwner(sentence)) continue;
     for (const [label, id] of Object.entries(SENSE_ID_MAP)) {
       if (!new RegExp(`\\b${label}\\b`).test(normalized)) continue;
+      if (!sentenceHasOwnerSenseGrant(sentence, label)) continue;
 
       const increaseMatch = normalized.match(new RegExp(`\\b${label}\\b[^.]*?\\bincreases? by\\s+(\\d+)\\s*(?:feet|ft)`));
       if (increaseMatch) {
         candidates.push(buildInferenceCandidate({
           ruleId: `sense-${id}-increase`,
           changes: [
-            buildEffectChange(`system.attributes.senses.${id}`, String(safeNumber(increaseMatch[1], 0)))
+            buildEffectChange(`system.attributes.senses.ranges.${id}`, String(safeNumber(increaseMatch[1], 0)))
           ],
           sentence
         }));
         continue;
       }
 
-      const distanceMatch = normalized.match(new RegExp(`\\b${label}\\b[^.]*?\\b(?:out to|to a range of|range of|radius of|within|to)\\s+(\\d+)\\s*(?:feet|ft)`));
+      const increaseToMatch = normalized.match(new RegExp(`\\b${label}\\b[^.]*?\\brange increases? to\\s+(\\d+)\\s*(?:feet|ft)`));
+      if (increaseToMatch) {
+        candidates.push(buildInferenceCandidate({
+          ruleId: `sense-${id}`,
+          changes: [
+            buildEffectChange(`system.attributes.senses.ranges.${id}`, String(safeNumber(increaseToMatch[1], 0)), ACTIVE_EFFECT_MODE.UPGRADE)
+          ],
+          sentence
+        }));
+        continue;
+      }
+
+      const distanceMatch = normalized.match(new RegExp(`\\b${label}\\b[^.]*?\\b(?:out to|to a range of|range of)\\s+(\\d+)\\s*(?:feet|ft)`));
       if (!distanceMatch) continue;
 
       candidates.push(buildInferenceCandidate({
         ruleId: `sense-${id}`,
         changes: [
-          buildEffectChange(`system.attributes.senses.${id}`, String(safeNumber(distanceMatch[1], 0)), ACTIVE_EFFECT_MODE.UPGRADE)
+          buildEffectChange(`system.attributes.senses.ranges.${id}`, String(safeNumber(distanceMatch[1], 0)), ACTIVE_EFFECT_MODE.UPGRADE)
         ],
         sentence
       }));
@@ -1662,7 +1747,11 @@ function groupInferenceCandidates(candidates = []) {
 }
 
 function effectChangeSignature(change = {}) {
-  return `${change.key}|${change.mode}|${change.value}`;
+  let value = String(change.value || '');
+  if (/^[+-]?\d+(?:\.\d+)?$/.test(value)) {
+    value = String(Number(value));
+  }
+  return `${change.key}|${change.mode}|${value}`;
 }
 
 function removeExistingEffectChanges(candidates = [], existingEffects = []) {
@@ -1688,7 +1777,8 @@ function buildFeaturePassiveEffects({
   documentId,
   documentName,
   img,
-  existingEffects = []
+  existingEffects = [],
+  forceDisabled = false
 }) {
   const candidates = removeExistingEffectChanges([
     ...inferUnarmoredDefenseCandidates({ ownerIdentifier, ownerName, featureName, text }),
@@ -1697,7 +1787,11 @@ function buildFeaturePassiveEffects({
     ...inferSenseCandidates(text),
     ...inferMovementCandidates(text),
     ...inferFlatBonusCandidates(text)
-  ], existingEffects);
+  ], existingEffects).map((candidate) => ({
+    ...candidate,
+    disabled: candidate.disabled || forceDisabled,
+    condition: candidate.condition || (forceDisabled ? 'Feature has activation or limited uses.' : '')
+  }));
 
   return groupInferenceCandidates(candidates).map((group) => {
     const rules = Array.from(new Set(group.rules));
@@ -2486,6 +2580,14 @@ function convertSpell(spell) {
 
 function convertFeatureLikeSpell(spell) {
   const normalized = normalizeSpell(spell);
+  const featureSource = withSourceFallback(normalized.source, {
+    custom: '',
+    book: 'Unknown Source',
+    page: '',
+    license: '',
+    rules: '',
+    sourceCategory: normalized.source.sourceCategory || SOURCE_CATEGORY.UNKNOWN
+  });
   const id = deterministicId(spellFeatureIdSeed(normalized));
   const identifier = trimSlugToken(normalized.name) || 'feature';
   const activation = detectFeatureActivation(normalized.descriptionText);
@@ -2546,7 +2648,7 @@ function convertFeatureLikeSpell(spell) {
         value: textToHtml(normalized.descriptionText),
         chat: ''
       },
-      source: normalized.source,
+      source: featureSource,
       uses: {
         max: '',
         recovery: [],
@@ -2568,6 +2670,7 @@ function convertFeatureLikeSpell(spell) {
     effects: effectData.effects,
     flags: buildSourceFlags({
       ...normalized,
+      source: featureSource,
       raw: spell
     }, 'feature', effectData.unmapped.length ? { unmappedModifiers: effectData.unmapped } : {})
   });
@@ -4019,11 +4122,12 @@ function detectFeatureActivation(text = '') {
   return { type: '', value: null };
 }
 
-function createFeatureDocument({ ownerName, ownerIdentifier, ownerType, feature, level, subclassName = '' }) {
+function createFeatureDocument({ ownerName, ownerIdentifier, ownerType, feature, level, subclassName = '', fallbackSource = {} }) {
   const sourceSplit = splitSourceText(feature.text, {
     name: feature.name,
     identifier: trimSlugToken(`${ownerIdentifier}-${feature.name}`)
   });
+  const featureSource = withSourceFallback(sourceSplit.source, fallbackSource);
   const identifierBase = trimSlugToken(`${ownerIdentifier}-${feature.name}`) || trimSlugToken(feature.name) || 'feature';
   const idSeed = [
     'feature',
@@ -4031,8 +4135,8 @@ function createFeatureDocument({ ownerName, ownerIdentifier, ownerType, feature,
     subclassName,
     feature.name,
     level,
-    sourceSplit.source.book,
-    sourceSplit.source.page,
+    featureSource.book,
+    featureSource.page,
     sourceSplit.content,
     JSON.stringify(feature.rolls),
     JSON.stringify(feature.counter || null)
@@ -4056,7 +4160,8 @@ function createFeatureDocument({ ownerName, ownerIdentifier, ownerType, feature,
     documentId: id,
     documentName: feature.name,
     img: ITEM_ICON_MAP.feat,
-    existingEffects: effectData.effects
+    existingEffects: effectData.effects,
+    forceDisabled: Boolean(activation.type || counter)
   });
   const uses = counter ? {
     max: String(counter.value || ''),
@@ -4130,7 +4235,7 @@ function createFeatureDocument({ ownerName, ownerIdentifier, ownerType, feature,
         value: textToHtml(sourceSplit.content),
         chat: ''
       },
-      source: sourceSplit.source,
+      source: featureSource,
       uses,
       type: {
         value: 'class',
@@ -4150,7 +4255,7 @@ function createFeatureDocument({ ownerName, ownerIdentifier, ownerType, feature,
       name: feature.name,
       detail: '',
       classes: '',
-      source: sourceSplit.source,
+      source: featureSource,
       raw: {
         ownerName,
         ownerType,
@@ -4502,6 +4607,33 @@ function detectSubclassTitle(subclasses) {
   return resolveSubclassTitle(subclasses);
 }
 
+function ensureUniqueFeatureIdentifiers(features = []) {
+  const groups = new Map();
+  for (const feature of features) {
+    const identifier = feature.system?.identifier || '';
+    if (!identifier) continue;
+    const group = groups.get(identifier) || [];
+    group.push(feature);
+    groups.set(identifier, group);
+  }
+
+  for (const group of groups.values()) {
+    if (group.length < 2) continue;
+
+    const contentKeys = new Set(group.map((feature) => JSON.stringify({
+      name: feature.name,
+      requirements: feature.system?.requirements || '',
+      source: feature.system?.source || {},
+      description: feature.system?.description?.value || ''
+    })));
+    if (contentKeys.size < 2) continue;
+
+    group.forEach((feature) => {
+      feature.system.identifier = `${feature.system.identifier}-${feature._id.slice(0, 6).toLowerCase()}`;
+    });
+  }
+}
+
 function convertClass(classEntry) {
   const classIdentifier = trimSlugToken(classEntry.name) || 'class';
   const classSource = resolveClassSourceText(classEntry, classIdentifier);
@@ -4590,7 +4722,8 @@ function convertClass(classEntry) {
         ownerIdentifier: classIdentifier,
         ownerType: 'class',
         feature,
-        level: autolevel.level
+        level: autolevel.level,
+        fallbackSource: classSourceSplit.source
       });
       features.push(featureDoc.document);
       levelFeatures.push(featureDoc.uuid);
@@ -4636,8 +4769,11 @@ function convertClass(classEntry) {
       source: classSourceSplit.source,
       identifier: classIdentifier,
       levels: 1,
-      hitDice: `d${safeNumber(classEntry.hd, 6)}`,
-      hitDiceUsed: 0,
+      hd: {
+        denomination: `d${safeNumber(classEntry.hd, 6)}`,
+        spent: 0,
+        additional: ''
+      },
       advancement: classAdvancements,
       spellcasting: {
         progression: spellcastingProgression,
@@ -4667,6 +4803,7 @@ function convertClass(classEntry) {
       name: subclass.name,
       identifier: subclassIdentifier
     });
+    const subclassSource = withSourceFallback(subclassSourceSplit.source, classSourceSplit.source);
     const advancements = [];
 
     const grouped = new Map();
@@ -4677,7 +4814,8 @@ function convertClass(classEntry) {
         ownerType: 'subclass',
         feature,
         level: feature.level,
-        subclassName: subclass.name
+        subclassName: subclass.name,
+        fallbackSource: subclassSource
       });
       features.push(featureDoc.document);
       const current = grouped.get(feature.level) || [];
@@ -4699,7 +4837,7 @@ function convertClass(classEntry) {
           value: textToHtml(subclassSourceSplit.content),
           chat: ''
         },
-        source: subclassSourceSplit.source,
+        source: subclassSource,
         identifier: subclassIdentifier,
         classIdentifier,
         advancement: advancements,
@@ -4713,11 +4851,13 @@ function convertClass(classEntry) {
         name: subclass.name,
         detail: '',
         classes: classEntry.name,
-        source: subclassSourceSplit.source,
+        source: subclassSource,
         raw: subclass
       }, 'subclass')
     }));
   }
+
+  ensureUniqueFeatureIdentifiers(features);
 
   return {
     classDocument,
@@ -4742,12 +4882,15 @@ function generateCompendiumDocuments(parsed) {
     features.push(...result.featureDocuments);
   });
 
+  const dedupedFeatures = dedupeDocuments(features);
+  ensureUniqueFeatureIdentifiers(dedupedFeatures);
+
   return {
     spells: dedupeDocuments(spells),
     items: dedupeDocuments(items),
     classes: dedupeDocuments(classes),
     subclasses: dedupeDocuments(subclasses),
-    features: dedupeDocuments(features)
+    features: dedupedFeatures
   };
 }
 

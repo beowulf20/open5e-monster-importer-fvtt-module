@@ -18,7 +18,7 @@ const {
 
 function parseArgs(argv) {
   const args = {
-    xmlPath: process.env.FC5_XML_PATH || '',
+    xmlPath: process.env.FC5_XML_PATH || path.resolve(process.cwd(), 'tmp', 'Complete_Compendium_5e.xml'),
     sourceRoot: path.resolve(process.cwd(), 'tmp', 'fc5-pack-sources'),
     packRoot: path.resolve(process.cwd(), 'monster-creator', 'packs')
   };
@@ -43,7 +43,7 @@ function parseArgs(argv) {
   }
 
   if (!args.xmlPath) {
-    throw new Error('XML path is required. Pass --xml /path/to/Core_Supplements_5e.xml or set FC5_XML_PATH.');
+    throw new Error('XML path is required. Pass --xml /path/to/Complete_Compendium_5e.xml or set FC5_XML_PATH.');
   }
 
   args.xmlPath = path.resolve(args.xmlPath);

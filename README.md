@@ -94,13 +94,13 @@ Install dependencies and generate packs:
 
 ```bash
 npm install
-npm run generate:fc5-compendia -- --xml /path/to/Complete_Compendium_5e.xml
+npm run generate:fc5-compendia
 ```
 
-You can also set `FC5_XML_PATH` in `.env` and run:
+By default, the generator reads `tmp/Complete_Compendium_5e.xml`. You can override that with `--xml` or by setting `FC5_XML_PATH` in `.env`:
 
 ```bash
-npm run generate:fc5-compendia
+npm run generate:fc5-compendia -- --xml /path/to/Complete_Compendium_5e.xml
 ```
 
 That command writes JSON source files under `tmp/fc5-pack-sources/` and compiles module pack data into:
