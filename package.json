@@ -8,7 +8,10 @@
     "dev:vite": "vite",
     "dev:open": "vite --open",
     "dev:host": "vite --host",
+    "icons:dev": "vite --open /fc5-icon-tool.html",
+    "experiment:codex-icon": "node ./tools/fc5-compendium/experiment-codex-icon-image.js",
     "build": "node ./tools/copy-module.js",
+    "generate:open5e-data": "node ./tools/open5e/generate-open5e-data.js",
     "generate:fc5-compendia": "node ./tools/fc5-compendium/generate-fc5-compendiums.js",
     "serve": "vite preview --host --port 4174",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
@@ -16,11 +19,16 @@
     "release:dry-run": "./node_modules/.bin/semantic-release --dry-run --no-ci"
   },
   "devDependencies": {
+    "@chakra-ui/react": "^3.35.0",
+    "@emotion/react": "^11.14.0",
     "@foundryvtt/foundryvtt-cli": "^3.0.0",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/github": "^10.3.5",
+    "@vitejs/plugin-react": "^4.7.0",
     "dotenv": "^17.4.2",
     "jest": "^29.7.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
     "semantic-release": "^24.2.9",
     "vite": "^5.4.0"
   },

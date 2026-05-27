@@ -1,4 +1,5 @@
 const { defineConfig } = require('vite');
+const { fc5IconToolPlugin } = require('./tools/fc5-compendium/icon-tool-server.js');
 
 const open5eApiTarget = process.env.OPEN5E_API_URL
   || process.env.VITE_OPEN5E_API_URL
@@ -12,18 +13,26 @@ const open5eProxy = {
   }
 };
 
-module.exports = defineConfig({
-  server: {
-    host: true,
-    port: 4173,
-    open: '/monster-creator-test.html',
-    proxy: open5eProxy
-  },
-  preview: {
-    port: 4174,
-    proxy: open5eProxy
-  },
-  test: {
-    watch: false
-  }
+module.exports = defineConfig(async () => {
+  const react = (await import('@vitejs/plugin-react')).default;
+
+  return {
+    plugins: [
+      react(),
+      fc5IconToolPlugin()
+    ],
+    server: {
+      host: true,
+      port: 4173,
+      open: '/monster-creator-test.html',
+      proxy: open5eProxy
+    },
+    preview: {
+      port: 4174,
+      proxy: open5eProxy
+    },
+    test: {
+      watch: false
+    }
+  };
 });

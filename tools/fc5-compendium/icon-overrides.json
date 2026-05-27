@@ -1,0 +1,1690 @@
+{
+  "fc5classes:class:alchemist-valda:valda-s-spire-of-secrets-p-27-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5classes/alchemist-valda-d8nvgdt771lqtevn-b04c682a63.jpg",
+    "status": "approved",
+    "approved": true,
+    "source": "url:https://i0.wp.com/magehandpress.com/wp-content/uploads/2025/09/Alchemist-Icon.jpg?fit=1500%2C1500&ssl=1",
+    "mime": "image/jpeg",
+    "updatedAt": "2026-05-24T18:06:09.733Z"
+  },
+  "fc5classes:class:apothecary-drakkenheim:sebastian-crowe-s-guide-to-drakkenheim-p-132-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5classes/apothecary-drakkenheim-nakjuzzt2zcpdied-a2b80180f9.png",
+    "status": "approved",
+    "approved": true,
+    "source": "url:https://www.thebagofloot.com/wp-content/uploads/2022/08/Screen-Shot-2022-08-17-at-12.09.06-PM.png",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:10:37.120Z"
+  },
+  "fc5classes:class:artificer:eberron-rising-from-the-last-war-p-54-tasha-s-cauldron-of-everything:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5classes/artificer-lv5o3who41qmdmhc-e12be8f858.jpg",
+    "status": "approved",
+    "approved": true,
+    "source": "url:https://static0.cbrimages.com/wordpress/wp-content/uploads/2021/11/Wizard-Artificer-Build.jpg?w=1200&h=675&fit=crop",
+    "mime": "image/jpeg",
+    "updatedAt": "2026-05-24T18:14:54.559Z"
+  },
+  "fc5classes:class:artificer-ua-2024:ua2024-artificer:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5classes/artificer-ua-2024-6vy3wkyr0y5tmcds-0493603f49.png",
+    "status": "approved",
+    "approved": true,
+    "source": "url:https://dungeonsanddragonsfan.com/wp-content/uploads/2024/12/new-dnd-artificer-class-3.png",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:15:21.294Z"
+  },
+  "fc5classes:class:artificer-2024:eberron-forge-of-the-artificer:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5classes/artificer-2024-elvwgwszhszhk5ql-0493603f49.png",
+    "status": "approved",
+    "approved": true,
+    "source": "url:https://dungeonsanddragonsfan.com/wp-content/uploads/2024/12/new-dnd-artificer-class-3.png",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:15:26.820Z"
+  },
+  "fc5classes:class:artificer-revised-ua-2024:ua2024-eberron-updates:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5classes/artificer-revised-ua-2024-iwahibilqmllaudi-0493603f49.png",
+    "status": "approved",
+    "approved": true,
+    "source": "url:https://dungeonsanddragonsfan.com/wp-content/uploads/2024/12/new-dnd-artificer-class-3.png",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:15:36.806Z"
+  },
+  "fc5items:loot:a-necklace-string-of-small-pink-pearls:dungeon-master-s-guide-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/a-necklace-string-of-small-pink-pearls-egpza0zossqgavqz-2e0a14439c.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:26:04.695Z"
+  },
+  "fc5items:equipment:a-new-look:obojima-tales-from-the-tall-grass-p-245-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/a-new-look-ell9nwbbeh6cs61f-c00f5c4ce0.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:43:25.939Z"
+  },
+  "fc5items:equipment:abacus:player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/abacus-akdplvpb6nyotc4h-6ab4c6daa4.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:45:05.190Z"
+  },
+  "fc5items:equipment:abjurer-s-bangle-rare:the-griffon-s-saddlebag-book-two-p-32-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/abjurer-s-bangle-rare-tenkthe3dk4rf9ok-8b2e301b14.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:47:01.248Z"
+  },
+  "fc5items:equipment:abjurer-s-bangle-uncommon:the-griffon-s-saddlebag-book-two-p-32-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/abjurer-s-bangle-uncommon-tptbe14rjmeaqelq-8b2e301b14.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:48:28.452Z"
+  },
+  "fc5items:equipment:abjurer-s-bangle-very-rare:the-griffon-s-saddlebag-book-two-p-32-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/abjurer-s-bangle-very-rare-efloh4j777tnofe8-8b2e301b14.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:48:38.258Z"
+  },
+  "fc5items:equipment:abjurer-s-gilder:the-griffon-s-saddlebag-book-one-p-27-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/abjurer-s-gilder-gtgcdu3ke62msxow-7442c3ed26.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:49:36.465Z"
+  },
+  "fc5items:equipment:abracadabrus:icewind-dale-rime-of-the-frostmaiden:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/abracadabrus-nyhzdo4a2vavqutr-c0701d4405.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:51:15.784Z"
+  },
+  "fc5items:equipment:absorbing-tattoo:tasha-s-cauldron-of-everything:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/absorbing-tattoo-hohnrptbs08zp8sm-5b4ddf5171.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:54:01.462Z"
+  },
+  "fc5items:weapon:abyss-warden-s-axeblade:steinhardt-s-guide-to-the-eldritch-hunt-p-219-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/abyss-warden-s-axeblade-jq9jvuatrqqnahfm-b98a63b7b8.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:55:13.575Z"
+  },
+  "fc5items:equipment:accordion-of-wonderous-delights-hb:auroboros-coils-of-the-serpent-p-339-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/accordion-of-wonderous-delights-hb-rszatizfv2kh8jyy-d97b055f47.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:56:28.621Z"
+  },
+  "fc5items:equipment:accounting-and-valuation-of-all-things:chains-of-asmodeus:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/accounting-and-valuation-of-all-things-3zwfnehazxxbzy8p-8292a078ed.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:57:29.329Z"
+  },
+  "fc5items:weapon:ace-of-spades-heavyarms:heavyarms-the-gunslinger-v1-1-p-12-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/ace-of-spades-heavyarms-n3x4jeljyxyyukfn-e49133b6b3.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T18:59:02.655Z"
+  },
+  "fc5items:weapon:acheron-double-bladed-scimitar:explorer-s-guide-to-wildemount-p-265-third-party-wayfinder-s-guide-to-eberron-p-74-third-party-eberron-rising-from-the-last-war:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/acheron-double-bladed-scimitar-sd7dtjtnhxsubqim-e7f8d7e13c.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:00:10.604Z"
+  },
+  "fc5items:weapon:acheron-greatsword:explorer-s-guide-to-wildemount-p-265-third-party-wayfinder-s-guide-to-eberron-p-74-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/acheron-greatsword-w4y0rfgfgpu5jkbp-4009a373db.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:01:35.583Z"
+  },
+  "fc5items:weapon:acheron-longsword:explorer-s-guide-to-wildemount-p-265-third-party-wayfinder-s-guide-to-eberron-p-74-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/acheron-longsword-afvop5zofkmgkyf6-7c20076209.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:17:19.607Z"
+  },
+  "fc5items:weapon:acheron-rapier:explorer-s-guide-to-wildemount-p-265-third-party-wayfinder-s-guide-to-eberron-p-74-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/acheron-rapier-yvzmft9kyuwmimhy-5c5c192054.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:31:10.657Z"
+  },
+  "fc5classes:class:auxiliary-level-animal-master-valda:unknown:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5classes/auxiliary-level-animal-master-valda-7m6xdhtcy1tmsgni-eea15a2cd7.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:31:48.564Z"
+  },
+  "fc5items:weapon:acheron-scimitar:explorer-s-guide-to-wildemount-p-265-third-party-wayfinder-s-guide-to-eberron-p-74-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/acheron-scimitar-b7cysmyt4wqg3ddu-8f0102f567.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:36:23.170Z"
+  },
+  "fc5items:weapon:acheron-shortsword:explorer-s-guide-to-wildemount-p-265-third-party-wayfinder-s-guide-to-eberron-p-74-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/acheron-shortsword-vgiaia9m895zm09a-0b1faede58.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:37:44.401Z"
+  },
+  "fc5items:equipment:belt-of-fire-giant-strength:dungeon-master-s-guide-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/belt-of-fire-giant-strength-irx2pvdb7mww5q4d-28421cdb97.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:53:05.677Z"
+  },
+  "fc5items:equipment:adamantine-bar:waterdeep-dragon-heist:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/adamantine-bar-z8wkg3zgvbiclglr-492cb13fca.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:56:24.075Z"
+  },
+  "fc5items:weapon:adamantine-battleaxe:xanathar-s-guide-to-everything-p-78-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/adamantine-battleaxe-ewdci5blgudq7rcp-17a9d65021.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:56:32.159Z"
+  },
+  "fc5items:weapon:adamantine-battleaxe-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/adamantine-battleaxe-2024-rinijdgawznhhrlu-960c6067d6.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:57:13.386Z"
+  },
+  "fc5items:weapon:adamantine-blowgun:xanathar-s-guide-to-everything-p-78-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/adamantine-blowgun-no9n0g5q0ay0bi9y-45756388b0.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:57:46.889Z"
+  },
+  "fc5items:loot:adamantine-blowgun-needle:xanathar-s-guide-to-everything-p-78-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/adamantine-blowgun-needle-q44vc7imxxw7zq3x-049806a091.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:57:52.174Z"
+  },
+  "fc5items:loot:adamantine-blowgun-needles-50:xanathar-s-guide-to-everything-p-78-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/adamantine-blowgun-needles-50-fnmwa1xl8ppjegay-edce23eb9b.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:57:58.350Z"
+  },
+  "fc5items:weapon:adamantine-blunderbuss-matthew-mercer:xanathar-s-guide-to-everything-p-78-matthew-mercer-gunslinger-1-3:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/adamantine-blunderbuss-matthew-mercer-n7n4sz5uwbe8t7k1-5a0b5228ba.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:58:10.737Z"
+  },
+  "fc5items:loot:adamantine-bolt-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/adamantine-bolt-2024-m3kiira7qxzigljx-bee384bfb5.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T19:59:07.153Z"
+  },
+  "fc5items:loot:acidlight-arrow:the-griffon-s-saddlebag-book-one-p-27-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/acidlight-arrow-adhpefzzn2outpgc-565bdb28d2.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:32:33.317Z"
+  },
+  "fc5items:loot:acidlight-bolt:the-griffon-s-saddlebag-book-one-p-27-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/acidlight-bolt-rqxxr6ea8nzxjtmv-09808425d7.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:32:37.197Z"
+  },
+  "fc5items:weapon:aciurgist-s-blade:the-griffon-s-saddlebag-book-two-p-32-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/aciurgist-s-blade-gzqbp1lmqro1ffse-edd0b12cda.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:32:44.025Z"
+  },
+  "fc5items:equipment:acid-vial:player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/acid-vial-mfw3v90c2krtdc4b-edd0b12cda.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:36:56.930Z"
+  },
+  "fc5items:equipment:acid-2024:player-s-handbook-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/acid-2024-ubkp5bv0ziid8anu-9daacea29a.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:37:01.142Z"
+  },
+  "fc5items:equipment:acid-absorbing-tattoo:tasha-s-cauldron-of-everything:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/acid-absorbing-tattoo-ttojee5fliko9ubk-9b74121ed7.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:37:17.077Z"
+  },
+  "fc5items:weapon:acid-bomb:valda-s-spire-of-secrets-p-31-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/acid-bomb-ev6qmmlv6r7htmpb-2ff6a6d5c7.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:37:29.294Z"
+  },
+  "fc5items:equipment:acid-bottle:tome-of-heroes-p-199-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/acid-bottle-26cbamd1deyz1a7h-d6048f20a6.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:37:35.762Z"
+  },
+  "fc5items:equipment:alchemist-s-supplies:player-s-handbook-2014-p-154-xanathar-s-guide-to-everything:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/alchemist-s-supplies-z8hp0ab2ayf90sbz-591299e30d.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:37:44.298Z"
+  },
+  "fc5items:equipment:alchemist-s-supplies-2024:player-s-handbook-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/alchemist-s-supplies-2024-p92grzkbsxbnsvga-16d094344a.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:37:51.339Z"
+  },
+  "fc5items:equipment:alchemy-jug:dungeon-master-s-guide-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/alchemy-jug-0bgizjonymdhxvwq-c50c81a8eb.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:38:01.383Z"
+  },
+  "fc5items:equipment:alchemy-jug-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/alchemy-jug-2024-n5lfsgb47vfpdzia-695fcbe1bb.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:38:12.119Z"
+  },
+  "fc5items:equipment:anton-s-elementalist-s-bracers:tasha-s-scrapped-book-p-50-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/anton-s-elementalist-s-bracers-nyelfilbzvgt8yir-9f25096a6f.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:38:27.131Z"
+  },
+  "fc5items:consumable:aqua-fortis:valda-s-spire-of-secrets-p-303-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/aqua-fortis-ftc0fluipwxtys4c-65c78e6d7c.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:38:36.332Z"
+  },
+  "fc5items:equipment:arcane-cannon:explorer-s-guide-to-wildemount-p-265-third-party:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/arcane-cannon-stiehdz96d12eehg-a047ba4824.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:38:43.443Z"
+  },
+  "fc5items:equipment:armor-of-resistance-generic-variant:dungeon-master-s-guide-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/armor-of-resistance-generic-variant-v8kwz7hr9em1t2rv-bdc10d6db8.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:38:51.720Z"
+  },
+  "fc5items:equipment:armor-of-the-valiant-soul:tal-dorei-campaign-setting-reborn-p-202-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/armor-of-the-valiant-soul-ygjymcxlnjbnbffr-b20634469d.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:39:04.253Z"
+  },
+  "fc5items:equipment:bandolier-of-the-elements:the-griffon-s-saddlebag-book-two-p-42-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/bandolier-of-the-elements-xqssaz039w8qt8r1-b3e98f06c7.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:39:07.851Z"
+  },
+  "fc5items:weapon:battlebrew-maul:the-griffon-s-saddlebag-book-one-p-33-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/battlebrew-maul-uiiwspxqoxvwqldu-0c924b0659.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:39:11.506Z"
+  },
+  "fc5items:equipment:black-dragon-mask:hoard-of-the-dragon-queen-p-94-tyranny-of-dragons:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/black-dragon-mask-vjshdvd2xpf9vwga-58e61af50b.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:39:15.137Z"
+  },
+  "fc5items:equipment:black-dragon-scale-mail-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/black-dragon-scale-mail-2024-v04mpqribbyn9iyt-f4899c0c9e.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-24T20:39:51.591Z"
+  },
+  "fc5items:weapon:adamantine-hoopak:xanathar-s-guide-to-everything-p-78-dragonlance-shadow-of-the-dragon-queen:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/adamantine-hoopak-c5dlglrfhml1jgll-d218ee94a8.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T01:15:31.214Z"
+  },
+  "fc5items:equipment:adjustable-stilts:waterdeep-dragon-heist:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/adjustable-stilts-t9alpd2rlpq21shl-56e7fbb947.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T01:15:34.617Z"
+  },
+  "fc5items:equipment:amethyst-lodestone:fizban-s-treasury-of-dragons:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/amethyst-lodestone-tbyo6lbvaysmlbe5-010e2fd8cc.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T01:15:37.888Z"
+  },
+  "fc5items:weapon:ao-hai-s-fang:the-griffon-s-saddlebag-book-two-p-36-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/ao-hai-s-fang-vzfkvas8ktn8sgck-bc48fcd810.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T01:15:40.933Z"
+  },
+  "fc5classes:class:auxiliary-level-courier-valda:unknown:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5classes/auxiliary-level-courier-valda-custhu6e5rc3c24h-a63ca9af9b.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:07:37.895Z"
+  },
+  "fc5classes:class:auxiliary-level-buffoon-valda:unknown:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5classes/auxiliary-level-buffoon-valda-oh8ptljr8bfhcr5u-3e6991de5c.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:07:39.218Z"
+  },
+  "fc5classes:class:auxiliary-level-clandestine-caster-valda:unknown:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5classes/auxiliary-level-clandestine-caster-valda-9zpitpmtyagfjhxa-d8122ed72f.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:07:42.093Z"
+  },
+  "fc5items:equipment:black-dragon-scale-mail:dungeon-master-s-guide-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/black-dragon-scale-mail-wo6hnv5iw9jf4ggz-9340ffba6f.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:09:31.076Z"
+  },
+  "fc5items:equipment:breastplank-breastplate-rare:heliana-s-guide-to-monster-hunting-part-one-p-449-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/breastplank-breastplate-rare-3fy7fwv57sv2lkxp-7a60deb98e.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:09:48.361Z"
+  },
+  "fc5items:equipment:breastplank-breastplate-very-rare:heliana-s-guide-to-monster-hunting-part-one-p-449-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/breastplank-breastplate-very-rare-myw66zjjo6xvsfc6-b5ac9b3acb.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:10:14.097Z"
+  },
+  "fc5items:equipment:breastplank-plate-armor-rare:heliana-s-guide-to-monster-hunting-part-one-p-449-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/breastplank-plate-armor-rare-xnnz2tury77xahlw-b42ff024dc.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:10:46.804Z"
+  },
+  "fc5items:equipment:breastplank-plate-armor-uncommon:heliana-s-guide-to-monster-hunting-part-one-p-449-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/breastplank-plate-armor-uncommon-dm76oxrjbgbt3i6c-b9674e6293.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:10:59.680Z"
+  },
+  "fc5items:equipment:breastplank-plate-armor-very-rare:heliana-s-guide-to-monster-hunting-part-one-p-449-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/breastplank-plate-armor-very-rare-x3xnctjtpprql1j7-69f621c235.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:11:35.758Z"
+  },
+  "fc5items:equipment:breastplate-barding-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/breastplate-barding-of-acid-resistance-hsnchstdyboki0fp-7f1b5e562e.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:12:07.326Z"
+  },
+  "fc5items:equipment:breastplate-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/breastplate-of-acid-resistance-eyfckgn89qq7as6v-2c2db0b1a3.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:12:14.048Z"
+  },
+  "fc5items:equipment:breastplate-of-acid-resistance-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/breastplate-of-acid-resistance-2024-rmzhnqtvfvfumkrz-081644f5a6.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:12:27.939Z"
+  },
+  "fc5items:equipment:broodslinger-uncommon:heliana-s-guide-to-monster-hunting-part-one-p-468-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/broodslinger-uncommon-pyzq5opxrhxhljaf-cbf7b5ec49.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:13:25.254Z"
+  },
+  "fc5items:equipment:broodslinger-rare:heliana-s-guide-to-monster-hunting-part-one-p-468-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/broodslinger-rare-521qw6ft2glq1nc4-80372bdf7b.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:13:29.360Z"
+  },
+  "fc5items:equipment:broodslinger-very-rare:heliana-s-guide-to-monster-hunting-part-one-p-468-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/broodslinger-very-rare-fpz6ackkuev0k3xa-41dba588f7.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:13:51.524Z"
+  },
+  "fc5items:equipment:caltrooze:heliana-s-guide-to-monster-hunting-part-one-p-438-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/caltrooze-qtquettnjxcyggjs-9d37c7c90c.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:14:09.267Z"
+  },
+  "fc5items:equipment:captain-s-pride:the-griffon-s-saddlebag-book-two-p-57-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/captain-s-pride-cfpsurp57l3bxukv-8cc6e4c1eb.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:14:18.710Z"
+  },
+  "fc5items:equipment:chain-barding-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/chain-barding-of-acid-resistance-zcax95yyvpvugqxv-56b10df656.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:15:12.710Z"
+  },
+  "fc5items:equipment:chain-mail-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/chain-mail-of-acid-resistance-bejyvinxhaeo00nx-180772a125.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:15:29.498Z"
+  },
+  "fc5items:equipment:chain-mail-of-acid-resistance-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/chain-mail-of-acid-resistance-2024-fchzrkuxwz4bdn9v-68c10201c6.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:15:37.662Z"
+  },
+  "fc5items:equipment:chain-shirt-barding-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/chain-shirt-barding-of-acid-resistance-xx77bw1seypednbq-d79ab60cf8.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:16:33.420Z"
+  },
+  "fc5items:equipment:chain-shirt-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/chain-shirt-of-acid-resistance-zpfwxl6alud9r5ri-954c4796a6.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:16:44.747Z"
+  },
+  "fc5items:equipment:chain-shirt-of-acid-resistance-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/chain-shirt-of-acid-resistance-2024-ixlgszzw2f9cpv5b-dee09ed3e3.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:17:18.520Z"
+  },
+  "fc5items:equipment:chromatic-rose:the-wild-beyond-the-witchlight:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/chromatic-rose-m8u9jz3kwuvpbczx-32a67d94e5.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:17:28.299Z"
+  },
+  "fc5items:equipment:charm-of-swarms:pluto-jackson-s-monsters-of-drakkenheim-p-384-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/charm-of-swarms-rflgdpmkrvhufxcx-52ee266295.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:17:51.215Z"
+  },
+  "fc5items:equipment:cleaning-cube:the-griffon-s-saddlebag-book-two-p-61-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/cleaning-cube-wcwj5bbvsxvphjwy-b3210a3db1.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:18:33.399Z"
+  },
+  "fc5items:equipment:copper-dragon-scale-mail:dungeon-master-s-guide-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/copper-dragon-scale-mail-6aaxqefgbqistwbx-2fa840af28.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:18:47.846Z"
+  },
+  "fc5items:equipment:copper-dragon-scale-mail-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/copper-dragon-scale-mail-2024-7tjkpapdtsc8jgta-a011eec4b9.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:19:12.982Z"
+  },
+  "fc5items:equipment:crest-of-the-sacred-flame:pluto-jackson-s-monsters-of-drakkenheim-p-384-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/crest-of-the-sacred-flame-a9pedbctepbj0x8y-091b03d4f9.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:19:59.977Z"
+  },
+  "fc5items:equipment:cylinder-slughide-dissolvent:tome-of-heroes-p-199-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/cylinder-slughide-dissolvent-6lvwvcunaqu26rgf-98fabf10b5.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:20:13.530Z"
+  },
+  "fc5items:equipment:deathwalker-s-ward:tal-dorei-campaign-setting-reborn-p-204-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/deathwalker-s-ward-clrvbztxxxlytv2c-5707d59c63.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:20:22.405Z"
+  },
+  "fc5items:equipment:deck-of-many-more-things:the-book-of-many-things:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/deck-of-many-more-things-uhrdm7sujwbhauod-5ed22cb73f.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:21:25.328Z"
+  },
+  "fc5items:equipment:deck-of-wonder:the-book-of-many-things:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/deck-of-wonder-701citjrzmpi3z6f-bc62f660ad.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:21:30.607Z"
+  },
+  "fc5items:equipment:dragon-horn-pauldron:the-griffon-s-saddlebag-book-two-p-73-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/dragon-horn-pauldron-z96etgd0fxpejhkl-508f6aa6b6.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:21:34.361Z"
+  },
+  "fc5items:equipment:dragon-touched-focus:fizban-s-treasury-of-dragons:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/dragon-touched-focus-lkfv5thsnxp595qe-e1e296648a.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:22:49.615Z"
+  },
+  "fc5items:loot:dragonbreath-arrow:the-griffon-s-saddlebag-book-two-p-74-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/dragonbreath-arrow-ije8jtqzoqkayrsi-75af660981.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:22:52.550Z"
+  },
+  "fc5items:equipment:dragonband:the-griffon-s-saddlebag-book-two-p-73-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/dragonband-xkduxdzecf7dzkto-f03dcf7b42.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:23:03.689Z"
+  },
+  "fc5items:equipment:electric-charge-ring:pluto-jackson-s-monsters-of-drakkenheim-p-385-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/electric-charge-ring-kdunm9wtr83iegge-05884e41da.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:23:41.733Z"
+  },
+  "fc5items:loot:dragonbreath-bolt:the-griffon-s-saddlebag-book-two-p-74-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/dragonbreath-bolt-c9dqy8jvfiw5idtn-fd3d8e6ad8.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:24:10.650Z"
+  },
+  "fc5items:weapon:dragontooth-dagger:rise-of-tiamat-p-94-tyranny-of-dragons:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/dragontooth-dagger-5094esh3lcb8zjyq-0554d9cf50.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:24:12.988Z"
+  },
+  "fc5items:weapon:elemental-longbow:tasha-s-crucible-of-everything-else-volume-1-p-67-homebrew-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/elemental-longbow-0ky8rayzglz5in1z-f85b472f0f.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:24:53.666Z"
+  },
+  "fc5items:equipment:enzymatic-gastrostaff:the-griffon-s-saddlebag-book-two-p-78-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/enzymatic-gastrostaff-8gz8kdps5ls0zvle-85ca55535d.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:25:03.543Z"
+  },
+  "fc5items:equipment:elemental-shroom-corrosive:gloom-s-shrooms-v1-1-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/elemental-shroom-corrosive-ag2qhqi2sv1x9rm0-cb14acee49.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:25:15.476Z"
+  },
+  "fc5items:weapon:flooze-very-rare:heliana-s-guide-to-monster-hunting-part-one-p-439-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/flooze-very-rare-u4hzbx7rlfp4mizf-6e8f959ace.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:25:58.967Z"
+  },
+  "fc5items:weapon:flail-of-tiamat:fizban-s-treasury-of-dragons:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/flail-of-tiamat-4bgxwic810biwlrh-bcd2b3a9bb.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:26:07.333Z"
+  },
+  "fc5items:weapon:flooze:heliana-s-guide-to-monster-hunting-part-one-p-439-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/flooze-qclqelcoewrwash0-6c2881e834.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:26:19.754Z"
+  },
+  "fc5items:consumable:gelatinous-shot:tasha-s-crucible-of-everything-else-volume-1-p-69-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/gelatinous-shot-wj6tiielmlpmbvlb-77e7214521.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:26:38.923Z"
+  },
+  "fc5items:weapon:gelatinous-whip:the-griffon-s-saddlebag-book-two-p-87-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/gelatinous-whip-1kazd1q2fk7wwjnn-2d224a4fb3.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:27:01.223Z"
+  },
+  "fc5items:weapon:graz-tchar-the-decadent-end:tal-dorei-campaign-setting-reborn-p-195-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/graz-tchar-the-decadent-end-rfy8ap9atrtc1re7-d6bfe5588c.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:27:36.696Z"
+  },
+  "fc5items:equipment:hag-stitched-troll-hide-armor:pluto-jackson-s-monsters-of-drakkenheim-p-387-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/hag-stitched-troll-hide-armor-knnmcksombtop3hy-5529fbc093.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:27:41.330Z"
+  },
+  "fc5items:equipment:griffon-coinpouch:the-griffon-s-saddlebag-book-two-p-95-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/griffon-coinpouch-3rckg6id3xumcaw2-b9cc429e44.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:28:00.567Z"
+  },
+  "fc5items:equipment:half-plate-armor-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/half-plate-armor-of-acid-resistance-zmivq4c8pstblghg-9e80e26638.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:28:57.902Z"
+  },
+  "fc5items:equipment:hag-stitched-troll-leather-armor:pluto-jackson-s-monsters-of-drakkenheim-p-387-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/hag-stitched-troll-leather-armor-lbwfq7jjgtxfbi1i-c014e8339f.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:29:06.615Z"
+  },
+  "fc5items:equipment:half-plate-armor-of-acid-resistance-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/half-plate-armor-of-acid-resistance-2024-wrespmsmlmjnsifo-a6bd5b74d2.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:29:21.352Z"
+  },
+  "fc5items:weapon:hand-trebuchet:tome-of-heroes-p-192-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/hand-trebuchet-gmyvmedlmk5hgik0-a6ae19d442.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:29:57.597Z"
+  },
+  "fc5items:equipment:hat-of-many-spells-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/hat-of-many-spells-2024-jgtrhx99wm5kxm9m-e60390ef92.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:30:07.501Z"
+  },
+  "fc5items:equipment:half-plate-barding-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/half-plate-barding-of-acid-resistance-fwoxabyscmk7cia5-827aa00ae2.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:30:32.821Z"
+  },
+  "fc5items:weapon:headbanger-lute-club-uncommon:heliana-s-guide-to-monster-hunting-part-one-p-450-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/headbanger-lute-club-uncommon-xs8bg5wboon7gakf-8e9be987fa.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:31:31.079Z"
+  },
+  "fc5items:weapon:headbanger-lute-club-very-rare:heliana-s-guide-to-monster-hunting-part-one-p-450-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/headbanger-lute-club-very-rare-jkt6wadae3kdqgyw-45baf97ff9.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:31:33.927Z"
+  },
+  "fc5items:weapon:headbanger-lute-greatclub-uncommon:heliana-s-guide-to-monster-hunting-part-one-p-450-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/headbanger-lute-greatclub-uncommon-6xduaijbb2wajnf4-88080fb918.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:31:52.903Z"
+  },
+  "fc5items:equipment:helm-of-perfect-potential:bigby-presents-glory-of-the-giants:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/helm-of-perfect-potential-5kwxsl188tnkq5mm-8091c23302.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:33:01.280Z"
+  },
+  "fc5items:weapon:headbanger-lute-greatclub-very-rare:heliana-s-guide-to-monster-hunting-part-one-p-450-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/headbanger-lute-greatclub-very-rare-hpkupt3w3moxncyy-e94ae641d0.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:33:03.546Z"
+  },
+  "fc5items:equipment:helm-of-the-chromatic-dragon:the-griffon-s-saddlebag-book-two-p-102-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/helm-of-the-chromatic-dragon-ephw1phreuqafcyk-d7217053ca.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:33:08.006Z"
+  },
+  "fc5items:equipment:hide-armor-of-acid-resistance-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/hide-armor-of-acid-resistance-2024-wblvulftk8o7azaa-b0b591a43d.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:33:50.822Z"
+  },
+  "fc5items:equipment:hide-armor-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/hide-armor-of-acid-resistance-md2siutblijhvcv6-7728c9bc4b.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:34:16.676Z"
+  },
+  "fc5items:equipment:hide-barding-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/hide-barding-of-acid-resistance-dikrcigphcuuuhc9-cf1d26dc15.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:34:44.370Z"
+  },
+  "fc5items:equipment:indefinite-term-madness:steinhardt-s-guide-to-the-eldritch-hunt-p-274-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/indefinite-term-madness-vfyvuj6amvxq4uxi-0fbe9f130a.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:35:04.894Z"
+  },
+  "fc5items:weapon:ironfang:princes-of-the-apocalypse:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/ironfang-2vsiwot96qd20xl2-0ed3cb1443.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:35:15.767Z"
+  },
+  "fc5items:weapon:john-s-scimitar:sebastian-crowe-s-guide-to-drakkenheim-p-200-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/john-s-scimitar-ock6plkhdcl1aae1-1be1f2b46b.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:36:00.003Z"
+  },
+  "fc5items:equipment:kyrzin-s-ooze:eberron-rising-from-the-last-war:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/kyrzin-s-ooze-isxbxriz72uugwki-0dc2b57d23.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:36:04.064Z"
+  },
+  "fc5items:equipment:kraken-band:the-griffon-s-saddlebag-book-two-p-112-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/kraken-band-phohs7sxsmfcka3w-b670452830.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:36:15.801Z"
+  },
+  "fc5items:equipment:kythrian-manchineel-staff:eberron-rising-from-the-last-war-p-277-wayfinder-s-guide-to-eberron-p-114-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/kythrian-manchineel-staff-jnvollzq3bjwdhrq-42d277b551.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:37:15.820Z"
+  },
+  "fc5items:equipment:leather-armor-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/leather-armor-of-acid-resistance-znhdqpc8aa3isgwe-51cf06b2d4.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:37:18.826Z"
+  },
+  "fc5items:equipment:kythrian-manchineel-wooden-staff:eberron-rising-from-the-last-war-p-277-wayfinder-s-guide-to-eberron-p-114-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/kythrian-manchineel-wooden-staff-gobvowqoranpjxra-27b203cd1a.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:37:19.908Z"
+  },
+  "fc5items:weapon:longbow-of-the-cobra:the-griffon-s-saddlebag-book-two-p-50-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/longbow-of-the-cobra-fskibepim6pjsq9r-b17383a5d2.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:38:35.338Z"
+  },
+  "fc5items:equipment:magehunter-breastplate:valda-s-spire-of-secrets-p-312-homebrew-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/magehunter-breastplate-v6qj8r8q1xs8e0oo-e3029af235.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:38:38.082Z"
+  },
+  "fc5items:equipment:leather-barding-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/leather-barding-of-acid-resistance-9aesxncujyfpnic3-b69a77432b.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:38:43.970Z"
+  },
+  "fc5items:equipment:magik-oil:heliana-s-guide-to-monster-hunting-part-one-p-486-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/magik-oil-kgyqgltmwkksmd2u-85d37b9139.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:39:25.911Z"
+  },
+  "fc5items:equipment:mask-of-monstrous-forms:pluto-jackson-s-monsters-of-drakkenheim-p-389-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/mask-of-monstrous-forms-pfucat5bvcwxnd0q-d339005afa.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:40:01.318Z"
+  },
+  "fc5items:weapon:maul-of-chaos:pluto-jackson-s-monsters-of-drakkenheim-p-387-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/maul-of-chaos-lucmr9zqfo9vgugr-0c63c6ce79.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:40:05.871Z"
+  },
+  "fc5items:weapon:mawling-maul-light-hammer-rare:heliana-s-guide-to-monster-hunting-part-one-p-451-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/mawling-maul-light-hammer-rare-0gcxtzxrtmr9j2hz-730cbaacab.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:40:47.072Z"
+  },
+  "fc5items:weapon:mawling-maul-light-hammer-uncommon:heliana-s-guide-to-monster-hunting-part-one-p-451-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/mawling-maul-light-hammer-uncommon-0wdiug43r6i6ebgx-c63920b51e.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:41:25.310Z"
+  },
+  "fc5items:weapon:mawling-maul-warhammer-rare:heliana-s-guide-to-monster-hunting-part-one-p-451-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/mawling-maul-warhammer-rare-es9wpz2n1irsw454-08d93262db.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:41:28.262Z"
+  },
+  "fc5items:weapon:mawling-maul-warhammer-uncommon:heliana-s-guide-to-monster-hunting-part-one-p-451-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/mawling-maul-warhammer-uncommon-kpp52d6d16ljow8i-ce7d070f3e.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:42:01.268Z"
+  },
+  "fc5items:equipment:mephitic-seal-scarified:steinhardt-s-guide-to-the-eldritch-hunt-p-264-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/mephitic-seal-scarified-fu4zzpfqrpsa7ayj-1894d55871.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:42:46.847Z"
+  },
+  "fc5items:equipment:mephitic-seal-tattoed:steinhardt-s-guide-to-the-eldritch-hunt-p-264-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/mephitic-seal-tattoed-x4ql2xp1avqlrkoy-883bd888e1.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:42:49.731Z"
+  },
+  "fc5items:weapon:mimaxe:tasha-s-crucible-of-everything-else-volume-1-p-70-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/mimaxe-1ylyp6at85afve5z-55981a9771.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:43:12.224Z"
+  },
+  "fc5items:equipment:mizzium-apparatus:guildmasters-guide-to-ravnica:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/mizzium-apparatus-psadciljaoucm45h-55ca456094.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:43:48.266Z"
+  },
+  "fc5items:weapon:moonblade:dungeon-master-s-guide-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/moonblade-gfdn1my7ulfkn6ob-9522b83c46.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:44:05.434Z"
+  },
+  "fc5items:equipment:mosshide-troll-belt:the-griffon-s-saddlebag-book-two-p-124-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/mosshide-troll-belt-lw7zlh6vrbykakit-dec3c0f305.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:44:19.762Z"
+  },
+  "fc5items:weapon:nightbringer:monstrous-compendium-vol-2-dragonlance-creatures:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/nightbringer-4ghorqwjvm42cdgn-c46964adf6.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:44:30.067Z"
+  },
+  "fc5items:equipment:oozemat-coat:heliana-s-guide-to-monster-hunting-part-one-p-440-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/oozemat-coat-swudn6dqjs84h2xf-d440ff5ae1.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:44:56.512Z"
+  },
+  "fc5items:weapon:orphan-s-cradle:steinhardt-s-guide-to-the-eldritch-hunt-p-246-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/orphan-s-cradle-oueemtryugyiowr4-c777e06f28.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:45:33.772Z"
+  },
+  "fc5items:equipment:padded-armor-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/padded-armor-of-acid-resistance-pbsfilqohkgwbohg-954ddb94aa.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:45:44.353Z"
+  },
+  "fc5items:equipment:padded-armor-of-acid-resistance-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/padded-armor-of-acid-resistance-2024-jsgjtzqo8tfswo25-7c31903023.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:46:14.476Z"
+  },
+  "fc5items:equipment:padded-barding-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/padded-barding-of-acid-resistance-u8xdvwh3gvsqoawl-c964695d1a.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:46:53.266Z"
+  },
+  "fc5items:equipment:plant-of-many-fruits:gm-toolkit-monthly-fantastic-flora-p-30-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/plant-of-many-fruits-h7lyfr1cfkesft0g-10fe75fc14.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:47:35.887Z"
+  },
+  "fc5items:equipment:plate-armor-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/plate-armor-of-acid-resistance-hqi4uricyrjhkot7-99e6253123.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:48:17.975Z"
+  },
+  "fc5items:equipment:plate-armor-of-acid-resistance-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/plate-armor-of-acid-resistance-2024-cws4lmfgyyjvgdmi-2611abf707.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:48:43.165Z"
+  },
+  "fc5items:equipment:plate-barding-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/plate-barding-of-acid-resistance-ha6bmfrnn1w2b2ti-424d095a07.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:49:02.758Z"
+  },
+  "fc5items:consumable:potion-of-acid-resistance:dungeon-master-s-guide-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/potion-of-acid-resistance-7dtdstlx1np73u5x-e6d062faf0.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:49:54.610Z"
+  },
+  "fc5items:equipment:polyhedrooze-very-rare:heliana-s-guide-to-monster-hunting-part-one-p-437-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/polyhedrooze-very-rare-9a6ijvqyiowoi4ua-b6feb1bdfe.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:49:57.024Z"
+  },
+  "fc5items:consumable:potion-of-acid-resistance-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/potion-of-acid-resistance-2024-vpnowvtoildani6m-140346ebce.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:50:06.856Z"
+  },
+  "fc5items:weapon:prismatic-bomb:valda-s-spire-of-secrets-p-32-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/prismatic-bomb-mtgh13obhywkqeha-70416728d6.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:51:14.559Z"
+  },
+  "fc5items:consumable:potion-of-resistance-generic-variant:dungeon-master-s-guide-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/potion-of-resistance-generic-variant-nokdxie1erzktxlk-a28b3168a2.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:51:16.989Z"
+  },
+  "fc5items:equipment:quiver-of-elemental-chaos:the-griffon-s-saddlebag-book-two-p-140-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/quiver-of-elemental-chaos-tuzlj4xvqfwjdqij-648e29ffa4.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:51:29.253Z"
+  },
+  "fc5items:equipment:reflector-shield:pluto-jackson-s-monsters-of-drakkenheim-p-391-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/reflector-shield-olaxhibi6mqnad4x-5816d0c185.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:52:31.379Z"
+  },
+  "fc5items:equipment:ring-barding-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/ring-barding-of-acid-resistance-eqpdvvhbyfsx7dia-0685df5545.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:52:35.372Z"
+  },
+  "fc5items:equipment:ring-mail-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/ring-mail-of-acid-resistance-p2h9ay6lbmu80qrn-f004bd59f0.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:52:44.609Z"
+  },
+  "fc5items:equipment:ring-mail-of-acid-resistance-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/ring-mail-of-acid-resistance-2024-dbjbgv4uiyl61gva-5fa5fc01bb.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:53:47.649Z"
+  },
+  "fc5items:equipment:ring-of-acid-resistance:dungeon-master-s-guide-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/ring-of-acid-resistance-zixqa56kgchmm3x6-9099950a3f.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:53:50.384Z"
+  },
+  "fc5items:equipment:ring-of-acid-resistance-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/ring-of-acid-resistance-2024-73vqhanmpnpdd1ka-e24eff9330.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:54:14.701Z"
+  },
+  "fc5items:equipment:ring-of-earth-elemental-command:dungeon-master-s-guide-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/ring-of-earth-elemental-command-woujjxnfvjy9yvhu-13892649b3.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:55:08.496Z"
+  },
+  "fc5items:equipment:ring-of-elemental-command-earth-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/ring-of-elemental-command-earth-2024-8vz3zbcfep24hgqy-8ee37681cc.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:55:14.244Z"
+  },
+  "fc5items:equipment:ring-of-resistance-generic-variant:dungeon-master-s-guide-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/ring-of-resistance-generic-variant-jdiuggcg0ei3dunz-83977e29d9.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:55:34.055Z"
+  },
+  "fc5items:equipment:scale-barding-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/scale-barding-of-acid-resistance-nnf4yhayo7nbrojm-41e04f44b4.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:56:02.180Z"
+  },
+  "fc5items:equipment:ruby-rod-of-asmodeus:chains-of-asmodeus:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/ruby-rod-of-asmodeus-foblytrkqfomeyon-49f770ad18.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:56:31.221Z"
+  },
+  "fc5items:equipment:scale-mail-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/scale-mail-of-acid-resistance-wig7twvm3rhyoekw-8791b9d2ef.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:56:49.026Z"
+  },
+  "fc5items:equipment:scale-mail-of-acid-resistance-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/scale-mail-of-acid-resistance-2024-wpxiakqjbevzcl4p-4563880d1c.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:57:13.342Z"
+  },
+  "fc5items:equipment:shellstone-ring:tasha-s-crucible-of-everything-else-volume-1-p-71-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/shellstone-ring-k8ckwvjag2ngmmao-5855296bf5.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:57:43.515Z"
+  },
+  "fc5items:weapon:shortbow-of-the-cobra:the-griffon-s-saddlebag-book-two-p-50-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/shortbow-of-the-cobra-kip0dev4sywueioe-88749e77eb.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:58:04.883Z"
+  },
+  "fc5items:weapon:slime-slinger:player-s-handbook-2014-p-149-crown-of-the-oathbreaker-p-740-homebrew:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/slime-slinger-z6nhppqjhxnsisvx-8ddef35d7b.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:58:28.165Z"
+  },
+  "fc5items:equipment:sphere-slughide-dissolvent:tome-of-heroes-p-199-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/sphere-slughide-dissolvent-z3dbymugokl3ggqx-9d8b89faf3.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:59:02.751Z"
+  },
+  "fc5items:equipment:spiked-armor-of-acid-resistance:dungeon-master-s-guide-2014-p-152-sword-coast-adventurer-s-guide:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/spiked-armor-of-acid-resistance-b54mnurxefn73r04-d8ff18bad6.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:59:34.435Z"
+  },
+  "fc5items:equipment:spiked-barding-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014-p-157-sword-coast-adventurer-s-guide:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/spiked-barding-of-acid-resistance-l9jm7ubhjh6c22u5-57f3a21a7b.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T11:59:50.701Z"
+  },
+  "fc5items:equipment:splint-armor-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/splint-armor-of-acid-resistance-dtnx15ls2lficcyj-6688e83632.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:00:18.986Z"
+  },
+  "fc5items:equipment:splint-barding-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/splint-barding-of-acid-resistance-qa08s5zffmkzwmcx-0002b3cd3d.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:00:34.347Z"
+  },
+  "fc5items:equipment:splint-armor-of-acid-resistance-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/splint-armor-of-acid-resistance-2024-ir1ahn7qpbxlg2xz-1bd754a3f3.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:00:58.287Z"
+  },
+  "fc5items:equipment:staff-of-the-wyrmling:tony-petrecca-journey-through-the-center-of-the-underdark-2-the-darklake-strikes-back:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/staff-of-the-wyrmling-br1pruw3syzhmhgn-4f200954e6.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:02:13.973Z"
+  },
+  "fc5items:equipment:staff-of-the-dragon:tony-petrecca-journey-through-the-center-of-the-underdark-2-the-darklake-strikes-back:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/staff-of-the-dragon-6adwmahtnmywv4sf-9e663523ce.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:02:23.583Z"
+  },
+  "fc5items:equipment:staff-of-tiamat:tony-petrecca-journey-through-the-center-of-the-underdark-2-the-darklake-strikes-back:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/staff-of-tiamat-usqisub0xwtsvfx9-04126dd8c3.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:03:40.514Z"
+  },
+  "fc5items:equipment:studded-leather-armor-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/studded-leather-armor-of-acid-resistance-t1meomrcmhh7f14u-db38408040.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:03:48.974Z"
+  },
+  "fc5items:equipment:studded-leather-armor-of-acid-resistance-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/studded-leather-armor-of-acid-resistance-2024-mbd1zpk9rlrcd8o9-45cb3846a8.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:04:52.861Z"
+  },
+  "fc5items:equipment:studded-leather-barding-of-acid-resistance:dungeon-master-s-guide-2014-p-152-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/studded-leather-barding-of-acid-resistance-pbbwmh0aspfriuvo-4d4b646067.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:05:15.238Z"
+  },
+  "fc5items:equipment:staff-of-cubic-cultivation:the-griffon-s-saddlebag-book-two-p-169-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/staff-of-cubic-cultivation-ijy0kzwswodts9mo-5f392eb21d.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:05:20.849Z"
+  },
+  "fc5items:equipment:the-incantations-of-iriolarthas:icewind-dale-rime-of-the-frostmaiden:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/the-incantations-of-iriolarthas-hcwhyinykjcz1vhh-e8b223fba6.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:06:10.742Z"
+  },
+  "fc5items:equipment:the-infernal-machine-of-lum-the-mad:infernal-machine-rebuild:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/the-infernal-machine-of-lum-the-mad-irw1ga1zv2nkjwxo-b110de3213.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:06:35.420Z"
+  },
+  "fc5items:equipment:trinket-tome-of-heroes:tome-of-heroes-p-207-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/trinket-tome-of-heroes-1jao7gco3mu5eqht-7d9e3a7d40.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:07:05.362Z"
+  },
+  "fc5items:consumable:trollblood-potion:pluto-jackson-s-monsters-of-drakkenheim-p-394-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/trollblood-potion-yaseaupoiaxatpah-ded7abc28a.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:07:23.532Z"
+  },
+  "fc5items:equipment:wand-of-the-mimic:player-s-handbook-2014-p-151-crown-of-the-oathbreaker-p-744-homebrew:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/wand-of-the-mimic-pauhcebcdblimapw-ab5fefd4dd.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:07:56.226Z"
+  },
+  "fc5items:weapon:warhammer-of-chaos:pluto-jackson-s-monsters-of-drakkenheim-p-387-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/warhammer-of-chaos-vcbhmuvukoaxawai-95cfed6f3b.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:08:24.176Z"
+  },
+  "fc5items:weapon:whelm-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/whelm-2024-mvxtkp8b98yjmupd-78561a12c6.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:08:49.425Z"
+  },
+  "fc5items:weapon:will-of-the-talon:explorer-s-guide-to-wildemount-p-279-third-party:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/will-of-the-talon-fmoidzy76zyqtqsn-b405eb5a16.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:09:09.696Z"
+  },
+  "fc5items:weapon:wrought-iron-tower:chains-of-asmodeus:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/wrought-iron-tower-osqt5aljqevmr9an-e6dc6e6272.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:09:58.991Z"
+  },
+  "fc5items:equipment:wyrmreaver-gauntlets:bigby-presents-glory-of-the-giants:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/wyrmreaver-gauntlets-lups8evlndc6l8nu-c99320c329.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:10:21.482Z"
+  },
+  "fc5items:weapon:wrymshide-bow:the-griffon-s-saddlebag-book-two-p-193-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/wrymshide-bow-zytaaimpsog01d57-bfade93697.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:10:22.566Z"
+  },
+  "fc5items:equipment:xanastone-ring:tasha-s-crucible-of-everything-else-volume-1-p-73-homebrew:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/xanastone-ring-ardno9fpvg00qd7b-c34bc3794b.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T12:10:46.916Z"
+  },
+  "fc5items:equipment:leather-armor-of-acid-resistance-2024:dungeon-master-s-guide-2024:2024": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/leather-armor-of-acid-resistance-2024-qg2agi1owsrto57f-87c08cf8b7.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T16:41:49.216Z"
+  },
+  "fc5items:equipment:breastplank-breastplate-uncommon:heliana-s-guide-to-monster-hunting-part-one-p-449-third-party-player-s-handbook-2014:2014": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/breastplank-breastplate-uncommon-pwqzde9eidmvjvfd-c7545727ea.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T16:41:52.122Z"
+  },
+  "fc5items:equipment:pendant-of-prismatic-protection:pluto-jackson-s-monsters-of-drakkenheim-p-391-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/pendant-of-prismatic-protection-r6rpwzmv6vdrlsqx-87bb3c607b.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T16:42:07.647Z"
+  },
+  "fc5items:equipment:polyhedrooze:heliana-s-guide-to-monster-hunting-part-one-p-437-third-party:unknown": {
+    "img": "modules/monster-creator/assets/fc5-icons/fc5items/polyhedrooze-uju0qyffikdznaht-ca05bfa1c1.png",
+    "status": "approved",
+    "approved": true,
+    "source": "clipboard",
+    "mime": "image/png",
+    "updatedAt": "2026-05-25T16:43:14.797Z"
+  }
+}
