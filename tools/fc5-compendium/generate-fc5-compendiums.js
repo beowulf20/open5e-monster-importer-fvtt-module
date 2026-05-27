@@ -43,7 +43,7 @@ function parseArgs(argv) {
   }
 
   if (!args.xmlPath) {
-    throw new Error('XML path is required. Pass --xml /path/to/Complete_Compendium_2014+2024.xml or set FC5_XML_PATH.');
+    throw new Error('XML path is required. Pass --xml /path/to/Core_Supplements_5e.xml or set FC5_XML_PATH.');
   }
 
   args.xmlPath = path.resolve(args.xmlPath);
@@ -58,7 +58,7 @@ async function main() {
 
   for (const [key, config] of Object.entries(PACK_CONFIG)) {
     const outputDir = path.join(args.sourceRoot, config.sourceDir);
-    writeJsonDocuments(outputDir, documents[key]);
+    writeJsonDocuments(outputDir, documents[key], config);
   }
 
   await compilePackSources(args.sourceRoot, args.packRoot);

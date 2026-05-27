@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 env:
-  FC5_XML_URL: https://github.com/vidalvanbergen/FightClub5eXML/releases/download/2026.02.10/Complete_Compendium_2014+2024.xml
+  FC5_XML_URL: https://github.com/vidalvanbergen/FightClub5eXML/releases/download/nightly/Complete_Compendium_5e.xml
 
 jobs:
   release:
@@ -33,7 +33,7 @@ jobs:
 
       - name: Generate FC5 compendium packs
         env:
-          FC5_XML_PATH: ${{ runner.temp }}/Complete_Compendium_2014_2024.xml
+          FC5_XML_PATH: ${{ runner.temp }}/Complete_Compendium_5e.xml
         run: |
           curl --fail --location --show-error "$FC5_XML_URL" --output "$FC5_XML_PATH"
           npm run generate:fc5-compendia

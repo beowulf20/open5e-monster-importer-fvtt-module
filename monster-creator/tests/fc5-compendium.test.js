@@ -5,9 +5,11 @@ const fixturePath = path.join(__dirname, 'fixtures', 'fc5-compendium.fixture.xml
 const fixtureXml = fs.readFileSync(fixturePath, 'utf8');
 
 const {
+  buildPackFolderDocuments,
   convertClass,
   convertItem,
   convertSpell,
+  dedupeDocuments,
   deterministicId,
   generateCompendiumDocuments,
   isFeatureLikeSpell,
@@ -48,6 +50,26 @@ function buildTestClass(overrides = {}) {
   };
 }
 
+function buildTestItem(name, sourceLine) {
+  return {
+    name,
+    detail: 'rare (requires attunement)',
+    typeCode: 'M',
+    magic: true,
+    weight: '3',
+    value: '',
+    ac: '',
+    property: 'T',
+    dmg1: '1d8',
+    dmg2: '',
+    dmgType: 'P',
+    range: '10/30',
+    text: `A source-normalized weapon.\n\nSource:\t${sourceLine}`,
+    modifiers: [],
+    rolls: []
+  };
+}
+
 function findToolAdvancement(classDocument) {
   return classDocument.system.advancement.find((entry) => {
     if (entry.type !== 'Trait') return false;
@@ -56,6 +78,20 @@ function findToolAdvancement(classDocument) {
     return grants.some((grant) => grant.startsWith('tool:'))
       || choices.some((choice) => (choice.pool || []).some((grant) => grant.startsWith('tool:')));
   });
+}
+
+function findWeaponAdvancement(classDocument) {
+  return classDocument.system.advancement.find((entry) => {
+    if (entry.type !== 'Trait') return false;
+    const grants = entry.configuration?.grants || [];
+    return grants.some((grant) => grant.startsWith('weapon:'));
+  });
+}
+
+function scaleAdvancementsByIdentifier(classDocument) {
+  return Object.fromEntries(classDocument.system.advancement
+    .filter((entry) => entry.type === 'ScaleValue')
+    .map((entry) => [entry.configuration.identifier, entry]));
 }
 
 describe('FC5 compendium conversion', () => {
@@ -106,8 +142,8 @@ describe('FC5 compendium conversion', () => {
     expect(feature._id).toBe(deterministicId([
       'spell',
       'Arcane Fighting Style: Blaster (HB)',
-      "Valda's Spire of Secrets p. 159 (Homebrew)",
-      '',
+      "Valda's Spire of Secrets",
+      '159',
       0,
       'Warmage (Valda): Arcane Fighting Styles',
       '',
@@ -297,7 +333,7 @@ Source:\tPlayer's Handbook (2024) p. 249`,
     })).classDocument;
     const bard = convertClass(buildTestClass({
       name: 'Bard',
-      tools: '3 Musical Instruments'
+      tools: 'Three Musical Instrument of your choice'
     })).classDocument;
     const warmage = convertClass(buildTestClass({
       name: 'Warmage',
@@ -329,6 +365,295 @@ Source:\tPlayer's Handbook (2024) p. 249`,
         count: 1,
         pool: ['tool:game:*']
       }
+    ]);
+  });
+
+  test('uses dnd5e wildcard skill choices when a class can choose any skill', () => {
+    const bard = convertClass(buildTestClass({
+      name: 'Bard',
+      numSkills: 3,
+      proficiency: 'Strength, Acrobatics, Animal Handling, Arcana, Athletics, Deception, History, Insight, Intimidation, Investigation, Medicine, Nature, Perception, Performance, Persuasion, Religion, Sleight of Hand, Stealth, Survival'
+    })).classDocument;
+    const skillAdvancement = bard.system.advancement.find((entry) => {
+      if (entry.type !== 'Trait') return false;
+      return entry.configuration?.choices?.some((choice) => choice.pool?.includes('skills:*'));
+    });
+
+    expect(skillAdvancement.configuration.choices).toEqual([
+      {
+        count: 3,
+        pool: ['skills:*']
+      }
+    ]);
+  });
+
+  test('generates Bard scale value advancements compatible with dnd5e', () => {
+    const bard = convertClass(buildTestClass({
+      name: 'Bard',
+      slotsReset: 'L',
+      autolevels: [
+        {
+          level: 1,
+          slots: [2, 2],
+          counters: [
+            { name: 'Spells Known', value: '4', reset: '' },
+            { name: 'Bardic Inspiration', value: '%6', reset: 'S' }
+          ],
+          features: [buildTestFeature('Bardic Inspiration', 'A creature gains one Bardic Inspiration die, a d6.')]
+        },
+        {
+          level: 2,
+          slots: [2, 3],
+          counters: [{ name: 'Spells Known', value: '5', reset: '' }],
+          features: [buildTestFeature('Song of Rest (d6)', 'Extra healing.')]
+        },
+        {
+          level: 3,
+          slots: [2, 4, 2],
+          counters: [{ name: 'Spells Known', value: '6', reset: '' }],
+          features: [buildTestFeature('Expertise', 'Choose two skill proficiencies.')]
+        },
+        {
+          level: 4,
+          slots: [3, 4, 3],
+          counters: [{ name: 'Spells Known', value: '7', reset: '' }],
+          features: []
+        },
+        {
+          level: 5,
+          slots: [3, 4, 3, 2],
+          counters: [{ name: 'Spells Known', value: '8', reset: '' }],
+          features: [buildTestFeature('Bardic Inspiration (d8)', 'The die becomes a d8.')]
+        },
+        {
+          level: 9,
+          slots: [3, 4, 3, 3, 3, 1],
+          counters: [{ name: 'Spells Known', value: '12', reset: '' }],
+          features: [buildTestFeature('Song of Rest (d8)', 'Extra healing.')]
+        },
+        {
+          level: 10,
+          slots: [4, 4, 3, 3, 3, 2],
+          counters: [{ name: 'Spells Known', value: '14', reset: '' }],
+          features: [
+            buildTestFeature('Bardic Inspiration (d10)', 'The die becomes a d10.'),
+            buildTestFeature('Expertise Improvement', 'Choose two more skill proficiencies.'),
+            buildTestFeature('Magical Secrets', 'Choose two spells from any classes.')
+          ]
+        },
+        {
+          level: 12,
+          slots: [4, 4, 3, 3, 3, 2, 1],
+          counters: [{ name: 'Spells Known', value: '15', reset: '' }],
+          features: []
+        },
+        {
+          level: 14,
+          slots: [4, 4, 3, 3, 3, 2, 1, 1],
+          counters: [{ name: 'Spells Known', value: '18', reset: '' }],
+          features: [buildTestFeature('Magical Secrets', 'Choose two spells from any classes.')]
+        },
+        {
+          level: 13,
+          slots: [4, 4, 3, 3, 3, 2, 1, 1],
+          counters: [{ name: 'Spells Known', value: '16', reset: '' }],
+          features: [buildTestFeature('Song of Rest (d10)', 'Extra healing.')]
+        },
+        {
+          level: 15,
+          slots: [4, 4, 3, 3, 3, 2, 1, 1, 1],
+          counters: [{ name: 'Spells Known', value: '19', reset: '' }],
+          features: [buildTestFeature('Bardic Inspiration (d12)', 'The die becomes a d12.')]
+        },
+        {
+          level: 17,
+          slots: [4, 4, 3, 3, 3, 2, 1, 1, 1, 1],
+          counters: [{ name: 'Spells Known', value: '20', reset: '' }],
+          features: [buildTestFeature('Song of Rest (d12)', 'Extra healing.')]
+        },
+        {
+          level: 18,
+          slots: [4, 4, 3, 3, 3, 3, 1, 1, 1, 1],
+          counters: [{ name: 'Spells Known', value: '22', reset: '' }],
+          features: [buildTestFeature('Magical Secrets', 'Choose two spells from any classes.')]
+        },
+        {
+          level: 20,
+          slots: [4, 4, 3, 3, 3, 3, 2, 2, 1, 1],
+          counters: [{ name: 'Spells Known', value: '22', reset: '' }],
+          features: []
+        }
+      ]
+    })).classDocument;
+    const scaleByIdentifier = scaleAdvancementsByIdentifier(bard);
+    const expertise = bard.system.advancement.filter((entry) => entry.type === 'Trait' && entry.configuration.mode === 'expertise');
+    const magicalSecrets = bard.system.advancement.find((entry) => entry.type === 'ItemChoice' && entry.title === 'Magical Secrets');
+
+    expect(scaleByIdentifier.inspiration._id).toBe('0Ybu5yMjplpTAHiE');
+    expect(scaleByIdentifier.inspiration.configuration.scale).toEqual({
+      1: { number: null, faces: 6, modifiers: [] },
+      5: { number: null, faces: 8, modifiers: [] },
+      10: { number: null, faces: 10, modifiers: [] },
+      15: { number: null, faces: 12, modifiers: [] }
+    });
+    expect(scaleByIdentifier['song-of-rest'].configuration.scale).toEqual({
+      2: { number: null, faces: 6, modifiers: [] },
+      9: { number: null, faces: 8, modifiers: [] },
+      13: { number: null, faces: 10, modifiers: [] },
+      17: { number: null, faces: 12, modifiers: [] }
+    });
+    expect(scaleByIdentifier['cantrips-known'].configuration.scale).toEqual({
+      1: { value: 2 },
+      4: { value: 3 },
+      10: { value: 4 }
+    });
+    expect(scaleByIdentifier['spells-known'].configuration.scale[20]).toBeUndefined();
+    expect(scaleByIdentifier['spells-known'].configuration.scale[17]).toEqual({ value: 20 });
+    expect(expertise.map((entry) => [entry._id, entry.level, entry.configuration.choices])).toEqual([
+      ['cwu9uhmtcKhqli8W', 3, [{ count: 2, pool: ['skills:*'] }]],
+      ['O2cVH7Y5kNfoUyLg', 10, [{ count: 2, pool: ['skills:*'] }]]
+    ]);
+    expect(magicalSecrets._id).toBe('EC1yNAV6khHilOhz');
+    expect(magicalSecrets.configuration.choices).toEqual({
+      10: { count: 2, replacement: false },
+      14: { count: 2, replacement: false },
+      18: { count: 2, replacement: false }
+    });
+  });
+
+  test('generates core class scale value advancements beyond Bard', () => {
+    const barbarian = convertClass(buildTestClass({
+      name: 'Barbarian',
+      autolevels: [
+        {
+          level: 1,
+          counters: [{ name: 'Rage', value: '2', reset: 'L' }],
+          features: [buildTestFeature('Rage', 'At 1st level, you have a +2 bonus to damage. Your bonus increases to +3 at 9th level and to +4 at 16th.')]
+        },
+        { level: 3, counters: [{ name: 'Rage', value: '3', reset: 'L' }], features: [] },
+        { level: 9, counters: [], features: [buildTestFeature('Brutal Critical (1 die)', 'One additional die.')] },
+        { level: 13, counters: [], features: [buildTestFeature('Brutal Critical (2 dice)', 'Two additional dice.')] },
+        { level: 17, counters: [{ name: 'Rage', value: '6', reset: 'L' }], features: [buildTestFeature('Brutal Critical (3 dice)', 'Three additional dice.')] },
+        { level: 20, counters: [], features: [buildTestFeature('Primal Champion', 'Unlimited rage.')] }
+      ]
+    })).classDocument;
+    const monk = convertClass(buildTestClass({
+      name: 'Monk',
+      autolevels: [
+        {
+          level: 1,
+          counters: [],
+          features: [buildTestFeature('Martial Arts', 'The Monk Table:\nLevel | Martial Arts\n1st | 1d4\n5th | 1d6\n11th | 1d8\n17th | 1d10')]
+        },
+        { level: 2, counters: [], features: [buildTestFeature('Unarmored Movement', 'Your speed increases by 10 feet.')] },
+        { level: 6, counters: [], features: [buildTestFeature('Unarmored Movement 2nd', 'Your speed increases by 15 feet.')] }
+      ]
+    })).classDocument;
+    const rogue = convertClass(buildTestClass({
+      name: 'Rogue',
+      autolevels: [
+        { level: 1, counters: [], features: [buildTestFeature('Sneak Attack', 'You deal an extra 1d6 damage.')] },
+        { level: 3, counters: [], features: [buildTestFeature('Sneak Attack (2)', 'You deal an extra 2d6 damage.')] }
+      ]
+    })).classDocument;
+
+    const barbarianScales = scaleAdvancementsByIdentifier(barbarian);
+    const monkScales = scaleAdvancementsByIdentifier(monk);
+    const rogueScales = scaleAdvancementsByIdentifier(rogue);
+
+    expect(barbarianScales.rages.configuration.scale[20]).toEqual({ value: 999 });
+    expect(barbarianScales['rage-damage'].configuration.scale[16]).toEqual({ value: 4 });
+    expect(barbarianScales['brutal-critical'].configuration.scale[17]).toEqual({ value: 3 });
+    expect(monkScales.die.configuration.scale[1]).toEqual({ number: null, faces: 4, modifiers: [] });
+    expect(monkScales['unarmored-movement'].configuration.distance.units).toBe('ft');
+    expect(rogueScales['sneak-attack'].configuration.scale[3]).toEqual({ number: 2, faces: 6, modifiers: [] });
+  });
+
+  test('maps wizard weapon proficiencies to dnd5e base item keys', () => {
+    const wizard = convertClass(buildTestClass({
+      name: 'Wizard',
+      weapons: 'Daggers, Darts, Slings, Quarterstaffs, Light Crossbows'
+    })).classDocument;
+
+    expect(findWeaponAdvancement(wizard).configuration.grants).toEqual([
+      'weapon:sim:dagger',
+      'weapon:sim:dart',
+      'weapon:sim:sling',
+      'weapon:sim:quarterstaff',
+      'weapon:sim:lightcrossbow'
+    ]);
+  });
+
+  test('maps Unarmored Defense into the original dnd5e AC calculation effect', () => {
+    const barbarian = convertClass(buildTestClass({
+      name: 'Barbarian',
+      autolevels: [{
+        level: 1,
+        counters: [],
+        features: [
+          buildTestFeature('Unarmored Defense', 'While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Constitution modifier. You can use a shield and still gain this benefit.\n\nSource:\tSynthetic Manual p. 2')
+        ]
+      }]
+    }));
+    const monk = convertClass(buildTestClass({
+      name: 'Monk',
+      autolevels: [{
+        level: 1,
+        counters: [],
+        features: [
+          buildTestFeature('Unarmored Defense', 'While you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier.\n\nSource:\tSynthetic Manual p. 3')
+        ]
+      }]
+    }));
+    const brawler = convertClass(buildTestClass({
+      name: 'Brawler (Tanares)',
+      autolevels: [{
+        level: 1,
+        counters: [],
+        features: [
+          buildTestFeature('Tough as Nails', 'Brawlers are known to be tough as nails and are extremely resilient even when not wearing armor. While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Constitution modifier. You can use a shield and still gain this benefit. Additionally, you are resistant to all damage types.\n\nSource:\tPlayer\'s Guide to Tanares p. 193')
+        ]
+      }]
+    }));
+
+    const barbarianFeature = barbarian.featureDocuments.find((entry) => entry.name === 'Unarmored Defense');
+    const monkFeature = monk.featureDocuments.find((entry) => entry.name === 'Unarmored Defense');
+    const brawlerFeature = brawler.featureDocuments.find((entry) => entry.name === 'Tough as Nails');
+
+    expect(barbarianFeature.effects).toHaveLength(1);
+    expect(barbarianFeature.effects[0].disabled).toBe(false);
+    expect(barbarianFeature.effects[0].transfer).toBe(true);
+    expect(barbarianFeature.effects[0].changes).toEqual([
+      expect.objectContaining({
+        key: 'system.attributes.ac.calc',
+        mode: 5,
+        value: 'unarmoredBarb'
+      })
+    ]);
+
+    expect(monkFeature.effects).toHaveLength(1);
+    expect(monkFeature.effects[0].changes).toEqual([
+      expect.objectContaining({
+        key: 'system.attributes.ac.calc',
+        mode: 5,
+        value: 'unarmoredMonk'
+      })
+    ]);
+
+    expect(brawlerFeature.effects).toHaveLength(1);
+    expect(brawlerFeature.effects[0].disabled).toBe(false);
+    expect(brawlerFeature.effects[0].transfer).toBe(true);
+    expect(brawlerFeature.effects[0].changes).toEqual([
+      expect.objectContaining({
+        key: 'system.attributes.ac.calc',
+        mode: 5,
+        value: 'unarmoredBarb'
+      }),
+      expect.objectContaining({
+        key: 'system.traits.dr.value',
+        mode: 2,
+        value: 'acid;bludgeoning;cold;fire;force;lightning;necrotic;piercing;poison;psychic;radiant;slashing;thunder'
+      })
     ]);
   });
 
@@ -499,6 +824,64 @@ Source:\tPlayer's Handbook (2024) p. 249`,
     expect(deterministicId('stormblade|echo')).toBe(deterministicId('stormblade|echo'));
   });
 
+  test('dedupes equivalent generated documents with different raw provenance', () => {
+    const first = convertItem(buildTestItem('Test Yklwa', 'Tal\'Dorei Campaign Setting: Reborn p. 199'));
+    const second = convertItem(buildTestItem('Test Yklwa', 'Tal\'Dorei Campaign Setting: Reborn p. 199 (Third Party)'));
+
+    expect(first._id).toBe(second._id);
+    expect(dedupeDocuments([first, second])).toHaveLength(1);
+  });
+
+  test('assigns generated pack documents under Monster Creator, source book, and content type folders', () => {
+    const alchemist = convertClass(buildTestClass({
+      name: 'Alchemist (Valda)',
+      traits: [{
+        name: 'Alchemist (Valda)',
+        text: 'Potion rules.\n\nSource:\tValda\'s Spire of Secrets p. 27 (Indie)'
+      }]
+    })).classDocument;
+    const wizard = convertClass(buildTestClass({
+      name: 'Wizard',
+      traits: [{
+        name: 'Wizard',
+        text: 'Wizard rules.\n\nSource:\tPlayer\'s Handbook (2014) p. 112'
+      }]
+    })).classDocument;
+    const { folders, documents } = buildPackFolderDocuments([alchemist, wizard], {
+      packName: 'fc5classes',
+      sourceDir: 'fc5-classes',
+      type: 'Item',
+      folderName: 'Classes'
+    });
+    const root = folders.find((folder) => folder.name === 'Monster Creator');
+    const valda = folders.find((folder) => folder.name === 'Valda\'s Spire of Secrets');
+    const valdaClasses = folders.find((folder) => folder.name === 'Classes' && folder.folder === valda._id);
+    const phb = folders.find((folder) => folder.name === 'Player\'s Handbook (2014)');
+
+    expect(root._key).toBe(`!folders!${root._id}`);
+    expect(valda.folder).toBe(root._id);
+    expect(phb.folder).toBe(root._id);
+    expect(documents.find((entry) => entry.name === 'Alchemist (Valda)').folder).toBe(valdaClasses._id);
+  });
+
+  test('uses feature source as class source when auxiliary classes have no traits', () => {
+    const result = convertClass(buildTestClass({
+      name: 'Auxiliary Level: Animal Master (Valda)',
+      traits: [],
+      autolevels: [{
+        level: 1,
+        counters: [],
+        features: [
+          buildTestFeature('Animal Master', 'Prerequisite: 3rd Level\n\n• Skills: Animal Handling\n\nSource:\tValda\'s Spire of Secrets p. 276 (Indie)')
+        ]
+      }]
+    })).classDocument;
+
+    expect(result.system.source.book).toBe('Valda\'s Spire of Secrets');
+    expect(result.system.source.page).toBe('276');
+    expect(result.flags['monster-creator'].fc5.sourceBook).toBe('Valda\'s Spire of Secrets');
+  });
+
   test('extracts source metadata from trailing source lines', () => {
     const result = splitSourceText(`A short rules text.\n\nSource:\tPrimer (2024) p. 99`);
 
@@ -509,10 +892,31 @@ Source:\tPlayer's Handbook (2024) p. 249`,
     expect(result.source.sourceCategory).toBe('unknown');
   });
 
+  test('keeps post-page source tags out of the book name', () => {
+    const result = splitSourceText(`A short rules text.\n\nSource:\tValda's Spire of Secrets p. 159 (Homebrew)`);
+    const multiSource = splitSourceText(`A short rules text.\n\nSource:\tValda's Spire of Secrets p. 308 (Homebrew), Player's Handbook (2014)`);
+    const unpaged = splitSourceText(`A short rules text.\n\nSource:\tValda's Spire of Secrets (Homebrew)`);
+    const indie = splitSourceText(`A short rules text.\n\nSource:\tValda's Spire of Secrets p. 27 (Indie)`);
+
+    expect(result.source.book).toBe("Valda's Spire of Secrets");
+    expect(result.source.page).toBe('159');
+    expect(result.source.sourceCategory).toBe('homebrew');
+    expect(multiSource.source.book).toBe("Valda's Spire of Secrets");
+    expect(multiSource.source.page).toBe('308');
+    expect(multiSource.source.rules).toBe('');
+    expect(multiSource.source.sourceCategory).toBe('homebrew');
+    expect(unpaged.source.book).toBe("Valda's Spire of Secrets");
+    expect(unpaged.source.page).toBe('');
+    expect(unpaged.source.sourceCategory).toBe('homebrew');
+    expect(indie.source.book).toBe("Valda's Spire of Secrets");
+    expect(indie.source.page).toBe('27');
+  });
+
   test('infers official rules-era metadata from published source books without explicit edition tags', () => {
     const published = splitSourceText(`Subclass rules.\n\nSource:\tXanathar's Guide to Everything p. 47`);
     const homebrew = splitSourceText(`Subclass rules.\n\nSource:\tMordenkainen's Codex of Allies v1.3 p. 24 (Homebrew)`);
     const ua = splitSourceText(`Subclass rules.\n\nSource:\tUnearthed Arcana: Gothic Heroes`);
+    const thirdParty = splitSourceText(`Weapon rules.\n\nSource:\tTal'Dorei Campaign Setting: Reborn p. 199`);
 
     expect(published.source.book).toBe("Xanathar's Guide to Everything");
     expect(published.source.rules).toBe('2014');
@@ -520,6 +924,7 @@ Source:\tPlayer's Handbook (2024) p. 249`,
     expect(homebrew.source.sourceCategory).toBe('homebrew');
     expect(homebrew.source.rules).toBe('');
     expect(ua.source.sourceCategory).toBe('ua');
+    expect(thirdParty.source.sourceCategory).toBe('third-party');
   });
 
   test('tags generated classes and subclasses with normalized FC5 source categories for subclass filtering', () => {

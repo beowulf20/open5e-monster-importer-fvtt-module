@@ -1,15 +1,16 @@
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
+const { documentIconKey, readOverrides } = require('./icon-tools.js');
 
 const MODULE_ID = 'monster-creator';
 
 const PACK_CONFIG = {
-  spells: { sourceDir: 'fc5-spells', packDir: 'fc5-spells', packName: 'fc5spells', type: 'Item' },
-  items: { sourceDir: 'fc5-items', packDir: 'fc5-items', packName: 'fc5items', type: 'Item' },
-  classes: { sourceDir: 'fc5-classes', packDir: 'fc5-classes', packName: 'fc5classes', type: 'Item' },
-  subclasses: { sourceDir: 'fc5-subclasses', packDir: 'fc5-subclasses', packName: 'fc5subclasses', type: 'Item' },
-  features: { sourceDir: 'fc5-features', packDir: 'fc5-features', packName: 'fc5features', type: 'Item' }
+  spells: { sourceDir: 'fc5-spells', packDir: 'fc5-spells', packName: 'fc5spells', type: 'Item', folderName: 'Spells' },
+  items: { sourceDir: 'fc5-items', packDir: 'fc5-items', packName: 'fc5items', type: 'Item', folderName: 'Items' },
+  classes: { sourceDir: 'fc5-classes', packDir: 'fc5-classes', packName: 'fc5classes', type: 'Item', folderName: 'Classes' },
+  subclasses: { sourceDir: 'fc5-subclasses', packDir: 'fc5-subclasses', packName: 'fc5subclasses', type: 'Item', folderName: 'Subclasses' },
+  features: { sourceDir: 'fc5-features', packDir: 'fc5-features', packName: 'fc5features', type: 'Item', folderName: 'Features' }
 };
 
 const TOP_LEVEL_TAGS = ['background', 'class', 'feat', 'item', 'monster', 'race', 'spell'];
@@ -105,6 +106,22 @@ const WORD_DAMAGE_TYPE_MAP = {
   thunder: 'thunder'
 };
 
+const STANDARD_DAMAGE_TYPES = [
+  'acid',
+  'bludgeoning',
+  'cold',
+  'fire',
+  'force',
+  'lightning',
+  'necrotic',
+  'piercing',
+  'poison',
+  'psychic',
+  'radiant',
+  'slashing',
+  'thunder'
+];
+
 const ITEM_PROPERTY_MAP = {
   '2H': 'two',
   A: 'amm',
@@ -185,6 +202,8 @@ const SOURCE_CATEGORY = {
   UNKNOWN: 'unknown'
 };
 
+const SOURCE_TAG_PATTERN = '(?:Homebrew|HB|UA|Unearthed Arcana|Third[-\\s]?Party|Indie|Partnered[-\\s]?Official|Semi[-\\s]?Official|MercerBrew)';
+
 const OFFICIAL_2014_SOURCE_PATTERNS = [
   /Acquisitions Incorporated/i,
   /Basic Rules/i,
@@ -215,6 +234,10 @@ const OFFICIAL_2024_SOURCE_PATTERNS = [
   /Player's Handbook\s*\(2024\)/i
 ];
 
+const THIRD_PARTY_SOURCE_PATTERNS = [
+  /Tal'Dorei Campaign Setting: Reborn/i
+];
+
 const PRIMARY_ABILITY_OVERRIDES = {
   barbarian: ['str'],
   bard: ['cha'],
@@ -243,6 +266,113 @@ const SPELLCASTING_PROGRESSION_OVERRIDES = {
   wizard: 'full'
 };
 
+const CLASS_SCALE_VALUE_IDS = {
+  barbarian: {
+    rages: '62svnflxsuad7oar',
+    'rage-damage': 't42incolsbuqn2ec',
+    'brutal-critical': 'y0kr48pnq5doebeb'
+  },
+  bard: {
+    inspiration: '0Ybu5yMjplpTAHiE',
+    'song-of-rest': 'TK2RAm9EFQtVjDrU',
+    'cantrips-known': 'ovKbtrhfIkYTuThu',
+    'spells-known': '9FXWVh7OmbPr1iR9'
+  },
+  cleric: {
+    'channel-divinity': 'oOvaOWkQdMJHHwzo',
+    'destroy-undead': 'bRWP2zsP33jeZcUY',
+    'cantrips-known': 'b6vbDSfWTwxqyTke'
+  },
+  druid: {
+    'wild-shape': 'eX43MTPVUV9VB0dK',
+    'cantrips-known': 'Gfzu57bEFMsekg7v',
+    'wild-shape-uses': 'PKUB0owJROhnfPwq'
+  },
+  fighter: {
+    indomitable: 'B7YpSu4cVsEbHbrv',
+    'action-surge': 'kxiasN1v8KFm9nse'
+  },
+  monk: {
+    die: 'MXFbf0nxMiyLdPbX',
+    'unarmored-movement': '1OzfWDWCquoHMeX5'
+  },
+  paladin: {
+    'aura-radius': 'J6UYtKD0wkJQ9CHT'
+  },
+  ranger: {
+    'spells-known': 'FYvhuTSScSJTfYBM'
+  },
+  rogue: {
+    'sneak-attack': '81nHtANt6Ffg9M4V'
+  },
+  sorcerer: {
+    'cantrips-known': 'rSUZv6eYOPRtikhv',
+    'spells-known': 'Wr4j8nEA7gZxzW5Z'
+  },
+  warlock: {
+    'cantrips-known': 'IXXGQe1feA5cBsOH',
+    'spells-known': 'zfiyBsaOuE359vfA'
+  },
+  wizard: {
+    'cantrips-known': 'r4NBaBhA20gUjJ56'
+  }
+};
+
+const CLASS_EXPERTISE_IDS = {
+  bard: {
+    3: 'cwu9uhmtcKhqli8W',
+    10: 'O2cVH7Y5kNfoUyLg'
+  },
+  rogue: {
+    1: 'TDHYngxGqDHllgzw',
+    6: 'Iozyk39gsM4Kecex'
+  }
+};
+
+const CANTRIPS_KNOWN_CLASSES = new Set(['bard', 'cleric', 'druid', 'sorcerer', 'warlock', 'wizard']);
+const SPELLS_KNOWN_CLASSES = new Set(['bard', 'ranger', 'sorcerer', 'warlock']);
+
+const WEAPON_PROFICIENCY_GRANT_MAP = {
+  battleaxe: 'weapon:mar:battleaxe',
+  blowgun: 'weapon:mar:blowgun',
+  club: 'weapon:sim:club',
+  dagger: 'weapon:sim:dagger',
+  dart: 'weapon:sim:dart',
+  flail: 'weapon:mar:flail',
+  glaive: 'weapon:mar:glaive',
+  greataxe: 'weapon:mar:greataxe',
+  greatclub: 'weapon:sim:greatclub',
+  greatsword: 'weapon:mar:greatsword',
+  halberd: 'weapon:mar:halberd',
+  handaxe: 'weapon:sim:handaxe',
+  handcrossbow: 'weapon:mar:handcrossbow',
+  heavycrossbow: 'weapon:mar:heavycrossbow',
+  javelin: 'weapon:sim:javelin',
+  lance: 'weapon:mar:lance',
+  lightcrossbow: 'weapon:sim:lightcrossbow',
+  lighthammer: 'weapon:sim:lighthammer',
+  longbow: 'weapon:mar:longbow',
+  longsword: 'weapon:mar:longsword',
+  mace: 'weapon:sim:mace',
+  maul: 'weapon:mar:maul',
+  morningstar: 'weapon:mar:morningstar',
+  musket: 'weapon:mar:musket',
+  pike: 'weapon:mar:pike',
+  pistol: 'weapon:mar:pistol',
+  quarterstaff: 'weapon:sim:quarterstaff',
+  rapier: 'weapon:mar:rapier',
+  scimitar: 'weapon:mar:scimitar',
+  shortbow: 'weapon:sim:shortbow',
+  shortsword: 'weapon:mar:shortsword',
+  sickle: 'weapon:sim:sickle',
+  sling: 'weapon:sim:sling',
+  spear: 'weapon:sim:spear',
+  trident: 'weapon:mar:trident',
+  warpick: 'weapon:mar:warpick',
+  warhammer: 'weapon:mar:warhammer',
+  whip: 'weapon:mar:whip'
+};
+
 const ABILITY_ID_MAP = {
   str: 'str',
   strength: 'str',
@@ -259,7 +389,8 @@ const ABILITY_ID_MAP = {
 };
 
 const ACTIVE_EFFECT_MODE = {
-  ADD: 2
+  ADD: 2,
+  OVERRIDE: 5
 };
 
 const SPELL_STATUS_EFFECTS = {
@@ -379,7 +510,7 @@ function inferSourceCategory({ book = '', name = '', sourceLine = '' } = {}) {
     return SOURCE_CATEGORY.UA;
   }
 
-  if (/third party/.test(normalized)) {
+  if (/third party/.test(normalized) || matchesSourcePatterns(sourceText, THIRD_PARTY_SOURCE_PATTERNS)) {
     return SOURCE_CATEGORY.THIRD_PARTY;
   }
 
@@ -734,27 +865,43 @@ function splitSourceText(value = '', hints = {}) {
   const contentLines = sourceIndex >= 0 ? lines.slice(0, sourceIndex) : lines.slice();
   const sourceLine = sourceIndex >= 0 ? lines.slice(sourceIndex).join(' ').replace(/^\s*Source:\s*/i, '').trim() : '';
 
-  let book = sourceLine;
-  let page = '';
-  if (sourceLine) {
-    const pageMatch = sourceLine.match(/\bp\.\s*([0-9A-Za-z-]+)\s*$/i);
-    if (pageMatch) {
-      page = pageMatch[1];
-      book = sourceLine.slice(0, pageMatch.index).trim();
-    }
-  }
+  const parsedSource = parseSourceCitation(sourceLine);
 
   return {
     content: contentLines.join('\n').trim(),
     sourceLine,
     source: normalizeSourceRecord({
       custom: '',
-      book,
-      page,
+      book: parsedSource.book,
+      page: parsedSource.page,
       license: '',
       rules: ''
-    }, { ...hints, sourceLine })
+    }, { ...hints, sourceLine: parsedSource.citation })
   };
+}
+
+function parseSourceCitation(sourceLine = '') {
+  const citation = normalizeWhitespace(sourceLine).split(/\s*,\s+/)[0] || '';
+  if (!citation) return { book: '', page: '', citation: '' };
+
+  const pageMatch = citation.match(new RegExp(`\\bp\\.\\s*([0-9A-Za-z-]+)(?:\\s*\\(${SOURCE_TAG_PATTERN}\\))?\\s*$`, 'i'));
+  if (!pageMatch) {
+    return {
+      book: stripSourceCategorySuffix(citation),
+      page: '',
+      citation
+    };
+  }
+
+  return {
+    book: citation.slice(0, pageMatch.index).trim(),
+    page: pageMatch[1],
+    citation
+  };
+}
+
+function stripSourceCategorySuffix(value = '') {
+  return normalizeWhitespace(value).replace(new RegExp(`\\s*\\(${SOURCE_TAG_PATTERN}\\)\\s*$`, 'i'), '').trim();
 }
 
 function textToHtml(value = '') {
@@ -793,8 +940,30 @@ function buildSourceFlags(entry, sourceType, extras = {}) {
   };
 }
 
-function normalizeDocumentBase({ id, name, type, img, system, flags, effects = [] }) {
-  return {
+let iconOverrideCache = null;
+
+function getIconOverrides() {
+  if (!iconOverrideCache) {
+    iconOverrideCache = readOverrides();
+  }
+  return iconOverrideCache;
+}
+
+function inferPackNameForDocument(document) {
+  if (document.type === 'spell') return PACK_CONFIG.spells.packName;
+  if (document.type === 'class') return PACK_CONFIG.classes.packName;
+  if (document.type === 'subclass') return PACK_CONFIG.subclasses.packName;
+  if (document.type === 'feat') return PACK_CONFIG.features.packName;
+  return PACK_CONFIG.items.packName;
+}
+
+function resolveGeneratedIcon(document, packName = '') {
+  const override = getIconOverrides()[documentIconKey(document, packName || inferPackNameForDocument(document))];
+  return override?.approved && override.img ? override.img : document.img;
+}
+
+function normalizeDocumentBase({ id, name, type, img, system, flags, effects = [], packName = '' }) {
+  const document = {
     _id: id,
     _key: `!items!${id}`,
     name,
@@ -807,6 +976,9 @@ function normalizeDocumentBase({ id, name, type, img, system, flags, effects = [
     ownership: { default: 0 },
     flags
   };
+
+  document.img = resolveGeneratedIcon(document, packName);
+  return document;
 }
 
 function normalizeModifierCategory(category = '') {
@@ -1103,6 +1275,83 @@ function buildDocumentEffects({
     effects,
     unmapped
   };
+}
+
+function inferUnarmoredDefenseCalc({ ownerIdentifier = '', ownerName = '', text = '' } = {}) {
+  const featureText = normalizeSearchText(text);
+  const ownerText = normalizeSearchText(`${ownerIdentifier} ${ownerName}`);
+
+  if (/\bconstitution modifier\b/.test(featureText) || /\bbarbarian\b/.test(ownerText)) {
+    return 'unarmoredBarb';
+  }
+
+  if (/\bwisdom modifier\b/.test(featureText) || /\bmonk\b/.test(ownerText)) {
+    return 'unarmoredMonk';
+  }
+
+  if (/\bcharisma modifier\b/.test(featureText) || /\bbard\b/.test(ownerText)) {
+    return 'unarmoredBard';
+  }
+
+  return '';
+}
+
+function hasUnarmoredDefenseFormula(featureName = '', text = '') {
+  if (trimSlugToken(featureName) === 'unarmored-defense') {
+    return true;
+  }
+
+  const featureText = normalizeSearchText(text);
+  return /\b(?:armor class|ac) equals 10 \+ your dexterity modifier \+ your (?:constitution|wisdom|charisma) modifier\b/.test(featureText);
+}
+
+function inferDamageResistanceChanges(text = '') {
+  const featureText = normalizeSearchText(text);
+  if (!/\bresistant to all damage types\b/.test(featureText)) {
+    return [];
+  }
+
+  return [
+    buildEffectChange('system.traits.dr.value', STANDARD_DAMAGE_TYPES.join(';'))
+  ];
+}
+
+function buildFeaturePassiveEffects({
+  ownerIdentifier = '',
+  ownerName = '',
+  featureName = '',
+  text = '',
+  documentId,
+  documentName,
+  img
+}) {
+  const changes = [];
+  const seeds = [];
+
+  if (hasUnarmoredDefenseFormula(featureName, text)) {
+    const calc = inferUnarmoredDefenseCalc({ ownerIdentifier, ownerName, text });
+    if (calc) {
+      changes.push(buildEffectChange('system.attributes.ac.calc', calc, ACTIVE_EFFECT_MODE.OVERRIDE));
+      seeds.push(`unarmored-defense|${calc}`);
+    }
+  }
+
+  const resistanceChanges = inferDamageResistanceChanges(text);
+  if (resistanceChanges.length) {
+    changes.push(...resistanceChanges);
+    seeds.push('damage-resistance|all');
+  }
+
+  if (!changes.length) return [];
+
+  return [buildActiveEffect({
+    documentId,
+    packName: PACK_CONFIG.features.packName,
+    documentName,
+    img,
+    changes,
+    seed: `passive|${seeds.join('|')}`
+  })];
 }
 
 function stripEditionSuffix(name = '') {
@@ -2463,18 +2712,18 @@ function capitalizeWords(value = '') {
     .join(' ');
 }
 
-function buildTraitAdvancement({ grants = [], choices = [], level = 1, classRestriction = null }) {
+function buildTraitAdvancement({ id = '', grants = [], choices = [], level = 1, classRestriction = null, mode = 'default', title = '' }) {
   const advancement = {
-    _id: deterministicId(['trait', level, grants.join(','), JSON.stringify(choices)].join('|')),
+    _id: id || deterministicId(['trait', level, grants.join(','), JSON.stringify(choices)].join('|')),
     type: 'Trait',
     configuration: {
-      mode: 'default',
+      mode,
       allowReplacements: false,
       grants,
       choices
     },
     level,
-    title: '',
+    title,
     value: {
       chosen: []
     }
@@ -2482,6 +2731,43 @@ function buildTraitAdvancement({ grants = [], choices = [], level = 1, classRest
 
   if (classRestriction) {
     advancement.classRestriction = classRestriction;
+  }
+
+  return advancement;
+}
+
+function buildItemChoiceAdvancement({ id = '', title, choices, hint = '' }) {
+  const advancement = {
+    _id: id || deterministicId(['item-choice', title, JSON.stringify(choices)].join('|')),
+    type: 'ItemChoice',
+    configuration: {
+      choices,
+      allowDrops: true,
+      type: 'spell',
+      pool: [],
+      spell: {
+        ability: [],
+        preparation: '',
+        uses: {
+          max: '',
+          per: ''
+        }
+      },
+      restriction: {
+        type: '',
+        subtype: '',
+        level: 'available'
+      }
+    },
+    value: {
+      added: {},
+      replaced: {}
+    },
+    title
+  };
+
+  if (hint) {
+    advancement.hint = hint;
   }
 
   return advancement;
@@ -2531,8 +2817,75 @@ function buildAbilityScoreImprovement(level) {
     },
     value: {},
     level,
-    title: ''
+    title: level === 19 ? '' : 'Ability Score Improvement'
   };
+}
+
+function buildSkillChoicePool(skills = []) {
+  const uniqueSkills = Array.from(new Set(skills));
+  const allSkills = Object.values(SKILL_MAP);
+  if (allSkills.every((skill) => uniqueSkills.includes(skill))) {
+    return ['skills:*'];
+  }
+  return uniqueSkills.map((skill) => `skills:${skill}`);
+}
+
+function buildScaleValueAdvancement({ id = '', title, identifier, type, distanceUnits = '', scale }) {
+  return {
+    _id: id || deterministicId(['scale-value', identifier, title, JSON.stringify(scale)].join('|')),
+    type: 'ScaleValue',
+    configuration: {
+      identifier,
+      type,
+      distance: {
+        units: distanceUnits
+      },
+      scale
+    },
+    value: {},
+    title
+  };
+}
+
+function buildDiceScaleValueAdvancement({ id, title, identifier, entries }) {
+  return buildScaleValueAdvancement({
+    id,
+    title,
+    identifier,
+    type: 'dice',
+    scale: Object.fromEntries(entries.map(({ level, number, faces }) => [
+      String(level),
+      {
+        number: number ?? null,
+        faces,
+        modifiers: []
+      }
+    ]))
+  });
+}
+
+function buildValueScaleAdvancement({ id, title, identifier, type = 'number', distanceUnits = '', entries }) {
+  return buildScaleValueAdvancement({
+    id,
+    title,
+    identifier,
+    type,
+    distanceUnits,
+    scale: Object.fromEntries(entries.map(({ level, value }) => [
+      String(level),
+      { value }
+    ]))
+  });
+}
+
+function buildNumberScaleValueAdvancement({ id, title, identifier, entries }) {
+  return buildValueScaleAdvancement({
+    id,
+    title,
+    identifier,
+    type: 'number',
+    entries
+  });
 }
 
 function buildSubclassAdvancement(level, title) {
@@ -2599,6 +2952,463 @@ function inferPrimaryAbility(classEntry, spellAbilityCode) {
   };
 }
 
+function extractCounterValues(classEntry, counterName) {
+  return classEntry.autolevels
+    .map((autolevel) => ({
+      level: safeNumber(autolevel.level, null),
+      value: autolevel.counters
+        ?.find((counter) => normalizeWhitespace(counter.name).toLowerCase() === counterName.toLowerCase())
+        ?.value
+    }))
+    .filter((entry) => entry.level !== null && entry.value !== undefined)
+    .map((entry) => ({
+      level: entry.level,
+      value: safeNumber(entry.value, null)
+    }))
+    .filter((entry) => entry.value !== null);
+}
+
+function extractChangedNumberEntries(entries) {
+  let previous = Symbol('unset');
+  return entries
+    .slice()
+    .sort((left, right) => left.level - right.level)
+    .filter((entry) => {
+      if (entry.value === previous) return false;
+      previous = entry.value;
+      return true;
+    });
+}
+
+function hasClassFeature(classEntry, pattern) {
+  return classEntry.autolevels
+    .some((autolevel) => autolevel.features?.some((feature) => pattern.test(feature.name)));
+}
+
+function getFeatureEntries(classEntry, pattern) {
+  const entries = [];
+  for (const autolevel of classEntry.autolevels) {
+    const level = safeNumber(autolevel.level, null);
+    if (level === null) continue;
+    for (const feature of autolevel.features || []) {
+      if (pattern.test(feature.name)) {
+        entries.push({ level, feature });
+      }
+    }
+  }
+  return entries;
+}
+
+function scaleId(classIdentifier, identifier) {
+  return CLASS_SCALE_VALUE_IDS[classIdentifier]?.[identifier] || '';
+}
+
+function extractDieFacesFromText(value = '') {
+  const dieMatch = String(value || '').match(/\bd(\d+)\b/i);
+  if (dieMatch) return safeNumber(dieMatch[1], null);
+
+  const percentMatch = String(value || '').match(/%(\d+)\b/);
+  return percentMatch ? safeNumber(percentMatch[1], null) : null;
+}
+
+function parseOrdinalLevel(value = '') {
+  const match = String(value || '').match(/\b(\d+)(?:st|nd|rd|th)?\b/i);
+  return match ? safeNumber(match[1], null) : null;
+}
+
+function parseCountWord(value = '') {
+  const text = String(value || '').toLowerCase();
+  const digitMatch = text.match(/\b(\d+)\b/);
+  if (digitMatch) return safeNumber(digitMatch[1], null);
+  if (/\bone\b/.test(text) || /\ba\b/.test(text)) return 1;
+  if (/\btwo\b/.test(text)) return 2;
+  if (/\bthree\b/.test(text)) return 3;
+  if (/\bfour\b/.test(text)) return 4;
+  return null;
+}
+
+function parseCrValue(value = '') {
+  const match = String(value || '').match(/\bCR\s+(\d+)(?:\/(\d+))?\b/i);
+  if (!match) return null;
+  const numerator = safeNumber(match[1], null);
+  const denominator = safeNumber(match[2], null);
+  if (numerator === null) return null;
+  return denominator ? numerator / denominator : numerator;
+}
+
+function extractDiceEntriesFromFeatures(classEntry, pattern, options = {}) {
+  const entries = [];
+  for (const { level, feature } of getFeatureEntries(classEntry, pattern)) {
+    const text = `${feature.name}\n${feature.text || ''}`;
+    const dieMatch = text.match(/(\d+)?d(\d+)\b/i);
+    if (dieMatch) {
+      entries.push({
+        level,
+        number: dieMatch[1] ? safeNumber(dieMatch[1], null) : options.defaultNumber ?? null,
+        faces: safeNumber(dieMatch[2], null)
+      });
+      continue;
+    }
+
+    const parentheticalCount = feature.name.match(/\(([^)]+)\)/);
+    const number = parentheticalCount ? parseCountWord(parentheticalCount[1]) : null;
+    if (number && options.faces) {
+      entries.push({ level, number, faces: options.faces });
+    }
+  }
+  return entries;
+}
+
+function extractTableDiceEntries(text = '') {
+  const entries = [];
+  for (const match of String(text || '').matchAll(/(\d+)(?:st|nd|rd|th)?\s*\|\s*(\d+)?d(\d+)\b/gi)) {
+    entries.push({
+      level: safeNumber(match[1], null),
+      number: match[2] ? safeNumber(match[2], null) : null,
+      faces: safeNumber(match[3], null)
+    });
+  }
+  return entries.filter((entry) => entry.level !== null && entry.faces !== null);
+}
+
+function extractDistanceEntriesFromFeatures(classEntry, pattern) {
+  const entries = [];
+  for (const { level, feature } of getFeatureEntries(classEntry, pattern)) {
+    const match = `${feature.name}\n${feature.text || ''}`.match(/\bincreases by\s+(\d+)\s+feet\b/i);
+    if (match) entries.push({ level, value: safeNumber(match[1], null) });
+  }
+  return entries.filter((entry) => entry.value !== null);
+}
+
+function extractCantripsKnownEntries(classEntry) {
+  return extractChangedNumberEntries(classEntry.autolevels
+    .map((autolevel) => ({
+      level: safeNumber(autolevel.level, null),
+      value: safeNumber(autolevel.slots?.[0], null)
+    }))
+    .filter((entry) => entry.level !== null && entry.value !== null && entry.value > 0));
+}
+
+function buildCantripsKnownScaleValueAdvancement(classEntry, classIdentifier) {
+  if (!CANTRIPS_KNOWN_CLASSES.has(classIdentifier)) return [];
+  const cantripsKnown = extractCantripsKnownEntries(classEntry);
+  if (!cantripsKnown.length) return [];
+
+  return [buildNumberScaleValueAdvancement({
+    id: scaleId(classIdentifier, 'cantrips-known'),
+    title: 'Cantrips Known',
+    identifier: 'cantrips-known',
+    entries: cantripsKnown
+  })];
+}
+
+function buildSpellsKnownScaleValueAdvancement(classEntry, classIdentifier) {
+  if (!SPELLS_KNOWN_CLASSES.has(classIdentifier)) return [];
+  const spellsKnown = extractChangedNumberEntries(extractCounterValues(classEntry, 'Spells Known'));
+  if (!spellsKnown.length) return [];
+
+  return [buildNumberScaleValueAdvancement({
+    id: scaleId(classIdentifier, 'spells-known'),
+    title: 'Spells Known',
+    identifier: 'spells-known',
+    entries: spellsKnown
+  })];
+}
+
+function buildBardScaleValueAdvancements(classEntry, classIdentifier) {
+  if (classIdentifier !== 'bard') return [];
+
+  const advancements = [];
+  const inspiration = [];
+  for (const { level, feature } of getFeatureEntries(classEntry, /^Bardic Inspiration(?:\s*\([^)]*\))?$/i)) {
+    const autolevel = classEntry.autolevels.find((entry) => safeNumber(entry.level, null) === level);
+    const counter = autolevel?.counters?.find((entry) => /^Bardic Inspiration$/i.test(entry.name));
+    const faces = extractDieFacesFromText(feature.name) || extractDieFacesFromText(counter?.value) || (level === 1 ? 6 : null);
+    if (faces) inspiration.push({ level, faces });
+  }
+  if (inspiration.length) advancements.push(buildDiceScaleValueAdvancement({
+    id: scaleId(classIdentifier, 'inspiration'),
+    title: 'Bardic Inspiration Die',
+    identifier: 'inspiration',
+    entries: inspiration
+  }));
+
+  const songOfRest = getFeatureEntries(classEntry, /^Song of Rest\s*\([^)]*\)$/i)
+    .map(({ level, feature }) => ({ level, faces: extractDieFacesFromText(feature.name) }))
+    .filter((entry) => entry.faces);
+  if (songOfRest.length) advancements.push(buildDiceScaleValueAdvancement({
+    id: scaleId(classIdentifier, 'song-of-rest'),
+    title: 'Song of Rest Die',
+    identifier: 'song-of-rest',
+    entries: songOfRest
+  }));
+
+  return advancements;
+}
+
+function buildBarbarianScaleValueAdvancements(classEntry, classIdentifier) {
+  if (classIdentifier !== 'barbarian') return [];
+
+  const rages = extractChangedNumberEntries(extractCounterValues(classEntry, 'Rage'));
+  if (hasClassFeature(classEntry, /^Primal Champion$/i)) {
+    rages.push({ level: 20, value: 999 });
+  }
+
+  const rageDamage = [];
+  const rage = getFeatureEntries(classEntry, /^Rage$/i)[0]?.feature;
+  if (rage) {
+    for (const match of rage.text.matchAll(/(?:At\s+)?(\d+)(?:st|nd|rd|th)?(?:\s+level)?[^.]*?\+(\d+)\s+bonus to damage/gi)) {
+      rageDamage.push({ level: safeNumber(match[1], null), value: safeNumber(match[2], null) });
+    }
+    for (const match of rage.text.matchAll(/\+(\d+)\s+at\s+(\d+)(?:st|nd|rd|th)?(?:\s+level)?/gi)) {
+      rageDamage.push({ level: safeNumber(match[2], null), value: safeNumber(match[1], null) });
+    }
+  }
+
+  const brutalCritical = getFeatureEntries(classEntry, /^Brutal Critical/i)
+    .map(({ level, feature }) => ({
+      level,
+      value: parseCountWord(feature.name.match(/\(([^)]+)\)/)?.[1] || '')
+    }))
+    .filter((entry) => entry.value);
+
+  return [
+    rages.length ? buildNumberScaleValueAdvancement({
+      id: scaleId(classIdentifier, 'rages'),
+      title: 'Rages',
+      identifier: 'rages',
+      entries: extractChangedNumberEntries(rages)
+    }) : null,
+    rageDamage.length ? buildNumberScaleValueAdvancement({
+      id: scaleId(classIdentifier, 'rage-damage'),
+      title: 'Rage Damage',
+      identifier: 'rage-damage',
+      entries: extractChangedNumberEntries(rageDamage)
+    }) : null,
+    brutalCritical.length ? buildNumberScaleValueAdvancement({
+      id: scaleId(classIdentifier, 'brutal-critical'),
+      title: 'Brutal Critical Dice',
+      identifier: 'brutal-critical',
+      entries: extractChangedNumberEntries(brutalCritical)
+    }) : null
+  ].filter(Boolean);
+}
+
+function buildClericScaleValueAdvancements(classEntry, classIdentifier) {
+  if (classIdentifier !== 'cleric') return [];
+
+  const channelDivinity = extractChangedNumberEntries(extractCounterValues(classEntry, 'Channel Divinity'));
+  const destroyUndead = getFeatureEntries(classEntry, /^Destroy Undead/i)
+    .map(({ level, feature }) => ({ level, value: parseCrValue(feature.name) }))
+    .filter((entry) => entry.value !== null);
+
+  return [
+    channelDivinity.length ? buildNumberScaleValueAdvancement({
+      id: scaleId(classIdentifier, 'channel-divinity'),
+      title: 'Channel Divinity Uses',
+      identifier: 'channel-divinity',
+      entries: channelDivinity
+    }) : null,
+    destroyUndead.length ? buildValueScaleAdvancement({
+      id: scaleId(classIdentifier, 'destroy-undead'),
+      title: 'Destroy Undead CR',
+      identifier: 'destroy-undead',
+      type: 'cr',
+      entries: destroyUndead
+    }) : null
+  ].filter(Boolean);
+}
+
+function buildDruidScaleValueAdvancements(classEntry, classIdentifier) {
+  if (classIdentifier !== 'druid') return [];
+
+  const wildShapeUses = extractChangedNumberEntries(extractCounterValues(classEntry, 'Wild Shape'));
+  if (hasClassFeature(classEntry, /^Archdruid$/i)) {
+    wildShapeUses.push({ level: 20, value: 99 });
+  }
+
+  const wildShapeFeature = getFeatureEntries(classEntry, /^Wild Shape$/i)[0]?.feature;
+  const wildShapeCr = [];
+  if (wildShapeFeature) {
+    for (const match of wildShapeFeature.text.matchAll(/(\d+)(?:st|nd|rd|th)?\s*\|\s*(\d+)(?:\/(\d+))?\s*\|/gi)) {
+      const numerator = safeNumber(match[2], null);
+      const denominator = safeNumber(match[3], null);
+      if (numerator !== null) wildShapeCr.push({ level: safeNumber(match[1], null), value: denominator ? numerator / denominator : numerator });
+    }
+  }
+
+  return [
+    wildShapeCr.length ? buildValueScaleAdvancement({
+      id: scaleId(classIdentifier, 'wild-shape'),
+      title: 'Wild Shape CR',
+      identifier: 'wild-shape',
+      type: 'cr',
+      entries: wildShapeCr
+    }) : null,
+    wildShapeUses.length ? buildNumberScaleValueAdvancement({
+      id: scaleId(classIdentifier, 'wild-shape-uses'),
+      title: 'Wild Shape Uses',
+      identifier: 'wild-shape-uses',
+      entries: extractChangedNumberEntries(wildShapeUses)
+    }) : null
+  ].filter(Boolean);
+}
+
+function buildFighterScaleValueAdvancements(classEntry, classIdentifier) {
+  if (classIdentifier !== 'fighter') return [];
+
+  const actionSurge = getFeatureEntries(classEntry, /^Action Surge/i)
+    .map(({ level, feature }) => ({ level, value: parseCountWord(feature.name) || (level === 2 ? 1 : null) }))
+    .filter((entry) => entry.value);
+  const indomitable = getFeatureEntries(classEntry, /^Indomitable/i)
+    .map(({ level, feature }) => ({ level, value: parseCountWord(feature.name) || (level === 9 ? 1 : null) }))
+    .filter((entry) => entry.value);
+
+  return [
+    indomitable.length ? buildNumberScaleValueAdvancement({
+      id: scaleId(classIdentifier, 'indomitable'),
+      title: 'Indomitable Uses',
+      identifier: 'indomitable',
+      entries: indomitable
+    }) : null,
+    actionSurge.length ? buildNumberScaleValueAdvancement({
+      id: scaleId(classIdentifier, 'action-surge'),
+      title: 'Action Surge Uses',
+      identifier: 'action-surge',
+      entries: actionSurge
+    }) : null
+  ].filter(Boolean);
+}
+
+function buildMonkScaleValueAdvancements(classEntry, classIdentifier) {
+  if (classIdentifier !== 'monk') return [];
+
+  const martialArtsFeature = getFeatureEntries(classEntry, /^Martial Arts$/i)[0]?.feature;
+  const martialArts = martialArtsFeature
+    ? extractTableDiceEntries(martialArtsFeature.text).map((entry) => ({ ...entry, number: null }))
+    : [];
+  const movement = extractDistanceEntriesFromFeatures(classEntry, /^Unarmored Movement(?:\s|$)/i);
+
+  return [
+    martialArts.length ? buildDiceScaleValueAdvancement({
+      id: scaleId(classIdentifier, 'die'),
+      title: 'Martial Arts Die',
+      identifier: 'die',
+      entries: martialArts
+    }) : null,
+    movement.length ? buildValueScaleAdvancement({
+      id: scaleId(classIdentifier, 'unarmored-movement'),
+      title: 'Unarmored Movement',
+      identifier: 'unarmored-movement',
+      type: 'distance',
+      distanceUnits: 'ft',
+      entries: movement
+    }) : null
+  ].filter(Boolean);
+}
+
+function buildPaladinScaleValueAdvancements(classEntry, classIdentifier) {
+  if (classIdentifier !== 'paladin') return [];
+  if (!hasClassFeature(classEntry, /^Aura of Protection$/i)) return [];
+
+  return [buildValueScaleAdvancement({
+    id: scaleId(classIdentifier, 'aura-radius'),
+    title: 'Aura Radius',
+    identifier: 'aura-radius',
+    type: 'distance',
+    distanceUnits: 'ft',
+    entries: [
+      { level: 6, value: 10 },
+      { level: 18, value: 30 }
+    ]
+  })];
+}
+
+function buildRogueScaleValueAdvancements(classEntry, classIdentifier) {
+  if (classIdentifier !== 'rogue') return [];
+
+  const sneakAttack = extractDiceEntriesFromFeatures(classEntry, /^Sneak Attack/i, { faces: 6, defaultNumber: 1 })
+    .filter((entry) => entry.faces);
+  if (!sneakAttack.length) return [];
+
+  return [buildDiceScaleValueAdvancement({
+    id: scaleId(classIdentifier, 'sneak-attack'),
+    title: 'Sneak Attack',
+    identifier: 'sneak-attack',
+    entries: sneakAttack
+  })];
+}
+
+function buildExpertiseAdvancements(classEntry, classIdentifier) {
+  if (!CLASS_EXPERTISE_IDS[classIdentifier]) return [];
+
+  const expertiseLevels = classEntry.autolevels
+    .filter((autolevel) => autolevel.features?.some((feature) => /^Expertise(?:\s+Improvement)?$/i.test(feature.name)))
+    .map((autolevel) => safeNumber(autolevel.level, null))
+    .filter((level) => level !== null);
+
+  return expertiseLevels.map((level) => {
+    const pool = classIdentifier === 'rogue' && level === 1
+      ? ['tool:thief', 'skills:*']
+      : classIdentifier === 'rogue'
+        ? ['skills:*', 'tool:thief']
+        : ['skills:*'];
+
+    return buildTraitAdvancement({
+      id: CLASS_EXPERTISE_IDS[classIdentifier][level] || '',
+      grants: [],
+      choices: [{
+        count: 2,
+        pool
+      }],
+      level,
+      mode: 'expertise',
+      title: 'Expertise'
+    });
+  });
+}
+
+function buildBardMagicalSecretsAdvancement(classEntry) {
+  if (trimSlugToken(classEntry.name) !== 'bard') return [];
+
+  const magicalSecretLevels = classEntry.autolevels
+    .filter((autolevel) => autolevel.features?.some((feature) => /^Magical Secrets$/i.test(feature.name)))
+    .map((autolevel) => safeNumber(autolevel.level, null))
+    .filter((level) => level !== null);
+  if (!magicalSecretLevels.length) return [];
+
+  return [buildItemChoiceAdvancement({
+    id: 'EC1yNAV6khHilOhz',
+    title: 'Magical Secrets',
+    choices: Object.fromEntries(magicalSecretLevels.map((level) => [
+      String(level),
+      {
+        count: 2,
+        replacement: false
+      }
+    ])),
+    hint: 'Choose two spells from any classes, including this one. A spell you choose must be of a level you can cast, as shown on the Bard table, or a cantrip.'
+  })];
+}
+
+function buildClassCompatibilityAdvancements(classEntry) {
+  const classIdentifier = trimSlugToken(classEntry.name);
+  return [
+    ...buildExpertiseAdvancements(classEntry, classIdentifier),
+    ...buildBardMagicalSecretsAdvancement(classEntry),
+    ...buildCantripsKnownScaleValueAdvancement(classEntry, classIdentifier),
+    ...buildSpellsKnownScaleValueAdvancement(classEntry, classIdentifier),
+    ...buildBarbarianScaleValueAdvancements(classEntry, classIdentifier),
+    ...buildBardScaleValueAdvancements(classEntry, classIdentifier),
+    ...buildClericScaleValueAdvancements(classEntry, classIdentifier),
+    ...buildDruidScaleValueAdvancements(classEntry, classIdentifier),
+    ...buildFighterScaleValueAdvancements(classEntry, classIdentifier),
+    ...buildMonkScaleValueAdvancements(classEntry, classIdentifier),
+    ...buildPaladinScaleValueAdvancements(classEntry, classIdentifier),
+    ...buildRogueScaleValueAdvancements(classEntry, classIdentifier)
+  ];
+}
+
 function parseSkillAndSaveData(proficiencyText = '') {
   const parts = splitCsvList(proficiencyText);
   const saves = [];
@@ -2641,9 +3451,29 @@ function parseWeaponGrants(text = '') {
 }
 
 function mapSpecificWeaponGrant(entry = '') {
-  const key = trimSlugToken(entry);
+  const key = normalizeWeaponGrantKey(entry);
   if (!key) return '';
-  return `weapon:sim:${key}`;
+  return WEAPON_PROFICIENCY_GRANT_MAP[key] || '';
+}
+
+function normalizeWeaponGrantKey(entry = '') {
+  let key = trimSlugToken(entry).replace(/-/g, '');
+  if (!key) return '';
+
+  const aliases = {
+    handcrossbows: 'handcrossbow',
+    heavycrossbows: 'heavycrossbow',
+    lightcrossbows: 'lightcrossbow',
+    lighthammers: 'lighthammer'
+  };
+  if (aliases[key]) return aliases[key];
+
+  if (key.endsWith('staves')) return `${key.slice(0, -6)}staff`;
+  if (key.endsWith('axes')) return `${key.slice(0, -2)}e`;
+  if (key.endsWith('swords')) return key.slice(0, -1);
+  if (key.endsWith('bows')) return key.slice(0, -1);
+  if (key.endsWith('s') && WEAPON_PROFICIENCY_GRANT_MAP[key.slice(0, -1)]) return key.slice(0, -1);
+  return key;
 }
 
 function normalizeToolText(value = '') {
@@ -2662,7 +3492,7 @@ function cleanToolChoicePrefix(value = '') {
 }
 
 function parseLeadingCount(value = '') {
-  const text = cleanToolChoicePrefix(value).replace(/^any\s+/i, '').trim();
+  const text = cleanToolChoicePrefix(value).replace(/^any\s+/i, '').trim().toLowerCase();
   if (!text) return null;
 
   const digitMatch = text.match(/^(\d+)\b/);
@@ -2847,6 +3677,15 @@ function createFeatureDocument({ ownerName, ownerIdentifier, ownerType, feature,
     img: ITEM_ICON_MAP.feat,
     disabled: Boolean(activation.type || counter)
   });
+  const passiveEffects = buildFeaturePassiveEffects({
+    ownerIdentifier,
+    ownerName,
+    featureName: feature.name,
+    text: sourceSplit.content,
+    documentId: id,
+    documentName: feature.name,
+    img: ITEM_ICON_MAP.feat
+  });
   const uses = counter ? {
     max: String(counter.value || ''),
     recovery: counter.reset && RECOVERY_MAP[counter.reset]
@@ -2934,7 +3773,7 @@ function createFeatureDocument({ ownerName, ownerIdentifier, ownerType, feature,
       },
       identifier: identifierBase
     },
-    effects: effectData.effects,
+    effects: [...effectData.effects, ...passiveEffects],
     flags: buildSourceFlags({
       name: feature.name,
       detail: '',
@@ -2967,6 +3806,31 @@ function buildClassDescription(classEntry) {
       return `<h3>${trait.name}</h3>${body}`;
     })
     .join('');
+}
+
+function resolveClassSourceText(classEntry, classIdentifier) {
+  const className = normalizeWhitespace(classEntry.name);
+  const strippedClassName = normalizeWhitespace(stripEditionSuffix(classEntry.name));
+  const matchingTrait = classEntry.traits.find((trait) => {
+    const traitName = normalizeWhitespace(trait.name);
+    return traitName === className || traitName === strippedClassName;
+  });
+  if (matchingTrait?.text) return matchingTrait.text;
+  if (classEntry.traits[0]?.text) return classEntry.traits[0].text;
+
+  for (const autolevel of classEntry.autolevels) {
+    for (const feature of autolevel.features || []) {
+      const sourceSplit = splitSourceText(feature.text, {
+        name: feature.name,
+        identifier: trimSlugToken(`${classIdentifier}-${feature.name}`)
+      });
+      if (sourceSplit.sourceLine) {
+        return `Source:\t${sourceSplit.sourceLine}`;
+      }
+    }
+  }
+
+  return '';
 }
 
 function extractTrailingParenthetical(value = '') {
@@ -3268,12 +4132,7 @@ function detectSubclassTitle(subclasses) {
 
 function convertClass(classEntry) {
   const classIdentifier = trimSlugToken(classEntry.name) || 'class';
-  const className = normalizeWhitespace(classEntry.name);
-  const strippedClassName = normalizeWhitespace(stripEditionSuffix(classEntry.name));
-  const classSource = classEntry.traits.find((trait) => {
-    const traitName = normalizeWhitespace(trait.name);
-    return traitName === className || traitName === strippedClassName;
-  })?.text || classEntry.traits[0]?.text || '';
+  const classSource = resolveClassSourceText(classEntry, classIdentifier);
   const classSourceSplit = splitSourceText(classSource, {
     name: classEntry.name,
     identifier: classIdentifier
@@ -3340,7 +4199,7 @@ function convertClass(classEntry) {
       grants: [],
       choices: [{
         count: classEntry.numSkills,
-        pool: skills.map((skill) => `skills:${skill}`)
+        pool: buildSkillChoicePool(skills)
       }],
       level: 1,
       classRestriction: 'primary'
@@ -3383,6 +4242,8 @@ function convertClass(classEntry) {
       classAdvancements.push(buildAbilityScoreImprovement(autolevel.level));
     }
   }
+
+  classAdvancements.push(...buildClassCompatibilityAdvancements(classEntry));
 
   if (Number.isFinite(subclassIntroLevel)) {
     classAdvancements.push(buildSubclassAdvancement(subclassIntroLevel, detectSubclassTitle(subclasses) || 'Subclass'));
@@ -3523,7 +4384,7 @@ function dedupeDocuments(documents) {
   const result = [];
 
   documents.forEach((document) => {
-    const serialized = JSON.stringify(document);
+    const serialized = serializeDocumentForDedupe(document);
     const existing = seen.get(document._id);
     if (!existing) {
       seen.set(document._id, serialized);
@@ -3539,15 +4400,109 @@ function dedupeDocuments(documents) {
   return result;
 }
 
+function serializeDocumentForDedupe(document) {
+  const comparable = structuredClone(document);
+  if (comparable.flags?.[MODULE_ID]?.fc5) {
+    delete comparable.flags[MODULE_ID].fc5.raw;
+  }
+  return JSON.stringify(comparable);
+}
+
 function ensureCleanDir(dirPath) {
   fs.rmSync(dirPath, { recursive: true, force: true });
   fs.mkdirSync(dirPath, { recursive: true });
 }
 
-function writeJsonDocuments(outputDir, documents) {
+function buildFolderDocument({ id, name, folder = null, type = 'Item', sort = 0 }) {
+  return {
+    _id: id,
+    _key: `!folders!${id}`,
+    name,
+    type,
+    folder,
+    sorting: 'a',
+    sort,
+    color: null,
+    flags: {},
+    ownership: { default: 0 }
+  };
+}
+
+function normalizeCompendiumFolderBook(value = '') {
+  const parsed = parseSourceCitation(value);
+  const book = parsed.book || value;
+  return stripSourceCategorySuffix(normalizeWhitespace(book)
+    .split(/\s*,\s+/)[0]
+    .replace(/\bp\.\s*[0-9A-Za-z-]+.*$/i, '')
+    .trim()) || 'Unknown Source';
+}
+
+function getDocumentSourceBook(document) {
+  return document.flags?.[MODULE_ID]?.fc5?.sourceBook
+    || document.system?.source?.book
+    || 'Unknown Source';
+}
+
+function buildPackFolderDocuments(documents, config = {}) {
+  if (!config.folderName) return { folders: [], documents };
+
+  const packName = config.packName || config.sourceDir || 'pack';
+  const documentType = config.type || 'Item';
+  const rootId = deterministicId(`folder|${packName}|Monster Creator`);
+  const rootFolder = buildFolderDocument({
+    id: rootId,
+    name: 'Monster Creator',
+    type: documentType,
+    sort: 0
+  });
+  const folders = [rootFolder];
+  const folderIds = new Set([rootId]);
+  const books = Array.from(new Set(documents.map((document) => normalizeCompendiumFolderBook(getDocumentSourceBook(document)))))
+    .sort((left, right) => left.localeCompare(right));
+
+  const bookFolderIds = new Map();
+  const kindFolderIds = new Map();
+  books.forEach((book, index) => {
+    const bookId = deterministicId(`folder|${packName}|Monster Creator|${book}`);
+    bookFolderIds.set(book, bookId);
+    if (!folderIds.has(bookId)) {
+      folderIds.add(bookId);
+      folders.push(buildFolderDocument({
+        id: bookId,
+        name: book,
+        folder: rootId,
+        type: documentType,
+        sort: (index + 1) * 100000
+      }));
+    }
+
+    const kindId = deterministicId(`folder|${packName}|Monster Creator|${book}|${config.folderName}`);
+    kindFolderIds.set(book, kindId);
+    if (!folderIds.has(kindId)) {
+      folderIds.add(kindId);
+      folders.push(buildFolderDocument({
+        id: kindId,
+        name: config.folderName,
+        folder: bookId,
+        type: documentType,
+        sort: 100000
+      }));
+    }
+  });
+
+  documents.forEach((document) => {
+    const book = normalizeCompendiumFolderBook(getDocumentSourceBook(document));
+    document.folder = kindFolderIds.get(book) || rootId;
+  });
+
+  return { folders, documents };
+}
+
+function writeJsonDocuments(outputDir, documents, config = {}) {
   ensureCleanDir(outputDir);
   const seen = new Set();
-  documents.forEach((document) => {
+  const { folders, documents: folderedDocuments } = buildPackFolderDocuments(documents, config);
+  [...folders, ...folderedDocuments].forEach((document) => {
     const identifier = trimSlugToken(document.name) || document._id;
     const filename = `${identifier}-${document._id}.json`;
     if (seen.has(filename)) {
@@ -3598,6 +4553,7 @@ module.exports = {
   dedupeDocuments,
   summarizeDocuments,
   writeJsonDocuments,
+  buildPackFolderDocuments,
   compilePackSources,
   splitSourceText,
   textToHtml,
