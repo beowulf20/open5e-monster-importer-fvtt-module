@@ -1,0 +1,4 @@
+interface:
+  display_name: "Foundry Debug"
+  short_description: "Debug live Foundry module issues."
+  default_prompt: "Use $foundry-debug to reproduce and debug a Monster Creator issue in live Foundry before changing code."

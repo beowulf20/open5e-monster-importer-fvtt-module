@@ -1,6 +1,6 @@
 # Monster Creator
 
-Monster Creator is a full Foundry Virtual Tabletop module that adds a **Create Monster** button to the Actor Directory and opens a Foundry form for creating NPC-style monsters with Open5E search.
+Monster Creator is a full Foundry Virtual Tabletop module that adds a **Create Monster** button to the Actor Directory and opens a Foundry form for creating NPC-style monsters with embedded Open5E search.
 
 It is built as a self-contained Foundry module for import via a manifest URL:
 
@@ -13,7 +13,7 @@ It is built as a self-contained Foundry module for import via a manifest URL:
 ## What this module provides
 
 - Actor Directory button: **Create Monster**
-- Open5E-backed monster search and pagination
+- Embedded Open5E monster search and pagination with local BM25 ranking
 - NPC actor creation payload that follows DnD5e conventions
 - Local/private Fight Club 5e XML conversion into `dnd5e` compendium packs
 - Automatic manifest/download URL injection for distribution builds
@@ -88,13 +88,13 @@ This repo can also generate local/private `dnd5e` compendium packs from a Fight 
 
 Target release used for development:
 
-- `https://github.com/vidalvanbergen/FightClub5eXML/releases/download/2026.02.10/Complete_Compendium_2014+2024.xml`
+- `https://github.com/vidalvanbergen/FightClub5eXML/releases/download/nightly/Complete_Compendium_5e.xml`
 
 Install dependencies and generate packs:
 
 ```bash
 npm install
-npm run generate:fc5-compendia -- --xml /path/to/Complete_Compendium_2014+2024.xml
+npm run generate:fc5-compendia -- --xml /path/to/Complete_Compendium_5e.xml
 ```
 
 You can also set `FC5_XML_PATH` in `.env` and run:
@@ -114,6 +114,16 @@ That command writes JSON source files under `tmp/fc5-pack-sources/` and compiles
 Generated documents include mapped Active Effects for common FC5 modifier data such as AC bonuses, weapon/spell attack bonuses, damage bonuses, save bonuses, movement bonuses, ability score bonuses, and subclass/class feature modifiers. Unsupported modifier strings are preserved in document flags for later refinement instead of being dropped.
 
 The module manifest already includes these pack definitions. Regenerate them locally whenever the upstream XML changes.
+
+### FC5 icon curation
+
+After generating FC5 pack sources, run the local icon operator panel:
+
+```bash
+npm run icons:dev
+```
+
+Open `/fc5-icon-tool.html` if the browser does not open automatically. The panel shows generated FC5 items still using generic icons, accepts pasted/dropped images or image URLs, stores approved assets under `monster-creator/assets/fc5-icons/`, and records decisions in `tools/fc5-compendium/icon-overrides.json`. Run `npm run generate:fc5-compendia` again to apply approved icons to the compiled packs.
 
 ## Screenshots
 
@@ -152,13 +162,17 @@ Then in Foundry use:
 
 - `http://127.0.0.1:8000/module.json`
 
-### API endpoint
+### Open5E data
 
-Default API endpoint in builds is:
+Monster Creator embeds the Open5E creature payload in the module and searches it locally with BM25 ranking plus local query expansion. Runtime search does not need the Open5E API by default.
 
-- `https://api.open5e.com`
+Refresh the embedded creature data with:
 
-To override for local/proxy use:
+```bash
+npm run generate:open5e-data
+```
+
+For local/proxy debugging, switch **Open5E data source** to **Remote Open5E API** in module settings. The default API endpoint is `https://api.open5e.com`. To override the endpoint during release builds:
 
 ```bash
 MONSTER_CREATOR_API_REMOTE_URL=http://localhost:8888 ./build-monster-creator.sh
@@ -179,7 +193,3 @@ Release preparation updates both `dist/module.json` and `dist/monster-creator/mo
 ## Credits
 
 - Most of the module work is based on and inspired by [Aioros/5e-statblock-importer](https://github.com/Aioros/5e-statblock-importer).
-
-## Next TODO
-
-- Embed the complete Open5E monster data payload in-module so runtime no longer depends on external API calls.

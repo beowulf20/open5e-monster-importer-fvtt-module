@@ -28,17 +28,26 @@ if (!chrome) {
 
 const vttUrl = process.env.VTT_URL || 'http://192.168.68.100:30000';
 const debugPort = process.env.CHROME_DEBUG_PORT || '9222';
+const debugHost = process.env.CHROME_DEBUG_HOST || '127.0.0.1';
+const debugUrlHost = debugHost === '0.0.0.0' ? '127.0.0.1' : debugHost;
+const allowOrigins = process.env.CHROME_DEBUG_ALLOW_ORIGINS
+  || `http://localhost:${debugPort},http://127.0.0.1:${debugPort}`;
 const userDataDir = process.env.CHROME_DEBUG_USER_DATA_DIR
   || path.join('/tmp', 'chrome-foundry-debug');
 
 const args = [
+  `--remote-debugging-address=${debugHost}`,
   `--remote-debugging-port=${debugPort}`,
+  `--remote-allow-origins=${allowOrigins}`,
   `--user-data-dir=${userDataDir}`,
   '--no-first-run',
   vttUrl
 ];
 
-console.log(`Launching ${chrome} with DevTools on port ${debugPort}`);
+console.log(`Launching ${chrome} with DevTools on ${debugHost}:${debugPort}`);
+console.log(`CDP version: http://${debugUrlHost}:${debugPort}/json/version`);
+console.log(`CDP targets: http://${debugUrlHost}:${debugPort}/json/list`);
+console.log(`Allowed DevTools origins: ${allowOrigins}`);
 console.log(`Opening ${vttUrl}`);
 
 const child = spawn(chrome, args, {
