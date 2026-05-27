@@ -1,6 +1,7 @@
 import { registerSettings } from './sbi-importer/sbiConfig.js';
 import { sbiUtils } from './sbi-importer/sbiUtils.js';
 import { sbiParser } from './sbi-importer/sbiParser.js';
+import { findEmbeddedOpen5eCreature, searchEmbeddedOpen5e } from './open5e/open5e-provider.mjs';
 
 const MONSTER_CREATOR_ID = 'monster-creator';
 const JHOW_MODE_SETTING = 'jhowMode';
@@ -13,6 +14,9 @@ const JHOW_CLICK_CONFETTI_COUNT = 30;
 const JHOW_INTERACTION_CONFETTI_COUNT = 12;
 const OPEN5E_API_DEFAULT_ROOT = 'https://api.open5e.com';
 const OPEN5E_CREATURES_ENDPOINT = '/v2/creatures/';
+const OPEN5E_DATA_SOURCE_SETTING = 'open5eDataSource';
+const OPEN5E_DATA_SOURCE_EMBEDDED = 'embedded';
+const OPEN5E_DATA_SOURCE_API = 'api';
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 const normalizeOpen5eApiRoot = (value) => {
@@ -39,6 +43,35 @@ const getOpen5eApiRoot = () => {
 
   return OPEN5E_API_DEFAULT_ROOT;
 };
+
+const normalizeOpen5eDataSource = (value) => {
+  if (typeof value !== 'string') {
+    return '';
+  }
+
+  const trimmed = value.trim().toLowerCase();
+  return [OPEN5E_DATA_SOURCE_EMBEDDED, OPEN5E_DATA_SOURCE_API].includes(trimmed) ? trimmed : '';
+};
+
+const getOpen5eDataSource = () => {
+  const override = normalizeOpen5eDataSource(
+    globalThis.MONSTER_CREATOR_OPEN5E_DATA_SOURCE || globalThis.MONSTER_CREATOR_OPEN5E_SOURCE
+  );
+  if (override) {
+    return override;
+  }
+
+  if (game?.settings?.get) {
+    const settingValue = normalizeOpen5eDataSource(game.settings.get(MONSTER_CREATOR_ID, OPEN5E_DATA_SOURCE_SETTING));
+    if (settingValue) {
+      return settingValue;
+    }
+  }
+
+  return OPEN5E_DATA_SOURCE_EMBEDDED;
+};
+
+const shouldUseRemoteOpen5eApi = () => getOpen5eDataSource() === OPEN5E_DATA_SOURCE_API;
 
 const isJhowModeEnabled = () => {
   return Boolean(game?.settings?.get?.(MONSTER_CREATOR_ID, JHOW_MODE_SETTING));
@@ -159,9 +192,22 @@ const registerMonsterCreatorSettings = () => {
     return;
   }
 
+  game.settings.register(MONSTER_CREATOR_ID, OPEN5E_DATA_SOURCE_SETTING, {
+    name: 'Open5E data source',
+    hint: 'Embedded uses local module data with BM25 search. API uses the configured Open5E API URL.',
+    scope: 'world',
+    config: true,
+    type: String,
+    choices: {
+      [OPEN5E_DATA_SOURCE_EMBEDDED]: 'Embedded local data',
+      [OPEN5E_DATA_SOURCE_API]: 'Remote Open5E API'
+    },
+    default: OPEN5E_DATA_SOURCE_EMBEDDED
+  });
+
   game.settings.register(MONSTER_CREATOR_ID, 'open5eApiUrl', {
     name: 'Open5E API URL',
-    hint: 'Base URL used for Open5E API requests. Defaults to https://api.open5e.com.',
+    hint: 'Base URL used only when the Open5E data source is Remote Open5E API.',
     scope: 'world',
     config: true,
     type: String,
@@ -571,6 +617,9 @@ const resolveOpen5eMonster = async (input, options = {}) => {
     ) {
       const normalized = normalizeOpen5eLookupInput(input.url);
       if (normalized?.url) {
+        if (!shouldUseRemoteOpen5eApi()) {
+          return findEmbeddedOpen5eCreature(normalized.slug);
+        }
         return await fetchJson(normalized.url);
       }
     }
@@ -592,6 +641,16 @@ const resolveOpen5eMonster = async (input, options = {}) => {
   }
 
   if (normalized.sourceType === 'url' || normalized.sourceType === 'slug') {
+    if (!shouldUseRemoteOpen5eApi()) {
+      const embeddedMonster = findEmbeddedOpen5eCreature(normalized.slug)
+        || searchEmbeddedOpen5e({ query: normalized.slug, limit: 1 }).results[0]
+        || null;
+      if (!embeddedMonster) {
+        sbiUtils.warn('[MonsterCreator] Embedded Open5E creature not found', { slug: normalized.slug });
+      }
+      return embeddedMonster;
+    }
+
     try {
       const monsterData = await fetchJson(normalized.url);
       return monsterData;
@@ -602,7 +661,7 @@ const resolveOpen5eMonster = async (input, options = {}) => {
     }
   }
 
-  const payload = await fetchJson(buildOpen5ePayloadUrl({
+  const payload = await searchOpen5e(normalized.query, {
     query: normalized.query,
     mode: safeString(options.mode, 'name'),
     page: safeInt(options.page, 1),
@@ -610,7 +669,7 @@ const resolveOpen5eMonster = async (input, options = {}) => {
     type: safeString(options.type),
     size: safeString(options.size),
     source: safeString(options.source)
-  }));
+  });
 
   const results = Array.isArray(payload?.results) ? payload.results : [];
   if (results.length > 0) {
@@ -620,7 +679,7 @@ const resolveOpen5eMonster = async (input, options = {}) => {
   return null;
 };
 
-const createMonsterFromOpen5eData = async (monsterData, { notes = '', folderId } = {}) => {
+const createMonsterFromOpen5eData = async (monsterData, { notes = '', folderId, source = 'open5e-embedded' } = {}) => {
   const formatter = getFormatter();
   if (!formatter || typeof formatter.toWotcStatblockText !== 'function') {
     sbiUtils.warn('[MonsterCreator] Open5E formatter unavailable; cannot build parser input text.');
@@ -647,7 +706,7 @@ const createMonsterFromOpen5eData = async (monsterData, { notes = '', folderId }
     const actor = await createMonsterFromText(open5eStatblockText, {
       notes,
       folderId,
-      source: 'open5e-api'
+      source
     });
 
     if (actor) {
@@ -773,7 +832,7 @@ const createMonsterFromManualForm = async (formData = {}, { notes = '', folderId
 };
 
 const searchOpen5e = async (query, options = {}) => {
-  return fetchJson(buildOpen5ePayloadUrl({
+  const payloadOptions = {
     query,
     mode: safeString(options.mode, 'name'),
     page: safeInt(options.page, 1),
@@ -781,7 +840,13 @@ const searchOpen5e = async (query, options = {}) => {
     type: safeString(options.type),
     size: safeString(options.size),
     source: safeString(options.source)
-  }));
+  };
+
+  if (!shouldUseRemoteOpen5eApi()) {
+    return searchEmbeddedOpen5e(payloadOptions);
+  }
+
+  return fetchJson(buildOpen5ePayloadUrl(payloadOptions));
 };
 
 class MonsterCreatorForm extends HandlebarsApplicationMixin(ApplicationV2) {
@@ -1027,15 +1092,6 @@ class MonsterCreatorForm extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!root) return;
 
     const queryState = this._readOpen5eInputs();
-    const url = buildOpen5ePayloadUrl({
-      query: queryState.query,
-      mode: queryState.mode,
-      page,
-      limit: queryState.limit,
-      type: queryState.type,
-      size: queryState.size,
-      source: queryState.source
-    });
 
     this._open5eCount = 0;
     this._open5eNext = null;
@@ -1044,7 +1100,14 @@ class MonsterCreatorForm extends HandlebarsApplicationMixin(ApplicationV2) {
     this._open5ePage = page;
 
     try {
-      const payload = await fetchJson(url);
+      const payload = await searchOpen5e(queryState.query, {
+        mode: queryState.mode,
+        page,
+        limit: queryState.limit,
+        type: queryState.type,
+        size: queryState.size,
+        source: queryState.source
+      });
       this._open5eCount = Number(payload?.count || 0);
       this._open5eNext = payload?.next || null;
       this._open5ePrevious = payload?.previous || null;
@@ -1226,7 +1289,7 @@ class MonsterCreatorForm extends HandlebarsApplicationMixin(ApplicationV2) {
     const actor = await createMonsterFromOpen5eData(selectedMonster, {
       notes: String(formData.notes || ''),
       folderId: undefined,
-      source: 'open5e-api'
+      source: shouldUseRemoteOpen5eApi() ? 'open5e-api' : 'open5e-embedded'
     });
 
     if (actor) {
