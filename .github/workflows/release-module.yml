@@ -32,10 +32,9 @@ jobs:
         run: npm ci
 
       - name: Generate FC5 compendium packs
-        env:
-          FC5_XML_PATH: ${{ runner.temp }}/Complete_Compendium_5e.xml
         run: |
-          curl --fail --location --show-error "$FC5_XML_URL" --output "$FC5_XML_PATH"
+          mkdir -p tmp
+          curl --fail --location --show-error "$FC5_XML_URL" --output tmp/Complete_Compendium_5e.xml
           npm run generate:fc5-compendia
 
       - name: Run semantic release
