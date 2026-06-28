@@ -874,7 +874,8 @@ class MonsterCreatorForm extends HandlebarsApplicationMixin(ApplicationV2) {
     },
     window: {
       title: 'Monster Creator',
-      resizable: true
+      resizable: true,
+      positioned: true
     },
     form: {
       closeOnSubmit: true,
@@ -1302,6 +1303,37 @@ class MonsterCreatorForm extends HandlebarsApplicationMixin(ApplicationV2) {
 
 }
 
+const getMonsterCreatorWindowPosition = () => {
+  const margin = 24;
+  const viewportWidth = Number(globalThis.innerWidth) || 1024;
+  const viewportHeight = Number(globalThis.innerHeight) || 768;
+  const width = Math.min(560, Math.max(320, viewportWidth - (margin * 2)));
+  const height = Math.min(700, Math.max(420, viewportHeight - (margin * 2)));
+
+  return {
+    width,
+    height,
+    left: Math.max(margin, Math.floor((viewportWidth - width) / 2)),
+    top: Math.max(margin, Math.floor((viewportHeight - height) / 2))
+  };
+};
+
+const openMonsterCreatorForm = async () => {
+  const app = new MonsterCreatorForm();
+  const position = getMonsterCreatorWindowPosition();
+
+  await app.render({
+    force: true,
+    position
+  });
+
+  if (typeof app.setPosition === 'function') {
+    app.setPosition(getMonsterCreatorWindowPosition());
+  }
+
+  return app;
+};
+
 Hooks.once('init', () => {
   try {
     registerSettings();
@@ -1320,8 +1352,8 @@ Hooks.once('init', () => {
     const importFromOpen5e = async (query, options = {}) => createMonsterFromOpen5e(query, options);
 
     module.api = {
-      openMonsterCreator: () => new MonsterCreatorForm().render(true),
-      open: () => new MonsterCreatorForm().render(true),
+      openMonsterCreator: openMonsterCreatorForm,
+      open: openMonsterCreatorForm,
       parse,
       import: importMonster,
       parseAndCreate: importMonster,
@@ -1376,7 +1408,7 @@ const addMonsterCreatorButton = (_app, html) => {
   }
   button.textContent = getJhowButtonLabel();
   button.addEventListener('click', () => {
-    new MonsterCreatorForm().render(true);
+    openMonsterCreatorForm();
   });
 
   wrapper.appendChild(button);

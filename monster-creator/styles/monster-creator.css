@@ -184,8 +184,11 @@
 .monster-creator-form {
   padding: 0.6rem 0.75rem 0.75rem;
   background: var(--mc-surface);
-  position: relative;
   overflow: auto;
+}
+
+#monster-creator-form.application {
+  position: fixed;
 }
 
 .monster-creator-form.monster-creator-jhow-mode,
